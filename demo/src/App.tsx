@@ -497,7 +497,6 @@ export default function App() {
                   <div className="demo-input-stack" style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '400px' }}>
                     <GlassInput
                       label="Developer Name"
-                      placeholder="Enter your name"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       intensity={intensity}
@@ -506,7 +505,6 @@ export default function App() {
 
                     <GlassInput
                       label="Organization Email"
-                      placeholder="example@zakisheriff.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       intensity={intensity}
