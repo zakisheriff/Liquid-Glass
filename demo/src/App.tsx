@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import {
   GlassButton,
   GlassCard,
@@ -7,7 +8,7 @@ import {
   GlassSheet,
   GlassSlider,
   LiquidGlassFilter,
-} from '../../src';
+} from '@zakisheriff/liquid-glass';
 
 // Vector SVG Icons for iOS 26 Visual Excellence (Proper 20px sized nicely)
 const SparklesIcon = ({ size = 20 }: { size?: number }) => (
