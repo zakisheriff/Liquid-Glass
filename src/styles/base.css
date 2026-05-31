@@ -1,4 +1,4 @@
-/* @theatom/liquid-glass — base styles */
+/* @zakisheriff/liquid-glass — base styles */
 
 @property --glass-angle-1 {
   syntax: '<angle>';
@@ -85,4 +85,3 @@
     animation-duration: 0.01ms !important;
   }
 }
-

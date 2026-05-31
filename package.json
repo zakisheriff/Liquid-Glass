@@ -1,5 +1,5 @@
 {
-  "name": "@theatom/liquid-glass",
+  "name": "@zakisheriff/liquid-glass",
   "version": "0.1.0",
   "description": "Liquid glass UI components for React — bringing iOS 26's native glass aesthetic to the web.",
   "author": "Zaki Sheriff",
@@ -25,9 +25,9 @@
   "keywords": ["react", "glass", "glassmorphism", "liquid-glass", "ui", "components", "ios", "apple"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/theatom/liquid-glass"
+    "url": "git+https://github.com/zakisheriff/Liquid-Glass.git"
   },
-  "homepage": "https://theatom.lk",
+  "homepage": "https://github.com/zakisheriff/Liquid-Glass",
   "peerDependencies": {
     "react": ">=17",
     "react-dom": ">=17"

@@ -1,5 +1,5 @@
-// @theatom/liquid-glass — Liquid glass UI components for React
-// Built by Zaki Sheriff at The Atom (https://theatom.lk)
+// @zakisheriff/liquid-glass — Liquid glass UI components for React
+// Built by Zaki Sheriff
 
 // Components
 export { GlassButton } from './components/GlassButton';
@@ -32,5 +32,5 @@ export type { UseGlassEffectOptions } from './hooks/useGlassEffect';
 export { useGlassAnimation } from './hooks/useGlassAnimation';
 export type { GlassAnimationState } from './hooks/useGlassAnimation';
 
-// Base styles (import separately: '@theatom/liquid-glass/styles.css')
+// Base styles (import separately: '@zakisheriff/liquid-glass/styles.css')
 import './styles/base.css';

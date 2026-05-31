@@ -145,7 +145,7 @@ export default function App() {
               <span>Zaki Sheriff</span>
             </div>
             <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '56px', fontWeight: 800, margin: 0, letterSpacing: '-0.02em', background: 'linear-gradient(135deg, #121214 30%, #4a4a4f 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              @theatom/liquid-glass
+              @zakisheriff/liquid-glass
             </h1>
             <p style={{ fontSize: '18px', color: 'rgba(0,0,0,0.65)', maxWidth: '600px', margin: '16px auto 0', lineHeight: 1.6, fontWeight: 300 }}>
               Bringing iOS 26's native liquid glass aesthetic to the web. Refraction, light caustics, and edge diffraction.
@@ -156,7 +156,7 @@ export default function App() {
                 thickness={thickness}
                 shimmer={shimmer}
                 size="sm"
-                onClick={() => window.open('https://theatom.lk', '_blank')}
+                onClick={() => window.open('https://github.com/zakisheriff/Liquid-Glass', '_blank')}
               >
                 <GlobeIcon size={20} />
                 Explore Zaki Sheriff
@@ -370,7 +370,7 @@ export default function App() {
                       overflowX: 'auto',
                       margin: '0 0 24px 0'
                     }}>
-                      npm install @theatom/liquid-glass
+                      npm install @zakisheriff/liquid-glass
                     </pre>
 
                     <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 8px 0' }}>2. Basic Usage</h3>
@@ -389,8 +389,8 @@ export default function App() {
                       margin: '0 0 24px 0',
                       lineHeight: '1.4'
                     }}>
-{`import { LiquidGlassFilter, GlassButton } from '@theatom/liquid-glass';
-import '@theatom/liquid-glass/styles.css';
+{`import { LiquidGlassFilter, GlassButton } from '@zakisheriff/liquid-glass';
+import '@zakisheriff/liquid-glass/styles.css';
 
 export default function App() {
   return (
@@ -506,7 +506,7 @@ export default function App() {
 
                     <GlassInput
                       label="Organization Email"
-                      placeholder="example@theatom.lk"
+                      placeholder="example@zakisheriff.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       intensity={intensity}

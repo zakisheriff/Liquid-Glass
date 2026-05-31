@@ -1,4 +1,4 @@
-# <div align="center">@theatom/liquid-glass</div>
+# <div align="center">@zakisheriff/liquid-glass</div>
 
 <div align="center">
 <strong>Apple-Inspired iOS 26 Liquid Glass UI Components for React</strong>
@@ -15,14 +15,14 @@
 
 <br />
 
-<a href="https://www.npmjs.com/package/@theatom/liquid-glass">
+<a href="https://www.npmjs.com/package/@zakisheriff/liquid-glass">
 <img src="https://img.shields.io/badge/View%20on%20npm-Install%20Package-CB3837?style=for-the-badge&logo=npm&logoColor=white" height="50" />
 </a>
 
 <br />
 <br />
 
-**[Visit The Atom: https://theatom.lk](https://theatom.lk)**
+**[View on GitHub: https://github.com/zakisheriff/Liquid-Glass](https://github.com/zakisheriff/Liquid-Glass)**
 
 </div>
 
@@ -30,7 +30,7 @@
 
 > **"Glass should feel physical, not painted on."**
 >
-> `@theatom/liquid-glass` brings Apple's liquid glass aesthetic to React.  
+> `@zakisheriff/liquid-glass` brings Apple's liquid glass aesthetic to React.  
 > Built with layered shadows, prismatic borders, animated shine overlays, and native CSS blur, it turns ordinary interface elements into tactile glass surfaces.
 
 ---
@@ -153,28 +153,28 @@ liquid-glass/
 ### 1. Install the Package
 
 ```bash
-npm install @theatom/liquid-glass
+npm install @zakisheriff/liquid-glass
 ```
 
 ```bash
-yarn add @theatom/liquid-glass
+yarn add @zakisheriff/liquid-glass
 ```
 
 ```bash
-pnpm add @theatom/liquid-glass
+pnpm add @zakisheriff/liquid-glass
 ```
 
 ### 2. Import Styles
 
 ```tsx
-import '@theatom/liquid-glass/styles.css';
+import '@zakisheriff/liquid-glass/styles.css';
 ```
 
 ### 3. Use Components
 
 ```tsx
-import { GlassButton, GlassCard } from '@theatom/liquid-glass';
-import '@theatom/liquid-glass/styles.css';
+import { GlassButton, GlassCard } from '@zakisheriff/liquid-glass';
+import '@zakisheriff/liquid-glass/styles.css';
 
 function App() {
   return (
@@ -235,7 +235,7 @@ function App() {
 - `useGlassAnimation` — Track interactive component states
 
 ### Styles
-- `@theatom/liquid-glass/styles.css` — Core stylesheet
+- `@zakisheriff/liquid-glass/styles.css` — Core stylesheet
 
 ---
 
@@ -319,7 +319,7 @@ Liquid Glass is built with a multi-layer CSS approach:
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/theatom/liquid-glass.git
+git clone https://github.com/zakisheriff/Liquid-Glass.git
 cd liquid-glass
 ```
 
@@ -371,7 +371,7 @@ If Liquid Glass helped you build a more beautiful interface or inspired your nex
 ---
 
 <p align="center">
-Made by <strong>Zaki Sheriff</strong> at <a href="https://theatom.lk">The Atom</a>
+Made by <strong>Zaki Sheriff</strong>
 </p>
 
 <p align="center">
