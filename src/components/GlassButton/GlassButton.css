@@ -199,6 +199,7 @@
   cursor: pointer;
   pointer-events: auto;
   border-radius: inherit;
+  line-height: 1;
   transition:
     transform var(--glass-duration) var(--glass-ease);
 }
@@ -362,9 +363,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.5em;
-  width: 100%;
-  height: 100%;
   padding: 0 1.4em;
+  box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   font-size: var(--glass-font-size);
   font-weight: var(--glass-font-weight);
@@ -373,6 +373,7 @@
   text-shadow: var(--glass-content-text-shadow, 0 1px 2px rgba(0, 0, 0, 0.05));
   white-space: nowrap;
   user-select: none;
+  line-height: 1;
   transition: text-shadow var(--glass-duration) var(--glass-ease);
 }
 
