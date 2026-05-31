@@ -23,7 +23,6 @@
   --glass-nav-height: 52px;
 
   --glass-ease: cubic-bezier(0.25, 1, 0.5, 1);
-  --glass-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --glass-duration: 0.4s;
 }
 
@@ -41,7 +40,7 @@
 /* ---------------------------------------------------------------------------
    Surface
    --------------------------------------------------------------------------- */
-.lg-nav .lg-surface {
+.lg-nav > .lg-surface {
   position: relative;
   z-index: 2;
   box-sizing: border-box;
@@ -62,7 +61,7 @@
 /* ---------------------------------------------------------------------------
    Backdrop Surface
    --------------------------------------------------------------------------- */
-.lg-nav .lg-backdrop-surface {
+.lg-nav > .lg-backdrop-surface {
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -80,7 +79,7 @@
 /* ---------------------------------------------------------------------------
    Backdrop Surface ::after — conic-gradient border ring
    --------------------------------------------------------------------------- */
-.lg-nav .lg-backdrop-surface::after {
+.lg-nav > .lg-backdrop-surface::after {
   content: '';
   position: absolute;
   z-index: 1;
@@ -120,14 +119,14 @@
   transition: --glass-angle-1 0.5s var(--glass-ease);
 }
 
-.lg-nav:hover .lg-backdrop-surface::after {
+.lg-nav:hover > .lg-backdrop-surface::after {
   --glass-angle-1: -125deg;
 }
 
 /* ---------------------------------------------------------------------------
    Shadow element — dual layer, non-clipped blurred gradient ring behind
    --------------------------------------------------------------------------- */
-.lg-nav .lg-shadow {
+.lg-nav > .lg-shadow {
   position: absolute;
   top: calc(0% - var(--glass-shadow-cutoff-fix) / 2);
   left: calc(0% - var(--glass-shadow-cutoff-fix) / 2);
@@ -139,7 +138,7 @@
   transition: filter var(--glass-duration) var(--glass-ease);
 }
 
-.lg-nav .lg-shadow::after {
+.lg-nav > .lg-shadow::after {
   content: "";
   position: absolute;
   width: calc(100% - var(--glass-shadow-cutoff-fix) - 0.25em);
@@ -166,11 +165,11 @@
   mask-composite: exclude;
 }
 
-.lg-nav:hover .lg-shadow {
+.lg-nav:hover > .lg-shadow {
   filter: blur(6px);
 }
 
-.lg-nav:hover .lg-shadow::after {
+.lg-nav:hover > .lg-shadow::after {
   opacity: 0.7;
   top: calc(var(--glass-shadow-cutoff-fix) - 0.875em);
 }
@@ -193,11 +192,10 @@
     0 1px 2px rgba(0, 0, 0, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 0.4);
 
-  /* Spring-like transition for the slide effect */
   transition:
-    transform 0.5s var(--glass-ease-spring),
-    width 0.35s var(--glass-ease),
-    height 0.35s var(--glass-ease);
+    transform 0.28s var(--glass-ease),
+    width 0.28s var(--glass-ease),
+    height 0.28s var(--glass-ease);
 }
 
 /* ---------------------------------------------------------------------------

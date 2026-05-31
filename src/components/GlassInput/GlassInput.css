@@ -60,7 +60,7 @@
 /* ---------------------------------------------------------------------------
    Surface
    --------------------------------------------------------------------------- */
-.lg-input .lg-surface {
+.lg-input > .lg-surface {
   position: relative;
   z-index: 2;
   box-sizing: border-box;
@@ -80,7 +80,7 @@
 }
 
 /* Backdrop Surface sibling */
-.lg-input .lg-backdrop-surface {
+.lg-input > .lg-backdrop-surface {
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -97,7 +97,7 @@
 }
 
 /* Conic gradient border ring on backdrop surface ::after */
-.lg-input .lg-backdrop-surface::after {
+.lg-input > .lg-backdrop-surface::after {
   content: '';
   position: absolute;
   z-index: 1;
@@ -149,11 +149,11 @@
   }
 }
 
-.lg-input--focused .lg-backdrop-surface {
+.lg-input--focused > .lg-backdrop-surface {
   box-shadow: var(--glass-surface-shadow-focus);
 }
 
-.lg-input--focused .lg-backdrop-surface::after {
+.lg-input--focused > .lg-backdrop-surface::after {
   --glass-angle-1: -125deg;
   background:
     conic-gradient(
@@ -175,7 +175,7 @@
 /* ---------------------------------------------------------------------------
    Shadow element — dual layer, non-clipped blurred gradient ring behind
    --------------------------------------------------------------------------- */
-.lg-input .lg-shadow {
+.lg-input > .lg-shadow {
   position: absolute;
   top: calc(0% - var(--glass-shadow-cutoff-fix) / 2);
   left: calc(0% - var(--glass-shadow-cutoff-fix) / 2);
@@ -187,7 +187,7 @@
   transition: filter var(--glass-duration) var(--glass-ease);
 }
 
-.lg-input .lg-shadow::after {
+.lg-input > .lg-shadow::after {
   content: "";
   position: absolute;
   width: calc(100% - var(--glass-shadow-cutoff-fix) - 0.25em);
@@ -214,11 +214,11 @@
   mask-composite: exclude;
 }
 
-.lg-input--focused .lg-shadow {
+.lg-input--focused > .lg-shadow {
   filter: blur(12px);
 }
 
-.lg-input--focused .lg-shadow::after {
+.lg-input--focused > .lg-shadow::after {
   opacity: 0.7;
   top: calc(var(--glass-shadow-cutoff-fix) - 0.5em);
   background:

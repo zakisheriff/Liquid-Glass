@@ -40,7 +40,7 @@
 /* ---------------------------------------------------------------------------
    Surface
    --------------------------------------------------------------------------- */
-.lg-card .lg-surface {
+.lg-card > .lg-surface {
   position: relative;
   z-index: 2;
   box-sizing: border-box;
@@ -59,7 +59,7 @@
 /* ---------------------------------------------------------------------------
    Backdrop Surface
    --------------------------------------------------------------------------- */
-.lg-card .lg-backdrop-surface {
+.lg-card > .lg-backdrop-surface {
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -78,7 +78,7 @@
 /* ---------------------------------------------------------------------------
    Backdrop Surface ::after — conic-gradient border ring
    --------------------------------------------------------------------------- */
-.lg-card .lg-backdrop-surface::after {
+.lg-card > .lg-backdrop-surface::after {
   content: '';
   position: absolute;
   z-index: 1;
@@ -121,18 +121,18 @@
 /* ---------------------------------------------------------------------------
    Surface hover
    --------------------------------------------------------------------------- */
-.lg-card:hover .lg-backdrop-surface {
+.lg-card:hover > .lg-backdrop-surface {
   box-shadow: var(--glass-surface-shadow-hover);
 }
 
-.lg-card:hover .lg-backdrop-surface::after {
+.lg-card:hover > .lg-backdrop-surface::after {
   --glass-angle-1: -125deg;
 }
 
 /* ---------------------------------------------------------------------------
    Shadow element — dual layer, non-clipped blurred gradient ring behind
    --------------------------------------------------------------------------- */
-.lg-card .lg-shadow {
+.lg-card > .lg-shadow {
   position: absolute;
   top: calc(0% - var(--glass-shadow-cutoff-fix) / 2);
   left: calc(0% - var(--glass-shadow-cutoff-fix) / 2);
@@ -144,7 +144,7 @@
   transition: filter var(--glass-duration) var(--glass-ease);
 }
 
-.lg-card .lg-shadow::after {
+.lg-card > .lg-shadow::after {
   content: "";
   position: absolute;
   width: calc(100% - var(--glass-shadow-cutoff-fix) - 0.25em);
@@ -171,11 +171,11 @@
   mask-composite: exclude;
 }
 
-.lg-card:hover .lg-shadow {
+.lg-card:hover > .lg-shadow {
   filter: blur(6px);
 }
 
-.lg-card:hover .lg-shadow::after {
+.lg-card:hover > .lg-shadow::after {
   opacity: 0.7;
   top: calc(var(--glass-shadow-cutoff-fix) - 0.875em);
 }
@@ -203,24 +203,24 @@
   }
 }
 
-.lg-card--shimmer .lg-surface::after {
+.lg-card--shimmer > .lg-surface::after {
   animation: lg-card-shimmer 6s linear infinite;
 }
 
-.lg-card--shimmer .lg-shadow::after {
+.lg-card--shimmer > .lg-shadow::after {
   animation: lg-card-shimmer 6s linear infinite;
 }
 
 /* Pause animation on hover so the interactive transition takes over */
-.lg-card--shimmer:hover .lg-surface::after,
-.lg-card--shimmer:hover .lg-shadow::after {
+.lg-card--shimmer:hover > .lg-surface::after,
+.lg-card--shimmer:hover > .lg-shadow::after {
   animation-play-state: paused;
 }
 
 /* ---------------------------------------------------------------------------
    Content ::after — subtle shine overlay
    --------------------------------------------------------------------------- */
-.lg-card--shimmer .lg-content::after {
+.lg-card--shimmer > .lg-surface > .lg-content::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -242,7 +242,7 @@
     opacity var(--glass-duration) var(--glass-ease);
 }
 
-.lg-card--shimmer:hover .lg-content::after {
+.lg-card--shimmer:hover > .lg-surface > .lg-content::after {
   background-position: 25% 25%;
   opacity: 0.35;
 }

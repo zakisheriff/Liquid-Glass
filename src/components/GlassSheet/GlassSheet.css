@@ -81,7 +81,7 @@
 /* ---------------------------------------------------------------------------
    Surface
    --------------------------------------------------------------------------- */
-.lg-sheet .lg-surface {
+.lg-sheet > .lg-surface {
   position: relative;
   z-index: 2;
   box-sizing: border-box;
@@ -103,7 +103,7 @@
 /* ---------------------------------------------------------------------------
    Backdrop Surface
    --------------------------------------------------------------------------- */
-.lg-sheet .lg-backdrop-surface {
+.lg-sheet > .lg-backdrop-surface {
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -120,7 +120,7 @@
 }
 
 /* Conic gradient border ring on backdrop surface ::after */
-.lg-sheet .lg-backdrop-surface::after {
+.lg-sheet > .lg-backdrop-surface::after {
   content: '';
   position: absolute;
   z-index: 1;
@@ -163,7 +163,7 @@
 /* ---------------------------------------------------------------------------
    Shadow element — dual layer, non-clipped blurred gradient ring behind
    --------------------------------------------------------------------------- */
-.lg-sheet .lg-shadow {
+.lg-sheet > .lg-shadow {
   position: absolute;
   top: calc(0% - var(--glass-shadow-cutoff-fix) / 2);
   left: calc(0% - var(--glass-shadow-cutoff-fix) / 2);
@@ -175,7 +175,7 @@
   transition: filter var(--glass-duration) var(--glass-ease);
 }
 
-.lg-sheet .lg-shadow::after {
+.lg-sheet > .lg-shadow::after {
   content: "";
   position: absolute;
   width: calc(100% - var(--glass-shadow-cutoff-fix) - 0.25em);

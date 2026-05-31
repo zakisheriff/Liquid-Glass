@@ -84,23 +84,6 @@ const VolumeIcon = ({ size = 20 }: { size?: number }) => (
   </svg>
 );
 
-const SunIcon = ({ size = 20 }: { size?: number }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
-    <circle cx="12" cy="12" r="4" />
-    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-  </svg>
-);
-
-const PaletteIcon = ({ size = 20 }: { size?: number }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
-    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 14.7255 3.09032 17.1962 4.85857 19C5.32115 19.4626 5.37894 20.2014 4.99268 20.7327C4.42857 21.5089 4.86971 22 5.82367 22H12Z" />
-    <circle cx="7.5" cy="10.5" r="1.5" fill="currentColor"/>
-    <circle cx="11.5" cy="7.5" r="1.5" fill="currentColor"/>
-    <circle cx="16.5" cy="9.5" r="1.5" fill="currentColor"/>
-    <circle cx="15.5" cy="14.5" r="1.5" fill="currentColor"/>
-  </svg>
-);
-
 export default function App() {
   // Global / Shared states
   const [intensity, setIntensity] = useState<number>(5);
@@ -120,8 +103,6 @@ export default function App() {
 
   // Slider states
   const [volume, setVolume] = useState<number>(46);
-  const [brightness, setBrightness] = useState<number>(54);
-  const [hueVal, setHueVal] = useState<number>(207);
 
   // Input states
   const [username, setUsername] = useState('');
@@ -160,8 +141,8 @@ export default function App() {
         <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px', position: 'relative', zIndex: 1 }}>
           {/* Header (Showing only Zaki Sheriff) */}
           <header style={{ textAlign: 'center', marginBottom: '60px' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', fontSize: '14px', fontWeight: 600, color: '#191919', opacity: 0.75, textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '12px' }}>
-              <span>By Zaki Sheriff</span>
+            <div style={{ display: 'inline-flex', alignItems: 'center', fontSize: '14px', fontWeight: 600, color: '#191919', opacity: 0.75, letterSpacing: '0.15em', marginBottom: '12px' }}>
+              <span>Zaki Sheriff</span>
             </div>
             <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '56px', fontWeight: 800, margin: 0, letterSpacing: '-0.02em', background: 'linear-gradient(135deg, #121214 30%, #4a4a4f 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               @theatom/liquid-glass
@@ -197,7 +178,7 @@ export default function App() {
                 Refraction Engine
               </h2>
               
-              {/* Slider 1: Intensity (Classic rounded knob control) */}
+              {/* Slider 1: Intensity (Control Center block style) */}
               <div style={{ marginBottom: '20px' }}>
                 <label style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: 'rgba(0,0,0,0.65)', marginBottom: '8px' }}>
                   <span>Glass Thickness (SVG Displace)</span>
@@ -208,7 +189,7 @@ export default function App() {
                   max={10}
                   value={intensity}
                   onChange={setIntensity}
-                  showThumb={true}
+                  showThumb={false}
                   intensity={intensity}
                   thickness={thickness}
                   shimmer={shimmer}
@@ -217,7 +198,7 @@ export default function App() {
                 />
               </div>
 
-              {/* Slider 2: Thickness (Classic rounded knob control) */}
+              {/* Slider 2: Thickness (Control Center block style) */}
               <div style={{ marginBottom: '20px' }}>
                 <label style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: 'rgba(0,0,0,0.65)', marginBottom: '8px' }}>
                   <span>Bevel Border Width</span>
@@ -228,7 +209,7 @@ export default function App() {
                   max={4}
                   value={thickness}
                   onChange={setThickness}
-                  showThumb={true}
+                  showThumb={false}
                   intensity={intensity}
                   thickness={thickness}
                   shimmer={shimmer}
@@ -577,56 +558,6 @@ export default function App() {
                         thickness={thickness}
                         shimmer={shimmer}
                       />
-                    </div>
-
-                    {/* Slider 2: Control Center Brightness (Thick Block / No Thumb) */}
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'rgba(0,0,0,0.55)', marginBottom: '10px' }}>
-                        <span>Display Brightness (iOS Control Center Block Slider)</span>
-                        <span style={{ fontWeight: 600 }}>{brightness}%</span>
-                      </div>
-                      <GlassSlider
-                        value={brightness}
-                        min={0}
-                        max={100}
-                        onChange={setBrightness}
-                        showThumb={false}
-                        icon={<SunIcon size={20} />}
-                        label="Brightness"
-                        intensity={intensity}
-                        tint={tint}
-                        thickness={thickness}
-                        shimmer={shimmer}
-                      />
-                    </div>
-
-                    {/* Slider 3: Classic Glass Slider with Glowing Liquid Glass Thumb */}
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'rgba(0,0,0,0.55)', marginBottom: '10px' }}>
-                        <span>Classic Slider (Media Timeline Style with Thumb Knob)</span>
-                        <span style={{ fontWeight: 600 }}>{hueVal} units</span>
-                      </div>
-                      <GlassSlider
-                        value={hueVal}
-                        min={0}
-                        max={360}
-                        onChange={setHueVal}
-                        showThumb={true}
-                        icon={<PaletteIcon size={20} />}
-                        label="Chroma Hue"
-                        intensity={intensity}
-                        tint={tint}
-                        thickness={thickness}
-                        shimmer={shimmer}
-                      />
-                    </div>
-
-                    {/* Slider 4: Pure Interactive Demo block */}
-                    <div style={{ marginTop: '10px', padding: '20px', background: 'rgba(0,0,0,0.02)', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.04)' }}>
-                      <div style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#191919', fontWeight: 600, marginBottom: '6px' }}>Interactive Output</div>
-                      <div style={{ fontSize: '14px', lineHeight: 1.5 }}>
-                        Active variables: Volume = <strong>{volume}</strong>, Brightness = <strong>{brightness}</strong>, Chroma Hue = <strong>{hueVal}</strong>.
-                      </div>
                     </div>
                   </div>
                 </GlassCard>
