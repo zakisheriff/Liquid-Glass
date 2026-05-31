@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
-const siteUrl = (process.env.VITE_SITE_URL || 'https://liquid-glass.zakisheriff.com').replace(/\/$/, '');
+const siteUrl = (process.env.VITE_SITE_URL || 'https://liquidglass.theatom.lk').replace(/\/$/, '');
 
 const seoAssets = () => ({
   name: 'liquid-glass-seo-assets',
