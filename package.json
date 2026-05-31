@@ -1,0 +1,52 @@
+{
+  "name": "@theatom/liquid-glass",
+  "version": "0.1.0",
+  "description": "Liquid glass UI components for React — bringing iOS 26's native glass aesthetic to the web.",
+  "author": "Zaki Sheriff",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./styles.css": "./dist/index.css"
+  },
+  "files": ["dist"],
+  "sideEffects": ["**/*.css"],
+  "keywords": ["react", "glass", "glassmorphism", "liquid-glass", "ui", "components", "ios", "apple"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theatom/liquid-glass"
+  },
+  "homepage": "https://theatom.lk",
+  "peerDependencies": {
+    "react": ">=17",
+    "react-dom": ">=17"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0",
+    "@vitejs/plugin-react": "^4.2.0"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build",
+    "demo": "vite demo"
+  }
+}

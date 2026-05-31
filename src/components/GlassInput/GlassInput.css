@@ -1,0 +1,315 @@
+/* ==========================================================================
+   GlassInput — @theatom/liquid-glass
+   Glassmorphic text input with floating label and focus diffraction glow.
+   
+   Architecture (3 layers):
+     .lg-root  .lg-input     — stacking context
+     .lg-surface              — backdrop-filter surface with border ring
+     .lg-shadow               — decorative blurred gradient behind
+     .lg-content              — label + input field
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   @property definitions for animatable conic-gradient angles
+   --------------------------------------------------------------------------- */
+@property --glass-input-glow-hue {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
+}
+
+/* ---------------------------------------------------------------------------
+   Design tokens
+   --------------------------------------------------------------------------- */
+.lg-input {
+  --glass-blur: 12px;
+  --glass-border-width: 1px;
+  --glass-tint: transparent;
+  --glass-radius: 999vw;
+
+  --glass-input-width: 280px;
+  --glass-input-height: 52px;
+  --glass-font-size: 15px;
+
+  --glass-surface-shadow-focus:
+    inset 0 0.0625em 0.125em 0 rgba(0, 0, 0, 0.06),
+    inset 0 -0.0625em 0.125em 0 rgba(255, 255, 255, 0.12),
+    0 0 1.25em -0.125em rgba(120, 160, 255, 0.3),
+    inset 0 0 0 0.03em rgba(255, 255, 255, 0.15),
+    0 0 0 0.0625em rgba(120, 160, 255, 0.25);
+
+  --glass-ease: cubic-bezier(0.25, 1, 0.5, 1);
+  --glass-duration: 0.4s;
+}
+
+/* ---------------------------------------------------------------------------
+   Root
+   --------------------------------------------------------------------------- */
+.lg-input.lg-root {
+  display: inline-flex;
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--glass-radius);
+  width: var(--glass-input-width);
+  transition:
+    transform var(--glass-duration) var(--glass-ease),
+    filter var(--glass-duration) var(--glass-ease);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------------------------------------------------------------------------
+   Surface
+   --------------------------------------------------------------------------- */
+.lg-input .lg-surface {
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: var(--glass-input-height);
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-radius: var(--glass-radius);
+  overflow: hidden;
+  transition:
+    box-shadow var(--glass-duration) var(--glass-ease),
+    backdrop-filter var(--glass-duration) var(--glass-ease);
+}
+
+/* Backdrop Surface sibling */
+.lg-input .lg-backdrop-surface {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--glass-surface-background);
+  background-color: var(--glass-tint);
+  box-shadow: var(--glass-surface-shadow);
+  backdrop-filter: var(--glass-refraction-filter, none) blur(var(--glass-blur));
+  -webkit-backdrop-filter: var(--glass-refraction-filter, none) blur(var(--glass-blur));
+  border-radius: var(--glass-radius);
+  pointer-events: none;
+  transition:
+    box-shadow var(--glass-duration) var(--glass-ease),
+    backdrop-filter var(--glass-duration) var(--glass-ease);
+}
+
+/* Conic gradient border ring on backdrop surface ::after */
+.lg-input .lg-backdrop-surface::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  width: calc(100% + var(--glass-border-width));
+  height: calc(100% + var(--glass-border-width));
+  inset: 0;
+  top: calc(0% - var(--glass-border-width) / 2);
+  left: calc(0% - var(--glass-border-width) / 2);
+  padding: var(--glass-border-width);
+  box-sizing: border-box;
+  border-radius: inherit;
+
+  background:
+    conic-gradient(
+      from var(--glass-angle-1) at 50% 50%,
+      rgba(0, 0, 0, 0.35),
+      transparent 5% 40%,
+      rgba(0, 0, 0, 0.35) 50%,
+      transparent 60% 95%,
+      rgba(0, 0, 0, 0.35)
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.35));
+
+  /* Bevel highlight shadow */
+  box-shadow: inset 0 0 0 calc(var(--glass-border-width) / 2) rgba(255, 255, 255, 0.5);
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  pointer-events: none;
+  transition: --glass-angle-1 0.5s var(--glass-ease);
+}
+
+/* ---------------------------------------------------------------------------
+   Focus state — edge diffraction glow mapped to sibling backdrop
+   --------------------------------------------------------------------------- */
+@keyframes lg-input-diffraction {
+  0% {
+    --glass-input-glow-hue: 0deg;
+  }
+  100% {
+    --glass-input-glow-hue: 360deg;
+  }
+}
+
+.lg-input--focused .lg-backdrop-surface {
+  box-shadow: var(--glass-surface-shadow-focus);
+}
+
+.lg-input--focused .lg-backdrop-surface::after {
+  --glass-angle-1: -125deg;
+  background:
+    conic-gradient(
+      from var(--glass-angle-1) at 50% 50%,
+      hsl(from oklch(0.7 0.15 var(--glass-input-glow-hue)) h s l / 0.6),
+      transparent 5% 40%,
+      hsl(from oklch(0.7 0.15 var(--glass-input-glow-hue)) h s l / 0.6) 50%,
+      transparent 60% 95%,
+      hsl(from oklch(0.7 0.15 var(--glass-input-glow-hue)) h s l / 0.6)
+    ),
+    linear-gradient(
+      180deg,
+      rgba(120, 160, 255, 0.5),
+      rgba(120, 160, 255, 0.5)
+    );
+  animation: lg-input-diffraction 4s linear infinite;
+}
+
+/* ---------------------------------------------------------------------------
+   Shadow element — dual layer, non-clipped blurred gradient ring behind
+   --------------------------------------------------------------------------- */
+.lg-input .lg-shadow {
+  position: absolute;
+  top: calc(0% - var(--glass-shadow-cutoff-fix) / 2);
+  left: calc(0% - var(--glass-shadow-cutoff-fix) / 2);
+  width: calc(100% + var(--glass-shadow-cutoff-fix));
+  height: calc(100% + var(--glass-shadow-cutoff-fix));
+  filter: blur(8px);
+  pointer-events: none;
+  z-index: 1;
+  transition: filter var(--glass-duration) var(--glass-ease);
+}
+
+.lg-input .lg-shadow::after {
+  content: "";
+  position: absolute;
+  width: calc(100% - var(--glass-shadow-cutoff-fix) - 0.25em);
+  height: calc(100% - var(--glass-shadow-cutoff-fix) - 0.25em);
+  inset: 0;
+  top: var(--glass-shadow-offset-top);
+  left: var(--glass-shadow-offset-left);
+  box-sizing: border-box;
+  background: var(--glass-shadow-background);
+  opacity: 0.4;
+  border-radius: var(--glass-radius);
+  padding: 0.125em;
+  transition:
+    top var(--glass-duration) var(--glass-ease),
+    opacity var(--glass-duration) var(--glass-ease);
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.lg-input--focused .lg-shadow {
+  filter: blur(12px);
+}
+
+.lg-input--focused .lg-shadow::after {
+  opacity: 0.7;
+  top: calc(var(--glass-shadow-cutoff-fix) - 0.5em);
+  background:
+    conic-gradient(
+      from var(--glass-angle-1) at 50% 50%,
+      rgba(0, 0, 0, 0.3),
+      rgba(0, 0, 0, 0.05) 25%,
+      rgba(0, 0, 0, 0.3) 50%,
+      rgba(0, 0, 0, 0.05) 75%,
+      rgba(0, 0, 0, 0.3)
+    ),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
+}
+
+/* ---------------------------------------------------------------------------
+   Content wrapper
+   --------------------------------------------------------------------------- */
+.lg-input > .lg-surface > .lg-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 24px;
+}
+
+/* ---------------------------------------------------------------------------
+   Floating label
+   --------------------------------------------------------------------------- */
+.lg-input__label {
+  position: absolute;
+  top: 50%;
+  left: 24px;
+  transform: translateY(-50%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: var(--glass-font-size);
+  font-weight: 400;
+  color: var(--glass-text-color, rgba(255, 255, 255, 0.5));
+  opacity: 0.6;
+  pointer-events: none;
+  transition:
+    transform var(--glass-duration) var(--glass-ease),
+    font-size var(--glass-duration) var(--glass-ease),
+    color var(--glass-duration) var(--glass-ease),
+    opacity var(--glass-duration) var(--glass-ease),
+    top var(--glass-duration) var(--glass-ease);
+  transform-origin: left center;
+}
+
+/* Float the label up when focused or has a value */
+.lg-input--focused .lg-input__label,
+.lg-input--has-value .lg-input__label {
+  top: 10px;
+  transform: translateY(0);
+  font-size: 11px;
+  opacity: 0.9;
+  color: var(--glass-text-color, rgba(255, 255, 255, 0.7));
+}
+
+.lg-input--focused .lg-input__label {
+  color: var(--glass-text-color, rgba(120, 180, 255, 0.9));
+}
+
+/* ---------------------------------------------------------------------------
+   Input field
+   --------------------------------------------------------------------------- */
+.lg-input__field {
+  all: unset;
+  box-sizing: border-box;
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: var(--glass-font-size);
+  font-weight: 400;
+  color: var(--glass-text-color, rgba(255, 255, 255, 0.92));
+  caret-color: var(--glass-text-color, rgba(120, 180, 255, 0.9));
+  padding-top: 6px;
+}
+
+/* Adjust padding when label is present and floated */
+.lg-input--focused .lg-input__field,
+.lg-input--has-value .lg-input__field {
+  padding-top: 12px;
+}
+
+.lg-input__field::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Hide placeholder when label is present and not yet floated */
+.lg-input:not(.lg-input--focused):not(.lg-input--has-value) .lg-input__field::placeholder {
+  color: transparent;
+}

@@ -1,0 +1,248 @@
+/* ==========================================================================
+   GlassCard — @theatom/liquid-glass
+   Glassmorphic container card following the wabi.ai physical glass approach.
+   
+   Architecture (3 layers):
+     .lg-root  .lg-card      — stacking context
+     .lg-surface              — backdrop-filter surface with border ring
+     .lg-shadow               — decorative blurred gradient behind
+     .lg-content              — padded content area
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   @property definitions for animatable conic-gradient angles
+   --------------------------------------------------------------------------- */
+.lg-card {
+  --glass-blur: 12px;
+  --glass-border-width: 1px;
+  --glass-tint: transparent;
+  --glass-radius: 36px;
+  --glass-padding: 24px;
+
+  --glass-ease: cubic-bezier(0.25, 1, 0.5, 1);
+  --glass-duration: 0.4s;
+}
+
+/* ---------------------------------------------------------------------------
+   Root
+   --------------------------------------------------------------------------- */
+.lg-card.lg-root {
+  display: block;
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--glass-radius);
+  transition:
+    transform var(--glass-duration) var(--glass-ease),
+    filter var(--glass-duration) var(--glass-ease);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------------------------------------------------------------------------
+   Surface
+   --------------------------------------------------------------------------- */
+.lg-card .lg-surface {
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  min-height: 80px;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-radius: var(--glass-radius);
+  overflow: hidden;
+  transition:
+    box-shadow var(--glass-duration) var(--glass-ease),
+    backdrop-filter var(--glass-duration) var(--glass-ease);
+}
+
+/* ---------------------------------------------------------------------------
+   Backdrop Surface
+   --------------------------------------------------------------------------- */
+.lg-card .lg-backdrop-surface {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--glass-surface-background);
+  background-color: var(--glass-tint);
+  box-shadow: var(--glass-surface-shadow);
+  backdrop-filter: var(--glass-refraction-filter, none) blur(var(--glass-blur));
+  -webkit-backdrop-filter: var(--glass-refraction-filter, none) blur(var(--glass-blur));
+  border-radius: var(--glass-radius);
+  pointer-events: none;
+  transition:
+    box-shadow var(--glass-duration) var(--glass-ease),
+    backdrop-filter var(--glass-duration) var(--glass-ease);
+}
+
+/* ---------------------------------------------------------------------------
+   Backdrop Surface ::after — conic-gradient border ring
+   --------------------------------------------------------------------------- */
+.lg-card .lg-backdrop-surface::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  width: calc(100% + var(--glass-border-width));
+  height: calc(100% + var(--glass-border-width));
+  inset: 0;
+  top: calc(0% - var(--glass-border-width) / 2);
+  left: calc(0% - var(--glass-border-width) / 2);
+  padding: var(--glass-border-width);
+  box-sizing: border-box;
+  border-radius: inherit;
+
+  background:
+    conic-gradient(
+      from var(--glass-angle-1) at 50% 50%,
+      rgba(0, 0, 0, 0.4),
+      transparent 5% 40%,
+      rgba(0, 0, 0, 0.4) 50%,
+      transparent 60% 95%,
+      rgba(0, 0, 0, 0.4)
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4));
+
+  /* Bevel highlight shadow */
+  box-shadow: inset 0 0 0 calc(var(--glass-border-width) / 2) rgba(255, 255, 255, 0.5);
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  pointer-events: none;
+  transition: --glass-angle-1 0.5s var(--glass-ease);
+}
+
+/* ---------------------------------------------------------------------------
+   Surface hover
+   --------------------------------------------------------------------------- */
+.lg-card:hover .lg-backdrop-surface {
+  box-shadow: var(--glass-surface-shadow-hover);
+}
+
+.lg-card:hover .lg-backdrop-surface::after {
+  --glass-angle-1: -125deg;
+}
+
+/* ---------------------------------------------------------------------------
+   Shadow element — dual layer, non-clipped blurred gradient ring behind
+   --------------------------------------------------------------------------- */
+.lg-card .lg-shadow {
+  position: absolute;
+  top: calc(0% - var(--glass-shadow-cutoff-fix) / 2);
+  left: calc(0% - var(--glass-shadow-cutoff-fix) / 2);
+  width: calc(100% + var(--glass-shadow-cutoff-fix));
+  height: calc(100% + var(--glass-shadow-cutoff-fix));
+  filter: blur(10px);
+  pointer-events: none;
+  z-index: 1;
+  transition: filter var(--glass-duration) var(--glass-ease);
+}
+
+.lg-card .lg-shadow::after {
+  content: "";
+  position: absolute;
+  width: calc(100% - var(--glass-shadow-cutoff-fix) - 0.25em);
+  height: calc(100% - var(--glass-shadow-cutoff-fix) - 0.25em);
+  inset: 0;
+  top: var(--glass-shadow-offset-top);
+  left: var(--glass-shadow-offset-left);
+  box-sizing: border-box;
+  background: var(--glass-shadow-background);
+  opacity: 0.5;
+  border-radius: var(--glass-radius);
+  padding: 0.125em;
+  transition:
+    top var(--glass-duration) var(--glass-ease),
+    opacity var(--glass-duration) var(--glass-ease);
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.lg-card:hover .lg-shadow {
+  filter: blur(6px);
+}
+
+.lg-card:hover .lg-shadow::after {
+  opacity: 0.7;
+  top: calc(var(--glass-shadow-cutoff-fix) - 0.875em);
+}
+
+/* ---------------------------------------------------------------------------
+   Content
+   --------------------------------------------------------------------------- */
+.lg-card > .lg-surface > .lg-content {
+  position: relative;
+  z-index: 2;
+  padding: var(--glass-padding);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: var(--glass-text-color, rgba(255, 255, 255, 0.92));
+}
+
+/* ---------------------------------------------------------------------------
+   Shimmer — animated border shine
+   --------------------------------------------------------------------------- */
+@keyframes lg-card-shimmer {
+  0% {
+    --glass-angle-1: -75deg;
+  }
+  100% {
+    --glass-angle-1: 285deg;
+  }
+}
+
+.lg-card--shimmer .lg-surface::after {
+  animation: lg-card-shimmer 6s linear infinite;
+}
+
+.lg-card--shimmer .lg-shadow::after {
+  animation: lg-card-shimmer 6s linear infinite;
+}
+
+/* Pause animation on hover so the interactive transition takes over */
+.lg-card--shimmer:hover .lg-surface::after,
+.lg-card--shimmer:hover .lg-shadow::after {
+  animation-play-state: paused;
+}
+
+/* ---------------------------------------------------------------------------
+   Content ::after — subtle shine overlay
+   --------------------------------------------------------------------------- */
+.lg-card--shimmer .lg-content::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    var(--glass-angle-2),
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 40% 50%,
+    transparent 55%
+  );
+  background-size: 200% 200%;
+  background-position: 0% 0%;
+  mix-blend-mode: screen;
+  opacity: 0.2;
+  pointer-events: none;
+  transition:
+    background-position 0.5s var(--glass-ease),
+    --glass-angle-2 0.5s var(--glass-ease),
+    opacity var(--glass-duration) var(--glass-ease);
+}
+
+.lg-card--shimmer:hover .lg-content::after {
+  background-position: 25% 25%;
+  opacity: 0.35;
+}

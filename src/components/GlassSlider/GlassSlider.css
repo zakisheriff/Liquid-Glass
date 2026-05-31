@@ -1,0 +1,420 @@
+/* ==========================================================================
+   GlassSlider — @theatom/liquid-glass
+   Glassmorphic range slider following the iOS 26 control center style.
+   
+   Architecture:
+     .lg-slider            — root container, capsule shape
+     .lg-slider-track      — layout track wrapper
+     .lg-backdrop-surface  — background glass panel with refraction & bevel
+     .lg-slider-fill       — active filled portion (translucent white glass)
+     .lg-slider-thumb      — sliding liquid glass knob
+     .lg-shadow            — backdrop soft shadow
+     .lg-slider-content    — icons/labels inside the track
+     .lg-slider-input      — native transparent <input type="range"> overlay
+   ========================================================================== */
+
+.lg-slider {
+  --glass-blur: 12px;
+  --glass-border-width: 1px;
+  --glass-tint: transparent;
+  --glass-radius: 999vw;
+  
+  --glass-slider-width: 100%;
+  --glass-slider-height: 44px;
+  --glass-font-size: 14px;
+  
+  --glass-ease: cubic-bezier(0.25, 1, 0.5, 1);
+  --glass-duration: 0.4s;
+}
+
+/* ---------------------------------------------------------------------------
+   Root Stacking context
+   --------------------------------------------------------------------------- */
+.lg-slider.lg-root {
+  display: flex;
+  position: relative;
+  width: var(--glass-slider-width);
+  height: var(--glass-slider-height);
+  isolation: isolate;
+  border-radius: var(--glass-radius);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------------------------------------------------------------------------
+   Slider Track Layout
+   --------------------------------------------------------------------------- */
+.lg-slider-track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+
+/* Backdrop Surface representing the track */
+.lg-slider .lg-backdrop-surface {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--glass-surface-background);
+  background-color: var(--glass-tint);
+  box-shadow: var(--glass-surface-shadow);
+  backdrop-filter: var(--glass-refraction-filter, none) blur(var(--glass-blur));
+  -webkit-backdrop-filter: var(--glass-refraction-filter, none) blur(var(--glass-blur));
+  border-radius: inherit;
+  pointer-events: none;
+  transition:
+    box-shadow var(--glass-duration) var(--glass-ease),
+    backdrop-filter var(--glass-duration) var(--glass-ease);
+}
+
+/* Conic gradient border ring on track */
+.lg-slider .lg-backdrop-surface::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  width: calc(100% + var(--glass-border-width));
+  height: calc(100% + var(--glass-border-width));
+  inset: 0;
+  top: calc(0% - var(--glass-border-width) / 2);
+  left: calc(0% - var(--glass-border-width) / 2);
+  padding: var(--glass-border-width);
+  box-sizing: border-box;
+  border-radius: inherit;
+
+  background:
+    conic-gradient(
+      from var(--glass-angle-1) at 50% 50%,
+      rgba(0, 0, 0, 0.35),
+      transparent 5% 40%,
+      rgba(0, 0, 0, 0.35) 50%,
+      transparent 60% 95%,
+      rgba(0, 0, 0, 0.35)
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.35));
+
+  /* Bevel highlight shadow */
+  box-shadow: inset 0 0 0 calc(var(--glass-border-width) / 2) rgba(255, 255, 255, 0.5);
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  pointer-events: none;
+  transition: --glass-angle-1 0.5s var(--glass-ease);
+}
+
+/* ---------------------------------------------------------------------------
+   Active Fill Overlay
+   --------------------------------------------------------------------------- */
+.lg-slider-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  width: var(--slider-percentage, 0%);
+  pointer-events: none;
+  
+  /* Solid premium white fill for maximum visibility and iOS fidelity */
+  background: #ffffff;
+  
+  /* Subtle glass border and reflections */
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.06),
+    inset -1px 0 2px rgba(255, 255, 255, 0.3);
+}
+
+/* ---------------------------------------------------------------------------
+   Shadow Element
+   --------------------------------------------------------------------------- */
+.lg-slider .lg-shadow {
+  position: absolute;
+  top: calc(0% - var(--glass-shadow-cutoff-fix) / 2);
+  left: calc(0% - var(--glass-shadow-cutoff-fix) / 2);
+  width: calc(100% + var(--glass-shadow-cutoff-fix));
+  height: calc(100% + var(--glass-shadow-cutoff-fix));
+  filter: blur(8px);
+  pointer-events: none;
+  z-index: 1;
+  transition: filter var(--glass-duration) var(--glass-ease);
+}
+
+.lg-slider .lg-shadow::after {
+  content: "";
+  position: absolute;
+  width: calc(100% - var(--glass-shadow-cutoff-fix) - 0.25em);
+  height: calc(100% - var(--glass-shadow-cutoff-fix) - 0.25em);
+  inset: 0;
+  top: var(--glass-shadow-offset-top);
+  left: var(--glass-shadow-offset-left);
+  box-sizing: border-box;
+  background: var(--glass-shadow-background);
+  opacity: 0.4;
+  border-radius: var(--glass-radius);
+  padding: 0.125em;
+  transition:
+    top var(--glass-duration) var(--glass-ease),
+    opacity var(--glass-duration) var(--glass-ease);
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* ---------------------------------------------------------------------------
+   Draggable Thumb Knob
+   --------------------------------------------------------------------------- */
+.lg-slider-thumb {
+  position: absolute;
+  top: 50%;
+  left: calc(16px + (100% - 32px) * var(--slider-ratio, 0));
+  z-index: 4;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  pointer-events: none;
+  
+  /* Center point alignment */
+  transform: translate(-50%, -50%);
+  
+  /* Liquid glass look */
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.85) 0%,
+    rgba(255, 255, 255, 0.6) 100%
+  );
+  
+  /* Physical double bevel highlight borders */
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow:
+    0 3px 8px -2px rgba(0, 0, 0, 0.22),
+    0 0 1px 1px rgba(255, 255, 255, 0.25),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8);
+    
+  transition:
+    transform 0.2s var(--glass-ease),
+    box-shadow 0.2s var(--glass-ease);
+}
+
+/* Hover expansion of thumb */
+.lg-slider:hover .lg-slider-thumb {
+  transform: translate(-50%, -50%) scale(1.08);
+  box-shadow:
+    0 4px 12px -2px rgba(0, 0, 0, 0.3),
+    0 0 2px 1px rgba(255, 255, 255, 0.35),
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.9);
+}
+
+/* Active pressed state of thumb */
+.lg-slider-track:active .lg-slider-thumb {
+  transform: translate(-50%, -50%) scale(0.96);
+  box-shadow:
+    0 2px 4px -1px rgba(0, 0, 0, 0.18),
+    inset 0 1px 1px rgba(255, 255, 255, 0.7);
+}
+
+/* ---------------------------------------------------------------------------
+   Content Inside Slider (Icons & Values)
+   --------------------------------------------------------------------------- */
+.lg-slider-content {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
+  z-index: 3;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0 16px !important;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: var(--glass-font-size);
+  font-weight: 500;
+  color: var(--glass-text-color, #191919);
+  text-shadow: var(--glass-content-text-shadow, 0 1px 1px rgba(255, 255, 255, 0.15));
+  transition: color var(--glass-duration) var(--glass-ease);
+}
+
+.lg-slider-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+.lg-slider-label {
+  letter-spacing: -0.01em;
+  opacity: 0.85;
+}
+
+.lg-slider-value-text {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.9;
+}
+
+/* ---------------------------------------------------------------------------
+   Native Input (Overlaid on top, completely invisible)
+   --------------------------------------------------------------------------- */
+.lg-slider-input {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Style track to cover full width */
+.lg-slider-input::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 100%;
+}
+
+.lg-slider-input::-moz-range-track {
+  width: 100%;
+  height: 100%;
+}
+
+/* Make native thumbs cover size to enable perfect grab area */
+.lg-slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.lg-slider-input::-moz-range-thumb {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------------------------
+   Focus Ring Accessibility
+   --------------------------------------------------------------------------- */
+.lg-slider-input:focus-visible ~ .lg-backdrop-surface {
+  box-shadow: 
+    var(--glass-surface-shadow-hover), 
+    0 0 0 3px rgba(120, 180, 255, 0.6);
+}
+
+.lg-slider-input:focus-visible ~ .lg-backdrop-surface::after {
+  --glass-angle-1: -125deg;
+}
+
+.lg-slider-input:focus-visible {
+  outline: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Shimmer shine overlay
+   --------------------------------------------------------------------------- */
+.lg-slider--shimmer .lg-slider-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    var(--glass-angle-2),
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 40% 50%,
+    transparent 55%
+  );
+  background-size: 200% 200%;
+  background-position: 0% 0%;
+  mix-blend-mode: screen;
+  opacity: 0.4;
+  pointer-events: none;
+  transition:
+    background-position 0.5s var(--glass-ease),
+    --glass-angle-2 0.5s var(--glass-ease);
+}
+
+.lg-slider--shimmer:hover .lg-slider-fill::after {
+  background-position: 25% 25%;
+}
+
+.lg-slider--shimmer .lg-slider-input:active ~ .lg-slider-fill::after {
+  --glass-angle-2: -15deg;
+  background-position: 50% 15%;
+  opacity: 0.2;
+}
+
+/* ---------------------------------------------------------------------------
+   Classic Timeline Slider Overrides (showThumb = true)
+   --------------------------------------------------------------------------- */
+.lg-slider--with-thumb .lg-slider-thumb {
+  width: 28px !important;
+  height: 28px !important;
+  left: calc(14px + (100% - 28px) * var(--slider-ratio, 0)) !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 0.8) !important;
+}
+
+.lg-slider--with-thumb:hover .lg-slider-thumb {
+  transform: translate(-50%, -50%) scale(1.1) !important;
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.16),
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+}
+
+.lg-slider--with-thumb .lg-slider-track:active .lg-slider-thumb {
+  transform: translate(-50%, -50%) scale(0.92) !important;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.6) !important;
+}
+
+.lg-slider--with-thumb .lg-slider-fill {
+  left: 14px !important;
+  width: calc((100% - 28px) * var(--slider-ratio, 0)) !important;
+  height: 6px !important;
+  top: 50% !important;
+  bottom: auto !important;
+  transform: translateY(-50%) !important;
+  border-radius: 999vw !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.lg-slider--with-thumb .lg-slider-track::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  top: 50%;
+  height: 6px;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 999vw;
+  z-index: 1;
+  pointer-events: none;
+}
