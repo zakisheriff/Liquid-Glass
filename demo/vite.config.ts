@@ -39,9 +39,9 @@ const seoAssets = () => ({
           theme_color: '#f3f6fb',
           icons: [
             {
-              src: '/favicon.svg',
-              sizes: 'any',
-              type: 'image/svg+xml',
+              src: '/LG-Logo.png',
+              sizes: '1080x1080',
+              type: 'image/png',
               purpose: 'any maskable',
             },
           ],
@@ -49,6 +49,12 @@ const seoAssets = () => ({
         null,
         2,
       ),
+    });
+
+    this.emitFile({
+      type: 'asset',
+      fileName: 'browserconfig.xml',
+      source: `<?xml version="1.0" encoding="utf-8"?>\n<browserconfig>\n  <msapplication>\n    <tile>\n      <square150x150logo src="/LG-Logo.png"/>\n      <TileColor>#f3f6fb</TileColor>\n    </tile>\n  </msapplication>\n</browserconfig>\n`,
     });
   },
 });
