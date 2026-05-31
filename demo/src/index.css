@@ -208,9 +208,10 @@ p {
 
   .demo-title {
     font-size: clamp(25px, 7.6vw, 34px) !important;
-    line-height: 0.98 !important;
+    line-height: 1.16 !important;
     letter-spacing: -0.045em !important;
     white-space: nowrap;
+    padding-bottom: 0.08em;
   }
 
   .demo-subtitle {
