@@ -189,8 +189,9 @@
   outline: none;
   font: inherit;
   color: inherit;
-  position: absolute;
-  inset: 0;
+  position: relative;
+  width: 100%;
+  height: 100%;
   z-index: 2;
   box-sizing: border-box;
   display: flex;
@@ -363,6 +364,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.5em;
+  width: 100%;
+  height: 100%;
   padding: 0 1.4em;
   box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
