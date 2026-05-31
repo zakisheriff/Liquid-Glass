@@ -47,6 +47,8 @@
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run build",
-    "demo": "vite demo"
+    "demo": "npm run build && vite demo",
+    "demo:build": "npm run build && vite build demo",
+    "demo:preview": "vite preview demo"
   }
 }
