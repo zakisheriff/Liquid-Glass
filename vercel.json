@@ -3,7 +3,7 @@
   "framework": "vite",
   "installCommand": "npm install",
   "buildCommand": "npm run demo:build",
-  "outputDirectory": "demo/dist",
+  "outputDirectory": "dist",
   "cleanUrls": true,
   "trailingSlash": false,
   "headers": [

@@ -48,7 +48,7 @@
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run build",
     "demo": "npm run build && vite demo",
-    "demo:build": "npm run build && vite build demo",
+    "demo:build": "npm run build && vite build demo && rm -rf dist && cp -R demo/dist dist",
     "demo:preview": "vite preview demo"
   }
 }
