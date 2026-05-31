@@ -207,9 +207,10 @@ p {
   }
 
   .demo-title {
-    font-size: clamp(34px, 10.5vw, 48px) !important;
+    font-size: clamp(25px, 7.6vw, 34px) !important;
     line-height: 0.98 !important;
-    overflow-wrap: anywhere;
+    letter-spacing: -0.045em !important;
+    white-space: nowrap;
   }
 
   .demo-subtitle {
@@ -322,6 +323,6 @@ p {
   }
 
   .demo-title {
-    font-size: clamp(30px, 10vw, 40px) !important;
+    font-size: clamp(24px, 7.4vw, 30px) !important;
   }
 }

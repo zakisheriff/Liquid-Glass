@@ -28,7 +28,7 @@
   --glass-radius: 999vw;
 
   --glass-input-width: 280px;
-  --glass-input-height: 52px;
+  --glass-input-height: 64px;
   --glass-font-size: 16px;
 
   --glass-surface-shadow-focus:
@@ -296,13 +296,16 @@
   font-weight: 400;
   color: var(--glass-text-color, rgba(255, 255, 255, 0.92));
   caret-color: var(--glass-text-color, rgba(120, 180, 255, 0.9));
-  padding-top: 6px;
+  height: 20px;
+  line-height: 20px;
+  padding-top: 0;
+  transition: margin-top var(--glass-duration) var(--glass-ease);
 }
 
 /* Adjust padding when label is present and floated */
 .lg-input--focused .lg-input__field,
 .lg-input--has-value .lg-input__field {
-  padding-top: 12px;
+  margin-top: 24px;
 }
 
 .lg-input__field::placeholder {

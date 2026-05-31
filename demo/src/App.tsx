@@ -145,7 +145,7 @@ export default function App() {
               <span>Zaki Sheriff</span>
             </div>
             <h1 className="demo-title" style={{ fontFamily: 'Outfit, sans-serif', fontSize: '56px', fontWeight: 800, margin: 0, letterSpacing: '-0.02em', background: 'linear-gradient(135deg, #121214 30%, #4a4a4f 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              @zakisheriff/liquid-glass
+              zakisheriff/liquidglass
             </h1>
             <p className="demo-subtitle" style={{ fontSize: '18px', color: 'rgba(0,0,0,0.65)', maxWidth: '600px', margin: '16px auto 0', lineHeight: 1.6, fontWeight: 300 }}>
               Bringing iOS 26's native liquid glass aesthetic to the web. Refraction, light caustics, and edge diffraction.
