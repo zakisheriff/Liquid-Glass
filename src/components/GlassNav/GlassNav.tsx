@@ -1,6 +1,8 @@
-import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
+import React, { useMemo, useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react';
 import { useGlassFilterMounted } from '../../filters/LiquidGlassFilter';
 import './GlassNav.css';
+
+const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
 export interface GlassNavItem {
   label: string;
@@ -44,17 +46,18 @@ export const GlassNav: React.FC<GlassNavProps> = ({
   const updateIndicator = useCallback(() => {
     const el = itemRefs.current[activeIndex];
     const parent = navRef.current;
-    if (!el || !parent) return;
-    const parentRect = parent.getBoundingClientRect();
+    const surface = parent?.parentElement;
+    if (!el || !parent || !surface) return;
+    const surfaceRect = surface.getBoundingClientRect();
     const rect = el.getBoundingClientRect();
     setIndicatorStyle({
       width: `${rect.width}px`,
       height: `${rect.height}px`,
-      transform: `translateX(${rect.left - parentRect.left}px)`,
+      transform: `translateX(${rect.left - surfaceRect.left}px)`,
     });
   }, [activeIndex]);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     updateIndicator();
     window.addEventListener('resize', updateIndicator);
     return () => window.removeEventListener('resize', updateIndicator);

@@ -138,19 +138,19 @@ export default function App() {
         <div className="blob blob-2" />
         <div className="blob blob-3" />
 
-        <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px', position: 'relative', zIndex: 1 }}>
+        <main className="demo-main" style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px', position: 'relative', zIndex: 1 }}>
           {/* Header (Showing only Zaki Sheriff) */}
-          <header style={{ textAlign: 'center', marginBottom: '60px' }}>
+          <header className="demo-header" style={{ textAlign: 'center', marginBottom: '60px' }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', fontSize: '14px', fontWeight: 600, color: '#191919', opacity: 0.75, letterSpacing: '0.15em', marginBottom: '12px' }}>
               <span>Zaki Sheriff</span>
             </div>
-            <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '56px', fontWeight: 800, margin: 0, letterSpacing: '-0.02em', background: 'linear-gradient(135deg, #121214 30%, #4a4a4f 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <h1 className="demo-title" style={{ fontFamily: 'Outfit, sans-serif', fontSize: '56px', fontWeight: 800, margin: 0, letterSpacing: '-0.02em', background: 'linear-gradient(135deg, #121214 30%, #4a4a4f 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               @zakisheriff/liquid-glass
             </h1>
-            <p style={{ fontSize: '18px', color: 'rgba(0,0,0,0.65)', maxWidth: '600px', margin: '16px auto 0', lineHeight: 1.6, fontWeight: 300 }}>
+            <p className="demo-subtitle" style={{ fontSize: '18px', color: 'rgba(0,0,0,0.65)', maxWidth: '600px', margin: '16px auto 0', lineHeight: 1.6, fontWeight: 300 }}>
               Bringing iOS 26's native liquid glass aesthetic to the web. Refraction, light caustics, and edge diffraction.
             </p>
-            <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'center' }}>
+            <div className="demo-hero-action" style={{ marginTop: '24px', display: 'flex', justifyContent: 'center' }}>
               <GlassButton
                 intensity={intensity}
                 thickness={thickness}
@@ -165,15 +165,15 @@ export default function App() {
           </header>
 
           {/* Floating Nav */}
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '40px' }}>
+          <div className="demo-nav-wrap" style={{ display: 'flex', justifyContent: 'center', marginBottom: '40px' }}>
             <GlassNav items={navItems} activeIndex={activeTab} onChange={setActiveTab} intensity={intensity} />
           </div>
 
           {/* Main Grid: Left Controls, Right Preview */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '30px', alignItems: 'start' }}>
+          <div className="demo-layout-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '30px', alignItems: 'start' }}>
             
             {/* Controls Panel */}
-            <GlassCard intensity={intensity} tint={tint} thickness={thickness} shimmer={shimmer} padding="30px" radius="36px">
+            <GlassCard className="demo-controls-card" intensity={intensity} tint={tint} thickness={thickness} shimmer={shimmer} padding="30px" radius="36px">
               <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '22px', fontWeight: 700, marginTop: 0, marginBottom: '24px' }}>
                 Refraction Engine
               </h2>
@@ -314,7 +314,7 @@ export default function App() {
             </GlassCard>
 
             {/* Playground Preview area */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <div className="demo-preview" style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
               
               {/* Show view depending on active tab */}
               {activeTab === 0 && (
@@ -327,7 +327,7 @@ export default function App() {
                     <p style={{ lineHeight: 1.6, fontSize: '15px', color: 'rgba(0,0,0,0.75)', margin: 0 }}>
                       Unlike generic glassmorphic libraries which only apply opacity and blur, <strong>Liquid Glass</strong> maps physical light refraction through real-time SVG Displacement filters. It replicates the premium iOS 26 native liquid glass aesthetic.
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '24px' }}>
+                    <div className="demo-two-column" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '24px' }}>
                       <div style={{ background: 'rgba(0,0,0,0.02)', padding: '18px', borderRadius: '24px', border: '1px solid rgba(0,0,0,0.04)' }}>
                         <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center' }}>
                           <MicroscopeIcon size={24} />
@@ -438,7 +438,7 @@ export default function App() {
                   </h2>
                   
                   {/* Click counter demo */}
-                  <div style={{ textAlign: 'center', padding: '30px 40px', background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(0,0,0,0.04)', borderRadius: '999vw', marginBottom: '30px' }}>
+                  <div className="demo-counter-panel" style={{ textAlign: 'center', padding: '30px 40px', background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(0,0,0,0.04)', borderRadius: '999vw', marginBottom: '30px' }}>
                     <div style={{ fontSize: '13px', color: 'rgba(0,0,0,0.45)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Interaction Count</div>
                     <div style={{ fontSize: '48px', fontWeight: 800, color: '#191919', margin: '4px 0' }}>{clickCount}</div>
                     <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', marginTop: '12px' }}>
@@ -494,7 +494,7 @@ export default function App() {
                     Click into the fields to witness the edge-diffraction focus effect. The bezel glow transitions smoothly and pulses with a sub-frequency rotation.
                   </p>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '400px' }}>
+                  <div className="demo-input-stack" style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '400px' }}>
                     <GlassInput
                       label="Developer Name"
                       placeholder="Enter your name"
@@ -572,7 +572,7 @@ export default function App() {
                     </p>
                   </GlassCard>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                  <div className="demo-two-column" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                     <GlassCard intensity={intensity} tint="rgba(0, 242, 254, 0.1)" thickness={thickness} shimmer={shimmer} radius="36px" padding="20px">
                       <h4 style={{ margin: '0 0 8px 0', color: '#00a3ad' }}>Subtle Cyan Tint</h4>
                       <p style={{ margin: 0, fontSize: '13px', color: 'rgba(0,0,0,0.6)', lineHeight: 1.4 }}>
@@ -603,7 +603,7 @@ export default function App() {
             <p style={{ color: 'rgba(0,0,0,0.6)', maxWidth: '500px', margin: '0 auto 24px', lineHeight: 1.6 }}>
               This is a bottom drawer designed with absolute glass fidelity. The page backing is locked while the drawer floats dynamically in front of the blurry canvas blobs.
             </p>
-            <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
+            <div className="demo-sheet-actions" style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
               <GlassButton intensity={intensity} tint={tint} thickness={thickness} shimmer={shimmer} onClick={() => alert('Confirmed!')}>
                 Action Confirmed
               </GlassButton>
