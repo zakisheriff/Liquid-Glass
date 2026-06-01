@@ -22,9 +22,11 @@
 <br />
 <br />
 
+**[Website: https://liquidglass.theatom.lk](https://liquidglass.theatom.lk)**
+
 **[GitHub: https://github.com/zakisheriff/Liquid-Glass](https://github.com/zakisheriff/Liquid-Glass)**
 
-**[Website: https://liquidglass.theatom.lk](https://liquidglass.theatom.lk)**
+**[npm: https://www.npmjs.com/package/@zakisheriff/liquid-glass](https://www.npmjs.com/package/@zakisheriff/liquid-glass)**
 
 </div>
 
