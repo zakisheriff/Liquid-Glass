@@ -5,7 +5,7 @@
 
   color-scheme: light;
   color: #191919;
-  background-color: #f0f2f5;
+  background-color: #eaeaea;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -21,7 +21,7 @@
 
 html {
   min-height: 100%;
-  background: #f0f2f5;
+  background: #eaeaea;
   width: 100%;
   max-width: 100%;
   overflow-x: clip;
@@ -33,7 +33,7 @@ body {
   width: 100%;
   max-width: 100%;
   overflow-x: clip;
-  background: #f0f2f5;
+  background: #eaeaea;
   color: #191919;
   position: relative;
 }
@@ -75,11 +75,12 @@ select {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, transparent 20%, #f0f2f5 85%);
+  background: radial-gradient(circle at 50% 50%, transparent 20%, #eaeaea 85%);
 }
 
 /* Floating colorful blobs to show off glass refraction */
 .blob {
+  display: none;
   position: absolute;
   border-radius: 50%;
   filter: blur(100px);

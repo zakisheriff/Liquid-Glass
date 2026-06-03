@@ -50,6 +50,10 @@ export const GlassNav: React.FC<GlassNavProps> = ({
     if (!el || !parent || !surface) return;
     const surfaceRect = surface.getBoundingClientRect();
     const rect = el.getBoundingClientRect();
+    
+    // Skip if element sizes haven't initialized yet
+    if (rect.width === 0) return;
+
     setIndicatorStyle({
       width: `${rect.width}px`,
       height: `${rect.height}px`,
@@ -59,8 +63,34 @@ export const GlassNav: React.FC<GlassNavProps> = ({
 
   useIsomorphicLayoutEffect(() => {
     updateIndicator();
+    
+    // Tick update to let CSS settle
+    const timer = setTimeout(updateIndicator, 0);
+
+    // Watch for size changes using ResizeObserver (catches stylesheet injection and container changes)
+    let resizeObserver: ResizeObserver | null = null;
+    const parent = navRef.current;
+    if (parent && typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => {
+        updateIndicator();
+      });
+      resizeObserver.observe(parent);
+      itemRefs.current.forEach((el) => {
+        if (el) resizeObserver?.observe(el);
+      });
+    }
+
+    // Watch for custom fonts loading
+    if (typeof document !== 'undefined' && 'fonts' in document) {
+      document.fonts.ready.then(updateIndicator);
+    }
+
     window.addEventListener('resize', updateIndicator);
-    return () => window.removeEventListener('resize', updateIndicator);
+    return () => {
+      clearTimeout(timer);
+      resizeObserver?.disconnect();
+      window.removeEventListener('resize', updateIndicator);
+    };
   }, [updateIndicator, items.length]);
 
   const glassStyle = useMemo<React.CSSProperties>(() => {

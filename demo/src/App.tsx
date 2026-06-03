@@ -439,7 +439,7 @@ export default function App() {
                   </h2>
                   
                   {/* Click counter demo */}
-                  <div className="demo-counter-panel" style={{ textAlign: 'center', padding: '30px 40px', background: 'rgba(255,255,255,0.45)', border: '1px solid rgba(0,0,0,0.04)', borderRadius: '999vw', marginBottom: '30px' }}>
+                  <div className="demo-counter-panel" style={{ textAlign: 'center', padding: '30px 40px', background: 'transparent', border: '1px solid rgba(0,0,0,0.04)', borderRadius: '999vw', marginBottom: '30px' }}>
                     <div style={{ fontSize: '13px', color: 'rgba(0,0,0,0.45)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Interaction Count</div>
                     <div style={{ fontSize: '48px', fontWeight: 800, color: '#191919', margin: '4px 0' }}>{clickCount}</div>
                     <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', marginTop: '12px' }}>
