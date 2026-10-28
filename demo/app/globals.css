@@ -1296,7 +1296,7 @@ html[data-morph] .hero__title-text[data-docked] {
 }
 
 .lens-demo__poster span {
-  color: #fff;
+  color: #f1f3f6;
   font-family: var(--display);
   font-size: clamp(64px, 11vw, 150px);
   font-weight: 700;

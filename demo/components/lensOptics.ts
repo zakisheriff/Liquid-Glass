@@ -38,14 +38,13 @@ export function mountLensOptics(stage: HTMLElement, poster: HTMLElement, lens: H
           ? normalize(corner) * sign(local)
           : (q.x > q.y ? vec2(sign(local.x), 0.) : vec2(0., sign(local.y)));
         float depth = max(-distance, 0.);
-        // A wide domed rim, like Apple's droplet: the bend grows smoothly
-        // from the flat centre to the edge, so letters under the rim curve
-        // into arcs instead of folding at a seam.
-        float bevel = radius * .9;
+        // Apple's droplet: a clear, unmagnified centre and a rounded rim that
+        // bends hard near the edge, curling letters under it into arcs.
+        float bevel = radius * .55;
         float t = clamp(depth / bevel, 0., 1.);
         float edge = 1. - t;
-        float bend = radius * .62 * edge * edge * (1.35 - .35 * edge);
-        vec2 ray = center + local / 1.1 + normal * bend;
+        float bend = radius * .4 * pow(edge, 1.9);
+        vec2 ray = center + local + normal * bend;
         float split = bend * .018;
         vec3 glass = vec3(
           samplePoster(ray + normal * split).r,
@@ -139,7 +138,7 @@ export function mountLensOptics(stage: HTMLElement, poster: HTMLElement, lens: H
     context.letterSpacing = style.letterSpacing;
     context.textAlign = 'center';
     context.textBaseline = 'middle';
-    context.fillStyle = '#fff';
+    context.fillStyle = getComputedStyle(title).color;
     context.fillText(title.textContent || '', width / 2, height / 2);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
