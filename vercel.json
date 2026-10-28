@@ -1,9 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "vite",
+  "framework": null,
   "installCommand": "npm install",
-  "buildCommand": "npm run demo:build",
-  "outputDirectory": "dist",
+  "buildCommand": "npm run site:build",
+  "outputDirectory": "demo/out",
   "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
@@ -32,12 +32,6 @@
           "value": "camera=(), microphone=(), geolocation=()"
         }
       ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
     }
   ]
 }

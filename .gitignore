@@ -4,3 +4,6 @@ demo/dist
 .DS_Store
 .gemini
 Reference
+demo/out
+demo/.next
+demo/next-env.d.ts
