@@ -144,3 +144,9 @@ export const Drop = ({ size, ...p }: P) => (
     <path d="M12 3.2s-6.5 7-6.5 11.3a6.5 6.5 0 0 0 13 0C18.5 10.2 12 3.2 12 3.2z" fill="currentColor" stroke="none" />
   </svg>
 );
+export const Sparkle = ({ size, ...p }: P) => (
+  <svg {...base(size)} {...p}>
+    <path d="M12 3.5c.6 3.9 2.6 5.9 6.5 6.5-3.9.6-5.9 2.6-6.5 6.5-.6-3.9-2.6-5.9-6.5-6.5 3.9-.6 5.9-2.6 6.5-6.5z" fill="currentColor" stroke="none" />
+    <path d="M18.5 15.5c.2 1.4.9 2.1 2.3 2.3-1.4.2-2.1.9-2.3 2.3-.2-1.4-.9-2.1-2.3-2.3 1.4-.2 2.1-.9 2.3-2.3z" fill="currentColor" stroke="none" />
+  </svg>
+);

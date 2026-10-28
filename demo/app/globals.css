@@ -1065,6 +1065,66 @@ img {
   gap: 12px;
 }
 
+/* Agent hand-off */
+.agent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  width: 100%;
+  margin-top: 120px;
+}
+
+.agent__card {
+  width: min(720px, 100%);
+  overflow: hidden;
+  border-radius: 22px;
+  background: var(--tile);
+}
+
+.agent__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 12px 12px 20px;
+  border-bottom: 0.5px solid var(--hairline);
+}
+
+.agent__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.agent__label svg {
+  color: var(--lg-accent);
+}
+
+.agent__prompt {
+  max-height: 340px;
+  margin: 0;
+  padding: 20px 24px 24px;
+  overflow: auto;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.65;
+  letter-spacing: 0;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 560px) {
+  .agent__label {
+    display: none;
+  }
+
+  .agent__bar {
+    justify-content: flex-end;
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /*  Footer                                                             */
 /* ------------------------------------------------------------------ */

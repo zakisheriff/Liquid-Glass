@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { GlassButton } from '@zakisheriff/liquid-glass';
-import { Check, Copy } from './icons';
+import { Check, Copy, Sparkle } from './icons';
 
 const COMMAND = 'npm i @zakisheriff/liquid-glass';
 
@@ -15,30 +15,53 @@ export function Settings() {
   return <GlassSwitch checked={on} onChange={setOn} />;
 }`;
 
-export function Install() {
-  const [copied, setCopied] = useState(false);
-  const copy = async () => {
+const PROMPT = `Add Apple-style Liquid Glass to this React app using @zakisheriff/liquid-glass.
+
+1. Install it: npm i @zakisheriff/liquid-glass
+2. Import the stylesheet once at the app root: import '@zakisheriff/liquid-glass/styles.css'
+3. Replace existing UI with the glass components where they fit:
+   - Buttons → GlassButton (variant: glass | clear | tinted | filled, plus destructive, tint, size, icon)
+   - Toggles → GlassSwitch (checked, onChange)
+   - Bottom / tab navigation → GlassNav (items: { label, icon }[], activeIndex, onChange)
+   - Tabs / filters → GlassSegmented (options, value, onChange)
+   - Range inputs → GlassSlider (value, onChange; showThumb={false} for Control Center blocks)
+   - Search / text fields → GlassInput (type="search" for a search field)
+   - Panels → GlassCard · Bottom sheets / modals → GlassSheet (open, onClose)
+4. Glass needs something behind it to bend: place bars and controls over images, gradients or scrolling content, not flat white.
+5. Theme: follow the system, or set data-theme="light" | "dark" on <html>.
+6. In Next.js the package is already marked "use client".
+
+Docs: https://github.com/zakisheriff/Liquid-Glass#readme`;
+
+function useCopy() {
+  const [copied, setCopied] = useState<string | null>(null);
+  const copy = async (key: string, text: string) => {
     try {
-      await navigator.clipboard.writeText(COMMAND);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1600);
+      await navigator.clipboard.writeText(text);
+      setCopied(key);
+      setTimeout(() => setCopied((k) => (k === key ? null : k)), 1600);
     } catch {
       /* clipboard blocked */
     }
   };
+  return { copied, copy };
+}
+
+export function Install() {
+  const { copied, copy } = useCopy();
 
   return (
     <section className="install" id="install">
       <header className="section-head">
-        <h2>Ready in one line.</h2>
+        <h2>Get started.</h2>
       </header>
       <div className="install__command">
         <code>{COMMAND}</code>
         <GlassButton
           size="sm"
-          icon={copied ? <Check size={16} /> : <Copy size={16} />}
-          aria-label={copied ? 'Copied' : 'Copy install command'}
-          onClick={copy}
+          icon={copied === 'cmd' ? <Check size={16} /> : <Copy size={16} />}
+          aria-label={copied === 'cmd' ? 'Copied' : 'Copy install command'}
+          onClick={() => copy('cmd', COMMAND)}
         />
       </div>
       <pre className="install__code">
@@ -49,6 +72,30 @@ export function Install() {
           npm
         </GlassButton>
         <GlassButton onClick={() => window.open('https://github.com/zakisheriff/Liquid-Glass', '_blank')}>GitHub</GlassButton>
+      </div>
+
+      <div className="agent">
+        <header className="section-head">
+          <h2>Or let your AI agent do it.</h2>
+        </header>
+        <div className="agent__card">
+          <div className="agent__bar">
+            <span className="agent__label">
+              <Sparkle size={16} /> Prompt for Claude Code, Cursor or Copilot
+            </span>
+            <GlassButton
+              size="sm"
+              variant={copied === 'prompt' ? 'tinted' : 'filled'}
+              icon={copied === 'prompt' ? <Check size={16} /> : <Copy size={16} />}
+              onClick={() => copy('prompt', PROMPT)}
+            >
+              {copied === 'prompt' ? 'Copied' : 'Copy prompt'}
+            </GlassButton>
+          </div>
+          <pre className="agent__prompt">
+            <code>{PROMPT}</code>
+          </pre>
+        </div>
       </div>
     </section>
   );
