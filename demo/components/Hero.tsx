@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { GlassButton, GlassCard, GlassNav, GlassSegmented, GlassSlider, GlassSwitch } from '@zakisheriff/liquid-glass';
+import { GlassButton, GlassCard, GlassNav, GlassSegmented, GlassSlider, GlassSwitch, useRefraction } from '@zakisheriff/liquid-glass';
 import { COVERS, Cover } from './art';
 import { ArrowUpRight, Bolt, Ellipsis, Grid, Home, Menu, Note, Plane, Play, Search, Speaker, Sun, Wifi } from './icons';
 
@@ -23,20 +23,23 @@ function useMinimised(feed: React.RefObject<HTMLDivElement | null>) {
       const delta = y - last;
       last = y;
       if (y < 24) setMinimised(false);
+      else if (Math.abs(delta) > 40) return; // programmatic jumps
       else if (delta > 3) setMinimised(true);
       else if (delta < -3) setMinimised(false);
     };
     el.addEventListener('scroll', onScroll, { passive: true });
     return () => el.removeEventListener('scroll', onScroll);
   }, [feed]);
-  return minimised;
+  return [minimised, setMinimised] as const;
 }
 
 function Device() {
   const [tab, setTab] = useState(0);
   const [segment, setSegment] = useState(0);
   const feed = useRef<HTMLDivElement>(null);
-  const minimised = useMinimised(feed);
+  const shell = useRef<HTMLDivElement>(null);
+  const [minimised, setMinimised] = useMinimised(feed);
+  useRefraction(shell, { kind: 'surface' });
   return (
     <div className="device" aria-label="Interactive demo">
       <div className="device__screen">
@@ -63,17 +66,19 @@ function Device() {
         </div>
 
         <div className="device__bottom" data-minimised={minimised ? '' : undefined}>
-          <div className="device__tabs">
+          {/* One glass shell: it shrinks around the selected tab instead of swapping elements. */}
+          <div
+            ref={shell}
+            className="lg-glass device__tabs"
+            onClickCapture={(event) => {
+              if (!minimised) return;
+              event.preventDefault();
+              event.stopPropagation();
+              setMinimised(false);
+            }}
+          >
             <GlassNav activeIndex={tab} onChange={setTab} items={TABS} />
           </div>
-          <GlassButton
-            size="lg"
-            className="device__mini-tab"
-            icon={TABS[tab].icon}
-            aria-label={`${TABS[tab].label}, show tabs`}
-            tabIndex={minimised ? 0 : -1}
-            onClick={() => feed.current?.scrollTo({ top: 0, behavior: 'smooth' })}
-          />
           <GlassButton className="device__player" size="lg">
             <Cover index={0} className="device__player-art" />
             <span className="device__player-text">
