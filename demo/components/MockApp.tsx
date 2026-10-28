@@ -7,19 +7,16 @@ import { PhoneStudio, studioArtwork, type StudioPalette } from './PhoneStudio';
 import { ArrowLeft, Bookmark, Check, Close, Ellipsis } from './icons';
 
 const PALETTES = [
-  { name: 'Amber', colors: ['#ffbd70', '#ff6f61', '#8f3dd9'] },
-  { name: 'Ocean', colors: ['#83ffe2', '#00aff5', '#1265ec'] },
-  { name: 'Dusk', colors: ['#a7a4ff', '#6460da', '#171e38'] },
-  { name: 'Mint', colors: ['#e1ffab', '#49e89c', '#059f98'] },
-  { name: 'Iris', colors: ['#e2a4fb', '#9582ee', '#514ce1'] },
-  { name: 'Rose', colors: ['#ffdd9e', '#f964ad', '#b11a7b'] },
-  { name: 'Sunrise', colors: ['#fff29a', '#ffab36', '#f35b59'] },
-  { name: 'Glacier', colors: ['#d6fff4', '#77c8e7', '#657bc5'] },
+  { name: 'Slate', color: '#5a768f' },
+  { name: 'Ocean', color: '#317eab' },
+  { name: 'Dusk', color: '#444d69' },
+  { name: 'Mint', color: '#64a796' },
+  { name: 'Indigo', color: '#596b9b' },
+  { name: 'Stone', color: '#8b8e92' },
+  { name: 'Sand', color: '#b5a17f' },
+  { name: 'Glacier', color: '#8fb5c7' },
 ];
-const background = (index: number) => {
-  const [a, b, c] = PALETTES[index].colors;
-  return `radial-gradient(ellipse at 10% 0%, ${a}, transparent 65%), radial-gradient(ellipse at 90% 95%, ${c}, transparent 65%), linear-gradient(135deg, ${b}, ${c})`;
-};
+const background = (index: number) => PALETTES[index].color;
 
 export function MockApp() {
   const [tab, setTab] = useState(0);
@@ -32,7 +29,7 @@ export function MockApp() {
   const [menu, setMenu] = useState(false);
   const [sort, setSort] = useState(false);
   const [sheetHost, setSheetHost] = useState<HTMLDivElement | null>(null);
-  const [studio, setStudio] = useState<StudioPalette>({ name: 'Amber glow', brightness: 76, hue: 28, vivid: true });
+  const [studio, setStudio] = useState<StudioPalette>({ name: 'Slate', brightness: 76, hue: 212, vivid: true });
   const palettes = PALETTES.map((palette, index) => index === 0 ? { ...palette, name: studio.name.trim() || 'Untitled palette' } : palette);
   const feed = useRef<HTMLDivElement>(null);
   const search = useRef<HTMLInputElement>(null);
@@ -60,8 +57,8 @@ export function MockApp() {
 
   const card = (index: number, featured = false) => (
     <article key={index} className={`mock__card${featured ? ' mock__card--feature' : ''}`}>
-      <button className="mock__tile" style={index === 0 ? studioArtwork(studio) : { background: background(index) }} aria-label={`Open ${palettes[index].name} gradient`} onClick={() => {setSelected(index);feed.current?.scrollTo({top:0});}} />
-      <GlassButton className="mock__save" size="sm" icon={saved.includes(index) ? <Check size={17} /> : <Bookmark size={17} />} aria-label={`${saved.includes(index) ? 'Unsave' : 'Save'} ${palettes[index].name} gradient`} aria-pressed={saved.includes(index)} onClick={() => toggleSaved(index)} />
+      <button className="mock__tile" style={index === 0 ? studioArtwork(studio) : { backgroundColor: background(index) }} aria-label={`Open ${palettes[index].name} palette`} onClick={() => {setSelected(index);feed.current?.scrollTo({top:0});}} />
+      <GlassButton className="mock__save" size="sm" icon={saved.includes(index) ? <Check size={17} /> : <Bookmark size={17} />} aria-label={`${saved.includes(index) ? 'Unsave' : 'Save'} ${palettes[index].name} palette`} aria-pressed={saved.includes(index)} onClick={() => toggleSaved(index)} />
     </article>
   );
 
@@ -69,13 +66,13 @@ export function MockApp() {
     <div ref={setSheetHost} className="mock-app">
       <div ref={feed} className="device__feed">
         {tab === 0 && segment === 0 && !searching && selected === null ? <PhoneStudio container={sheetHost} palette={studio} onChange={setStudio} saved={saved.includes(0)} onSave={() => toggleSaved(0)} /> : selected === null ? <>
-          {searching && <div className="mock__search"><GlassInput ref={search} type="search" placeholder="Find a gradient" aria-label="Find a gradient" value={query} onChange={(event) => setQuery(event.target.value)} /><GlassButton size="sm" icon={<Close size={16} />} aria-label="Close gradient search" onClick={() => {setSearching(false);setQuery('');}} /></div>}
+          {searching && <div className="mock__search"><GlassInput ref={search} type="search" placeholder="Find a palette" aria-label="Find a palette" value={query} onChange={(event) => setQuery(event.target.value)} /><GlassButton size="sm" icon={<Close size={16} />} aria-label="Close palette search" onClick={() => {setSearching(false);setQuery('');}} /></div>}
           {tab === 0 && !query && visible[0] !== undefined && card(visible[0], true)}
           <div className="mock__grid">{(tab === 0 && !query ? visible.slice(1) : visible).map((index) => card(index))}</div>
           {!visible.length && <p className="mock__empty">{query ? 'No matches' : 'Nothing saved yet'}</p>}
         </> : <>
           <GlassButton size="sm" icon={<ArrowLeft size={16} />} onClick={() => setSelected(null)}>Back</GlassButton>
-          <div className="mock__preview" style={selected === 0 ? studioArtwork(studio) : { background: background(selected) }} aria-label={`${palettes[selected].name} gradient`} />
+          <div className="mock__preview" style={selected === 0 ? studioArtwork(studio) : { backgroundColor: background(selected) }} aria-label={`${palettes[selected].name} palette`} />
           <div className="mock__actions"><GlassButton icon={<Bookmark size={18} />} onClick={() => toggleSaved(selected)}>{saved.includes(selected) ? 'Saved' : 'Save'}</GlassButton><GlassButton variant="filled" icon={<Check size={18} />} onClick={() => {setCollection((items) => items.includes(selected) ? items : [...items, selected]);changeTab(2);}}>Add to collection</GlassButton></div>
         </>}
       </div>

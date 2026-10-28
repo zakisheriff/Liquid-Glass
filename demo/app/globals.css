@@ -702,7 +702,6 @@ html[data-morph] .hero__title-text[data-docked] {
   margin: 0 4px 18px;
 }
 
-.phone-studio__heading p,
 .phone-studio__sheet > p {
   margin: 0 0 6px;
   color: var(--muted);
@@ -739,23 +738,6 @@ html[data-morph] .hero__title-text[data-docked] {
   padding: 4px 6px 22px;
 }
 
-.phone-studio__live {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-}
-
-.phone-studio__live > span {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 8px rgb(255 255 255 / 0.6);
-}
-
 .phone-studio__save.lg-button {
   position: absolute;
   top: -2px;
@@ -765,18 +747,12 @@ html[data-morph] .hero__title-text[data-docked] {
 }
 
 .phone-studio__preview h3 {
-  margin: 28px 0 4px;
+  margin: 4px 44px 0 0;
   font-size: 32px;
   font-weight: 600;
   line-height: 1.1;
   letter-spacing: -0.05em;
   overflow-wrap: anywhere;
-}
-
-.phone-studio__preview p {
-  margin: 0;
-  font-size: 12px;
-  opacity: 0.85;
 }
 
 .phone-studio__controls.lg-card {
@@ -809,12 +785,6 @@ html[data-morph] .hero__title-text[data-docked] {
   border-top: 0.5px solid rgb(255 255 255 / 0.22);
 }
 
-.phone-studio__toggle > span {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-
 .phone-studio__details {
   display: grid;
   gap: 16px;
@@ -828,13 +798,6 @@ html[data-morph] .hero__title-text[data-docked] {
 
 .phone-studio__actions .lg-button:last-child {
   flex: 1;
-}
-
-.phone-studio__hint {
-  margin: 0;
-  color: var(--muted);
-  font-size: 11px;
-  text-align: center;
 }
 
 .phone-studio__sheet {
