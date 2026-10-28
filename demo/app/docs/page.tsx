@@ -17,6 +17,15 @@ export default function Documentation() {
   const schema = { '@context': 'https://schema.org', '@graph': [
     { '@type': 'TechArticle', '@id': `${SITE_URL}/docs#guide`, headline: title, description, url: `${SITE_URL}/docs`, dateModified: UPDATED, inLanguage: 'en', author: { '@id': `${SITE_URL}/#author` }, about: { '@id': `${SITE_URL}/#software` }, isPartOf: { '@id': `${SITE_URL}/#website` } },
     { '@type': 'FAQPage', '@id': `${SITE_URL}/docs#questions`, mainEntity: FAQS.map(f => ({ '@type': 'Question', name: f.question, acceptedAnswer: { '@type': 'Answer', text: f.answer } })) },
+    { '@type': 'BreadcrumbList', '@id': `${SITE_URL}/docs#breadcrumbs`, itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Liquid Glass', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name: 'Documentation', item: `${SITE_URL}/docs` },
+    ] },
+    { '@type': 'HowTo', '@id': `${SITE_URL}/docs#quick-start`, name: 'Add liquid glass to a React or Next.js app', totalTime: 'PT2M', tool: [{ '@type': 'HowToTool', name: 'npm' }], step: [
+      { '@type': 'HowToStep', position: 1, name: 'Install the package', text: 'Run npm i @zakisheriff/liquid-glass.', url: `${SITE_URL}/docs#quick-start` },
+      { '@type': 'HowToStep', position: 2, name: 'Import the stylesheet once', text: "Import '@zakisheriff/liquid-glass/styles.css' in app/layout.tsx (App Router) or pages/_app.tsx (Pages Router).", url: `${SITE_URL}/docs#quick-start` },
+      { '@type': 'HowToStep', position: 3, name: 'Use a component', text: "Import a component such as GlassSwitch in a client component ('use client') and render it with React state.", url: `${SITE_URL}/docs#api` },
+    ] },
   ] };
   return <main className="docs">
     <link rel="alternate" type="text/markdown" href={`${SITE_URL}/docs.md`} />

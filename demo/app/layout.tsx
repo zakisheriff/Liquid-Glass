@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
-import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL, structuredData } from '@/lib/site';
+import { KEYWORDS, SITE_DESCRIPTION, SITE_TITLE, SITE_URL, structuredData } from '@/lib/site';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
@@ -12,17 +12,12 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   applicationName: 'Liquid Glass for the Web',
   category: 'Developer tools',
-  keywords: [
-    'liquid glass',
-    'liquid glass web',
-    'liquid glass react',
-    'iOS 26 glass',
-    'glassmorphism react',
-    'react ui components',
-    '@zakisheriff/liquid-glass',
-  ],
+  keywords: KEYWORDS,
+
   authors: [{ name: 'Zaki Sheriff', url: 'https://github.com/zakisheriff' }],
   creator: 'Zaki Sheriff',
+  publisher: 'The Atom',
+  formatDetection: { telephone: false, email: false, address: false },
   alternates: { canonical: '/' },
   robots: {
     index: process.env.VERCEL_ENV !== 'preview', follow: true,
@@ -67,6 +62,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta id="theme-color" name="theme-color" content="#f5f5f7" />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <link rel="describedby" href={`${SITE_URL}/llms.txt`} type="text/plain" />
+        <link rel="alternate" type="text/markdown" href={`${SITE_URL}/docs.md`} title="Documentation (Markdown)" />
+        <link rel="alternate" type="text/plain" href={`${SITE_URL}/llms-full.txt`} title="Full documentation for language models" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} />
       </head>
       <body>

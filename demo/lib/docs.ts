@@ -91,3 +91,30 @@ Chromium uses SVG backdrop displacement for bars, buttons and cards, and refract
 ## Questions
 ${FAQS.map(f => `### ${f.question}\n${f.answer}`).join('\n\n')}
 `;
+
+/** The llms.txt index (https://llmstxt.org): what this is, then where to read more. */
+export const LLMS_TXT = `# Liquid Glass for the Web
+
+> Apple-inspired liquid glass components for React and Next.js by Zaki Sheriff, published by The Atom. The npm package is @zakisheriff/liquid-glass (version ${PACKAGE_VERSION}). Open source under the MIT license, ${PERFORMANCE.js} of JavaScript and ${PERFORMANCE.css} of CSS gzipped, with no runtime dependencies.
+
+Install with \`npm i @zakisheriff/liquid-glass\` and import \`@zakisheriff/liquid-glass/styles.css\` once. Components: ${COMPONENTS.map(c => c.name).join(', ')}. This is an independent web UI library, not an Apple product. Chromium refracts the live backdrop with SVG displacement; Safari and Firefox use translucent material and magnified live copies inside lenses. React and React DOM 17 or later are required.
+
+## Documentation
+
+- [Full documentation for language models](${SITE_URL}/llms-full.txt): Everything in one plain-text file: install, components, props, theming, performance, browser support and answers.
+- [Documentation in Markdown](${SITE_URL}/docs.md): The guide as Markdown.
+- [Readable documentation](${SITE_URL}/docs): The same guide in HTML.
+- [Interactive component demo](${SITE_URL}/): Try buttons, switches, tab bars, segmented controls, sliders, search, menus and sheets.
+
+## Source and package
+
+- [Repository README](https://raw.githubusercontent.com/zakisheriff/Liquid-Glass/main/README.md): Usage examples and the full props reference.
+- [npm package](${NPM_URL}): Published versions and installation.
+- [Source code](${REPOSITORY}): Implementation, license and third-party notices.
+
+## Optional
+
+- [Author](https://github.com/zakisheriff): Zaki Sheriff.
+- [Publisher](https://theatom.lk): The Atom.
+`;
+
