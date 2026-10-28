@@ -38,6 +38,8 @@ export interface GlassShape {
 interface Baked {
   filter: string;
   rim: string;
+  /** Shape alpha feathered across the bevel (CSS mask for non-filter lenses). */
+  inner: string;
 }
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -93,7 +95,10 @@ function bevelProfile(bezel: number, thickness: number, ior: number) {
   };
 }
 
-function bake(width: number, height: number, radius: number, shape: Required<GlassShape>, pad = 0): Baked {
+function bake(width: number, height: number, radius: number, shape: Required<GlassShape>, pad = 0, simple = false): Baked {
+  // `simple`: one displacement pass (edge bend + magnification baked into a
+  // single map), no colour split. Safari's GPU filter path renders chained
+  // displacement + arithmetic composites black, so its mirrors use this.
   // `pad` widens the baked canvas around the shape: mirrored backdrops need
   // room for light the rim bends in from beyond the glass's own edge.
   const W = width + pad * 2;
@@ -114,6 +119,7 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   const rimA = new Float32Array(cw * ch);
   const rimHue = new Float32Array(cw * ch);
   const inside = new Float32Array(cw * ch);
+  const depth = new Float32Array(cw * ch);
   let max = 0.0001;
 
   const hw = width / 2;
@@ -150,14 +156,20 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
       const s = shift(d) * shape.strength * direction;
       // Edge bend only; magnification runs as its own pass so colour
       // splits only where the glass actually curves.
-      const vx = nx * s;
-      const vy = ny * s;
+      let vx = nx * s;
+      let vy = ny * s;
+      if (simple && magnify) {
+        vx -= px * magnify;
+        vy -= py * magnify;
+      }
       dx[i] = vx;
       dy[i] = vy;
       const m = Math.max(Math.abs(vx), Math.abs(vy));
       if (m > max) max = m;
 
       inside[i] = clamp(d / px1 + 0.5, 0, 1);
+      const t = clamp(d / (shape.bezel * 0.9), 0, 1);
+      depth[i] = t * t * (3 - 2 * t);
 
       if (d >= -px1) {
         // Light falls from the upper left; Liquid Glass catches it on both
@@ -191,7 +203,7 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
 
   const reach = Math.max(W, H) / 2;
   let zoomMap = '';
-  if (magnify) {
+  if (magnify && !simple) {
     const ramp = ctx.createImageData(cw, ch);
     for (let y = 0; y < ch; y++) {
       for (let x = 0; x < cw; x++) {
@@ -241,6 +253,10 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   ctx.putImageData(shapeMask, 0, 0);
   const mask = canvas.toDataURL();
 
+  for (let i = 0; i < cw * ch; i++) shapeMask.data[i * 4 + 3] = Math.round(depth[i] * 255);
+  ctx.putImageData(shapeMask, 0, 0);
+  const inner = canvas.toDataURL();
+
   const id = `lg-refract-${++counter}`;
   // Region in the element's own box (objectBoundingBox): WebKit only renders
   // feImage maps this way; Chromium accepts it for backdrop filters too.
@@ -275,7 +291,7 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   }
 
   const scale = max * 2;
-  if (shape.dispersion > 0) {
+  if (shape.dispersion > 0 && !simple) {
     const spread = 0.16 * shape.dispersion;
     const channels: Array<[string, number, string]> = [
       ['r', 1 + spread, '1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0'],
@@ -317,7 +333,7 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   );
 
   container().append(filter);
-  return { filter: `url(#${id})`, rim: `url("${rim}")` };
+  return { filter: `url(#${id})`, rim: `url("${rim}")`, inner: `url("${inner}")` };
 }
 
 function resolve(shape: GlassShape, width: number, height: number): Required<GlassShape> {
@@ -335,15 +351,15 @@ function resolve(shape: GlassShape, width: number, height: number): Required<Gla
   };
 }
 
-export function glassFor(width: number, height: number, radius: number, shape: GlassShape = {}, pad = 0): Baked {
+export function glassFor(width: number, height: number, radius: number, shape: GlassShape = {}, pad = 0, simple = false): Baked {
   const w = Math.round(width);
   const h = Math.round(height);
   const r = Math.min(w / 2, h / 2, Math.max(0, radius));
   const full = resolve(shape, w, h);
-  const key = [w, h, Math.round(r * 2) / 2, full.kind, full.bezel.toFixed(1), full.thickness.toFixed(1), full.ior, full.zoom, full.dispersion, full.strength, pad].join('|');
+  const key = [w, h, Math.round(r * 2) / 2, full.kind, full.bezel.toFixed(1), full.thickness.toFixed(1), full.ior, full.zoom, full.dispersion, full.strength, pad, simple].join('|');
   let baked = cache.get(key);
   if (!baked) {
-    baked = bake(w, h, r, full, pad);
+    baked = bake(w, h, r, full, pad, simple);
     cache.set(key, baked);
   }
   return baked;
@@ -389,6 +405,7 @@ export function useRefraction(
     let cancel: (() => void) | undefined;
     let filter = '';
     let pad = 0;
+    let zoom = 1;
 
     const fit = () => {
       const width = element.offsetWidth;
@@ -397,7 +414,13 @@ export function useRefraction(
       const radius = cornerRadius(element, width, height);
       const baked = glassFor(width, height, radius, shape);
       filter = baked.filter;
-      if (!live && mirror?.current) pad = Math.ceil(Math.min(width, height) * 0.45 + 6);
+      if (!live && mirror?.current) {
+        // No SVG filters off Chromium: real Safari's GPU path paints them
+        // black. The lens is a magnified copy, feathered out across the bevel.
+        pad = Math.ceil(Math.min(width, height) * 0.45 + 6);
+        zoom = resolve(shape, width, height).zoom;
+        element.style.setProperty('--lg-inner-mask', baked.inner);
+      }
       if (live) element.style.setProperty('--lg-filter', baked.filter);
       element.style.setProperty('--lg-rim', baked.rim);
     };
@@ -410,7 +433,7 @@ export function useRefraction(
     fit();
 
     const source = mirror?.current;
-    const unmirror = !live && source ? mirrorBackdrop(element, source, () => filter, () => pad, mirrorActive) : undefined;
+    const unmirror = !live && source ? mirrorBackdrop(element, source, () => pad, () => zoom, mirrorActive) : undefined;
 
     return () => {
       cancel?.();

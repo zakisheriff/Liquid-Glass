@@ -178,12 +178,20 @@
 
 /* Safari / Firefox: a live copy of what's beneath, refracted inside the glass. */
 .lg-glass > .lg-mirror {
-  /* Inset is set from JS: the layer overhangs the glass so the rim has
-     content to bend in; the filter's own mask trims it back to the shape. */
   position: absolute !important;
   inset: 0;
   z-index: 0 !important;
   pointer-events: none;
+  -webkit-mask-image: var(--lg-inner-mask);
+  mask-image: var(--lg-inner-mask);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+.lg-mirror__zoom {
+  position: absolute;
+  inset: 0;
+  transform-origin: center;
 }
 
 .lg-mirror * {

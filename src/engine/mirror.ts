@@ -1,11 +1,11 @@
 /**
- * Refraction for engines that can't filter the live backdrop (Safari, Firefox).
+ * Lenses for engines that can't filter the live backdrop (Safari, Firefox).
  *
- * We keep a live copy of the content that sits beneath the glass inside the
- * glass itself, aligned pixel-for-pixel, and run the same SVG displacement
- * filter over that copy with an ordinary CSS `filter`, which every engine
- * supports. Inline styles are re-synced each frame so animated content (a
- * sliding tint row, a fading track) stays in step.
+ * We keep a live copy of what sits beneath the glass inside the glass itself,
+ * aligned pixel-for-pixel, magnify it around the lens centre with a plain CSS
+ * transform, and feather it out across the bevel with a CSS mask. No SVG
+ * filters: real Safari's GPU path renders displacement filters black. Inline
+ * styles are re-synced each frame so animated content stays in step.
  */
 
 const SELF = 'data-lg-mirror-self';
@@ -70,8 +70,9 @@ const BACKGROUND = ['background-color', 'background-image', 'background-size', '
 export function mirrorBackdrop(
   glass: HTMLElement,
   source: HTMLElement,
-  filter: () => string,
   padding: () => number,
+  /** Interior magnification of the lens. */
+  zoom: () => number,
   /** Work only while this is true (e.g. a lens is lifted); idle otherwise. */
   active: () => boolean = () => true,
 ) {
@@ -80,12 +81,14 @@ export function mirrorBackdrop(
   layer.setAttribute('aria-hidden', 'true');
   glass.setAttribute(SELF, '');
   glass.prepend(layer);
-  // The filter runs on `layer`; everything it draws lives in a clipped
-  // viewport of exactly the glass's size. WebKit sizes objectBoundingBox
-  // filters from visual overflow, so nothing may spill past this box.
+  // `layer` is glass-sized and carries the feathered mask; the copy lives in
+  // a clipped viewport that overhangs it so magnification has edge content.
   const viewport = document.createElement('div');
   viewport.className = 'lg-mirror__viewport';
   layer.append(viewport);
+  const zoomer = document.createElement('div');
+  zoomer.className = 'lg-mirror__zoom';
+  viewport.append(zoomer);
 
   let copy = clone(source);
   let under: Array<{ original: HTMLElement; copy: HTMLElement; placed: string }> = [];
@@ -101,9 +104,9 @@ export function mirrorBackdrop(
       div.style.transformOrigin = '0 0';
       return { original, copy: div, placed: '' };
     });
-    viewport.prepend(...under.map((u) => u.copy));
+    zoomer.prepend(...under.map((u) => u.copy));
   };
-  viewport.append(copy.root);
+  zoomer.append(copy.root);
   buildUnder();
   let stopped = false;
   let frame = 0;
@@ -129,8 +132,6 @@ export function mirrorBackdrop(
     const nextPad = padding();
     if (nextPad !== pad) {
       pad = nextPad;
-      // Only the drawn content overhangs; the filtered layer stays glass-sized
-      // because WebKit measures filter space from the element's own box.
       viewport.style.inset = `${-pad}px`;
       under.forEach((u) => (u.placed = ''));
       placed = '';
@@ -188,9 +189,10 @@ export function mirrorBackdrop(
     }
   };
 
-  const applyFilter = () => {
-    const value = filter();
-    if (layer.style.filter !== value) layer.style.filter = value;
+  let zoomed = '';
+  const applyZoom = () => {
+    const value = `scale(${zoom()})`;
+    if (value !== zoomed) zoomer.style.transform = zoomed = value;
   };
 
   const tick = () => {
@@ -202,7 +204,7 @@ export function mirrorBackdrop(
       layer.style.visibility = on ? '' : 'hidden';
     }
     if (on) {
-      applyFilter();
+      applyZoom();
       sync();
       align();
     }
