@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { GlassButton, GlassCard, GlassNav, GlassSegmented, GlassSlider, GlassSwitch, useRefraction } from '@zakisheriff/liquid-glass';
 import { COVERS, Cover } from './art';
-import { ArrowUpRight, Bolt, Ellipsis, Grid, Home, Menu, Note, Plane, Play, Search, Speaker, Sun, Wifi } from './icons';
+import { Bolt, Ellipsis, Grid, Home, Menu, Note, Plane, Play, Search, Speaker, Sun, Wifi } from './icons';
 
 const TABS = [
   { label: 'Home', icon: <Home /> },
@@ -196,10 +196,10 @@ export function Hero() {
             Get started
           </GlassButton>
           <GlassButton onClick={() => window.open('https://github.com/zakisheriff/Liquid-Glass', '_blank')}>
-            GitHub <ArrowUpRight size={16} />
+            GitHub
           </GlassButton>
           <GlassButton onClick={() => window.open('https://www.npmjs.com/package/@zakisheriff/liquid-glass', '_blank')}>
-            npm <ArrowUpRight size={16} />
+            npm
           </GlassButton>
         </div>
       </div>
