@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { GlassButton, useRefraction } from '@zakisheriff/liquid-glass';
+import { SUPPORT_URL } from '@/lib/site';
 import { useTheme } from './theme';
 import { GitHub, Moon, Sun } from './icons';
 
@@ -147,6 +148,16 @@ export function Nav() {
             onClick={() => document.getElementById('install')?.scrollIntoView()}
           >
             Get
+          </GlassButton>
+          <GlassButton
+            size="sm"
+            variant="filled"
+            tint="#ff375f"
+            className="nav__donate"
+            aria-label="Support on Buy Me a Coffee"
+            onClick={() => window.open(SUPPORT_URL, '_blank', 'noopener,noreferrer')}
+          >
+            Support
           </GlassButton>
         </div>
       </div>

@@ -7,6 +7,7 @@ export const PACKAGE_VERSION = version;
 export const UPDATED = '2026-10-28';
 export const REPOSITORY = 'https://github.com/zakisheriff/Liquid-Glass';
 export const NPM_URL = 'https://www.npmjs.com/package/@zakisheriff/liquid-glass';
+export const SUPPORT_URL = 'https://buymeacoffee.com/theoneatom';
 export const PUBLISHER_URL = 'https://theatom.lk';
 
 /** The components, for search results and answer engines. */

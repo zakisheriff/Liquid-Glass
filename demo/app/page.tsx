@@ -31,6 +31,10 @@ export default function Page() {
               GitHub
             </a>
           </nav>
+          <p className="footer__feedback">
+            Found an issue or have a feature request? Contact{' '}
+            <a href="mailto:info@theatom.lk">info@theatom.lk</a>.
+          </p>
           <p className="footer__credit">
             Built by{' '}
             <a href="https://github.com/zakisheriff" target="_blank" rel="noreferrer">

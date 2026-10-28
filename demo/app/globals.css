@@ -232,6 +232,11 @@ html[data-morph] .hero__title-text[data-docked] {
   gap: 6px;
 }
 
+.nav__donate.lg-button {
+  padding: 0 10px;
+  font-size: 13px;
+}
+
 .nav__theme-icons {
   position: relative;
   display: block;
@@ -910,6 +915,11 @@ html[data-morph] .hero__title-text[data-docked] {
 }
 
 @media (max-width: 480px) {
+  .hero__ctas {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+  }
+
   /* On a phone the mockup stays clearly smaller than the screen it's on. */
   .device {
     width: min(340px, calc(100vw - 60px));
@@ -1690,6 +1700,11 @@ html[data-morph] .hero__title-text[data-docked] {
 
 .footer__links a:hover {
   opacity: 1;
+}
+
+.footer__feedback {
+  max-width: 420px;
+  font-size: 13px;
 }
 
 .footer__legal {

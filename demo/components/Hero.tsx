@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { GlassButton, GlassCard, GlassSlider, GlassSwitch } from '@zakisheriff/liquid-glass';
+import { SUPPORT_URL } from '@/lib/site';
 import { MockApp } from './MockApp';
-import { Battery, Bolt, Cellular, Plane, Speaker, Sun, Wifi } from './icons';
+import { Battery, Bolt, Cellular, Heart, Plane, Speaker, Sun, Wifi } from './icons';
 
 function useClock() {
   const [time, setTime] = useState('9:41');
@@ -108,6 +109,9 @@ export function Hero() {
           </GlassButton>
           <GlassButton onClick={() => window.open('https://www.npmjs.com/package/@zakisheriff/liquid-glass', '_blank')}>
             npm
+          </GlassButton>
+          <GlassButton variant="filled" tint="#ff375f" icon={<Heart size={18} />} aria-label="Support on Buy Me a Coffee" onClick={() => window.open(SUPPORT_URL, '_blank', 'noopener,noreferrer')}>
+            Support
           </GlassButton>
         </div>
       </div>
