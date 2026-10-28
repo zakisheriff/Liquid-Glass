@@ -25,6 +25,8 @@ export interface LensTrackOptions {
   overhang: number;
   /** Extra width (as a fraction of a slot) the lifted lens gains. */
   spread: number;
+  /** Magnification applied by the backdrop filter to the original glyphs. */
+  contentZoom?: number;
   /** How much the whole bar swells while touched (px on its long side). */
   swell: number;
 }
@@ -44,6 +46,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     let slot = 0;
     let height = 0;
     let pad = 0;
+    let padY = 0;
     // The lens is laid out at its full lifted size (W×H) and only scaled
     // *down* toward the resting pill. At full lift it renders 1:1: true pill
     // curves and a pixel-sharp baked rim, never a stretched bitmap.
@@ -63,7 +66,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     let dropTimer = 0;
     let suppressClick = false;
     const buttons = Array.from(bar.querySelectorAll<HTMLElement>('[data-lg-item]'));
-    let glyphs: Array<{ node: HTMLElement; x: number; y: number; width: number; label: boolean }> = [];
+    let glyphs: Array<{ node: HTMLElement; x: number; y: number; width: number; height: number; label: boolean }> = [];
     const preview = (index?: number) => {
       if (index === undefined) delete bar.dataset.previewing;
       else bar.dataset.previewing = '';
@@ -73,8 +76,9 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     const measure = () => {
       const style = getComputedStyle(bar);
       pad = parseFloat(style.paddingLeft) || 0;
+      padY = parseFloat(style.paddingTop) || 0;
       slot = (bar.clientWidth - pad - (parseFloat(style.paddingRight) || 0)) / latest.current.count;
-      height = bar.clientHeight - (parseFloat(style.paddingTop) || 0) - (parseFloat(style.paddingBottom) || 0);
+      height = bar.clientHeight - padY - (parseFloat(style.paddingBottom) || 0);
       const { overhang, spread } = latest.current;
       H = Math.round(bar.offsetHeight + overhang);
       // Give narrow segments the same lifted clearance at their sides as
@@ -83,52 +87,70 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       lens.style.width = `${W}px`;
       lens.style.height = `${H}px`;
       lens.style.left = `${pad + (slot - W) / 2}px`;
-      lens.style.top = `${pad + (height - H) / 2}px`;
+      lens.style.top = `${padY + (height - H) / 2}px`;
       select.style.width = `${slot}px`;
+      select.style.left = `${pad}px`;
       glyphs = buttons.flatMap((button) =>
         Array.from(button.querySelectorAll<HTMLElement>('.lg-nav__label, .lg-nav__icon > .lg-symbol')).map((node) => ({
           node,
           x: button.offsetLeft + node.offsetLeft - pad,
-          y: node.offsetTop + node.offsetHeight / 2,
+          y: node.offsetTop,
           width: node.offsetWidth,
+          height: node.offsetHeight,
           label: node.classList.contains('lg-nav__label'),
         })),
       );
     };
 
     const paint = () => {
-      const { x, swell, squash } = state;
+      const { swell, squash } = state;
+      const x = state.x;
       const lift = clamp(state.lift, 0, 1.08);
       if (!W || !H) return;
       const kx = ((slot + (W - slot) * lift) / W) * (1 + squash);
       const ky = ((height + (H - height) * lift) / H) * (1 - squash * 0.6);
+      const grow = 1 + (latest.current.swell / Math.max(bar.offsetWidth, 1)) * swell;
       const transform = `translateX(${x}px) scale(${kx}, ${ky})`;
       lens.style.transform = transform;
       select.style.transform = `translateX(${x}px)`;
       lens.style.opacity = String(clamp(lift * 4, 0, 1));
-      const grow = 1 + (latest.current.swell / Math.max(bar.offsetWidth, 1)) * swell;
       bar.style.scale = `${grow}`;
       lens.style.setProperty('--lg-lift', String(clamp(lift, 0, 1)));
       bar.style.setProperty('--lg-lift', String(clamp(lift, 0, 1)));
-      // Tint the original glyphs precisely where the curved lens overlaps.
-      // A moving gradient gives the native partial-blue transition without
-      // drawing a second, ghosted row of icons or labels.
+      // Paint a true capsule over each original glyph. A single horizontal
+      // gradient turns an icon blue in a rectangular strip before the curved
+      // end reaches it. Account for the filter's source magnification too.
       for (const glyph of glyphs) {
         if (lift <= 0.02 && !gesture) {
           glyph.node.style.removeProperty('--lg-content-tint');
           glyph.node.style.removeProperty('transform');
           continue;
         }
-        const ry = H * ky / 2;
-        const dy = clamp(Math.abs(glyph.y - height / 2) / ry, 0, 1);
-        const half = Math.max(0, (W - H) * kx / 2) + H * kx / 2 * Math.sqrt(1 - dy * dy);
+        const zoom = latest.current.contentZoom ?? 1;
+        const ry = H * ky / (2 * zoom);
+        const rx = H * kx / (2 * zoom);
+        const straight = Math.max(0, (W - H) * kx / (2 * zoom));
+        const dy = clamp(Math.abs(glyph.y + glyph.height / 2 - height / 2) / ry, 0, 1);
+        const half = straight + rx * Math.sqrt(1 - dy * dy);
         const from = x + slot / 2 - half - glyph.x;
         const to = x + slot / 2 + half - glyph.x;
         const normal = 'var(--lg-fg)';
         const active = 'var(--lg-track-active, var(--lg-accent))';
-        glyph.node.style.setProperty('--lg-content-tint', `linear-gradient(90deg, ${normal} ${from}px, ${active} ${from}px, ${active} ${to}px, ${normal} ${to}px)`);
         const coverage = clamp((Math.min(glyph.width, to) - Math.max(0, from)) / Math.max(1, glyph.width), 0, 1);
-        glyph.node.style.transform = `scale(${1 + clamp(lift, 0, 1) * coverage * (glyph.label ? 0.035 : 0.08)})`;
+        const scale = 1 + clamp(lift, 0, 1) * coverage * (glyph.label ? 0.035 : 0.08);
+        const cx = (x + slot / 2 - glyph.x - glyph.width / 2) / scale + glyph.width / 2;
+        const cy = (height / 2 - glyph.y - glyph.height / 2) / scale + glyph.height / 2;
+        const left = cx - straight / scale;
+        const right = cx + straight / scale;
+        const radiusX = rx / scale;
+        const radiusY = ry / scale;
+        glyph.node.style.setProperty('--lg-content-tint', [
+          `radial-gradient(ellipse ${radiusX}px ${radiusY}px at ${left}px ${cy}px, ${active} calc(100% - 0.5px), transparent 100%)`,
+          `radial-gradient(ellipse ${radiusX}px ${radiusY}px at ${right}px ${cy}px, ${active} calc(100% - 0.5px), transparent 100%)`,
+          `linear-gradient(${active}, ${active}) ${left}px ${cy - radiusY}px / ${right - left}px ${radiusY * 2}px no-repeat`,
+          `linear-gradient(${normal}, ${normal})`,
+        ].join(', '));
+        glyph.node.style.transform = `scale(${scale})`;
       }
       if (!gesture && lift < 0.02) delete bar.dataset.lifted;
     };

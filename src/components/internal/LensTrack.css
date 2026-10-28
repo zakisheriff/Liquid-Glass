@@ -63,7 +63,7 @@
 }
 
 .lg-track[data-lifted] .lg-nav__label {
-  background-image: var(--lg-content-tint);
+  background: var(--lg-content-tint);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -71,8 +71,7 @@
 }
 
 .lg-track[data-lifted] .lg-nav__icon > .lg-symbol {
-  background-color: transparent;
-  background-image: var(--lg-content-tint);
+  background: var(--lg-content-tint);
 }
 
 .lg-track__item {

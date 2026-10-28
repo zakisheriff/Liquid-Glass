@@ -8,7 +8,7 @@
   "trailingSlash": false,
   "headers": [
     {
-      "source": "/opengraph-image",
+      "source": "/social-card.png",
       "headers": [{ "key": "Content-Type", "value": "image/png" }]
     },
     {

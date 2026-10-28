@@ -565,6 +565,12 @@ html[data-morph='native'] .hero__title-text {
   inset: 0;
 }
 
+.mock-app .device__bottom {
+  left: 24px;
+  right: 24px;
+  bottom: 26px;
+}
+
 .mock-app .device__feed {
   padding-top: 124px;
   overscroll-behavior: contain;

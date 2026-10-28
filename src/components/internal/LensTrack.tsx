@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { useLensTrack } from '../../engine/lensTrack';
-import { useRefraction } from '../../engine/refraction';
+import { canRefractBackdrop, useRefraction } from '../../engine/refraction';
 import './LensTrack.css';
 
 export interface LensTrackProps {
@@ -31,13 +31,14 @@ export function LensTrack({
   const lens = useRef<HTMLSpanElement>(null);
   const select = useRef<HTMLSpanElement>(null);
   const strength = Math.max(1, Math.min(10, intensity)) / 5;
+  const tabbar = variant === 'tabbar';
+  const zoom = tabbar ? 1.14 : 1.1;
 
   useRefraction(glass, { kind: 'surface', strength });
   // Keep the centre magnification, with a thin clean rim. Strong bevel
   // displacement folds the bar's border into a second outline on each side.
-  useRefraction(lens, { kind: 'lens', strength: 0, zoom: variant === 'tabbar' ? 1.14 : 1.1, dispersion: 0, bezel: 2 });
+  useRefraction(lens, { kind: 'lens', strength: 0, zoom, dispersion: 0, bezel: 2 });
 
-  const tabbar = variant === 'tabbar';
   useLensTrack(
     { bar, glass, lens, select },
     {
@@ -46,6 +47,7 @@ export function LensTrack({
       onSelect: (next) => onChange?.(next),
       overhang: tabbar ? 14 : 12,
       spread: tabbar ? 0.3 : 0.16,
+      contentZoom: canRefractBackdrop() ? zoom : 1,
       swell: tabbar ? 8 : 14,
     },
   );

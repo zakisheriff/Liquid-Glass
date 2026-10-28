@@ -9,8 +9,8 @@ const description = 'Install and use liquid glass in React and Next.js. Componen
 export const metadata: Metadata = {
   title: 'React & Next.js Documentation', description,
   alternates: { canonical: '/docs', types: { 'text/markdown': '/docs.md' } },
-  openGraph: { title, description, url: '/docs', type: 'article', authors: ['Zaki Sheriff'], images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Liquid Glass for Web — React and Next.js components' }] },
-  twitter: { card: 'summary_large_image', title, description, images: ['/opengraph-image'] },
+  openGraph: { title, description, url: '/docs', type: 'article', authors: ['Zaki Sheriff'], images: [{ url: '/social-card.png', width: 1200, height: 630, alt: 'Liquid Glass for Web — React and Next.js components' }] },
+  twitter: { card: 'summary_large_image', title, description, images: ['/social-card.png'] },
 };
 
 export default function Documentation() {
