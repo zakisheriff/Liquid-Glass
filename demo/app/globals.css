@@ -62,6 +62,13 @@ img {
   display: block;
 }
 
+input,
+textarea,
+select,
+[contenteditable='true'] {
+  font-size: 16px;
+}
+
 /* ------------------------------------------------------------------ */
 /*  Nav                                                                */
 /* ------------------------------------------------------------------ */
@@ -1067,12 +1074,7 @@ html[data-morph='native'] .hero__title-text {
   inset: 0;
   display: grid;
   place-items: center;
-  background:
-    radial-gradient(160% 70% at 18% 118%, transparent 58.6%, rgb(255 255 255 / 0.9) 59.2%, transparent 60.4%),
-    radial-gradient(70% 60% at 85% 100%, #0631b5 0%, transparent 70%),
-    radial-gradient(60% 55% at 100% 15%, #4fc3f7 0%, transparent 65%),
-    radial-gradient(50% 45% at 10% 55%, #1aa3e8 0%, transparent 70%),
-    linear-gradient(160deg, #9dbbe6 0%, #e6dcae 32%, #3f86ea 52%, #0b46d0 74%, #6ea8ea 100%);
+  background: #4b9fd4 url('/glass-wallpaper.svg') center / cover;
   user-select: none;
 }
 
@@ -1089,16 +1091,51 @@ html[data-morph='native'] .hero__title-text {
   position: absolute;
   top: 0;
   left: 0;
-  width: 300px;
-  height: 170px;
+  width: clamp(220px, 31%, 340px);
+  height: 174px;
   border-radius: 999px;
   cursor: grab;
-  --lg-glass-fill: rgb(255 255 255 / 0.06);
+  --lg-glass-fill: rgb(255 255 255 / 0.025);
   --lg-glass-blur: 0px;
-  --lg-saturate: 1.25;
+  --lg-saturate: 1;
   --lg-rim-opacity: 1;
-  --lg-glass-shadow: 0 20px 50px rgb(0 20 80 / 0.18), 0 4px 12px rgb(0 20 80 / 0.1);
+  --lg-glass-shadow: 0 12px 26px rgb(0 20 80 / 0.09), 0 2px 6px rgb(0 20 80 / 0.06);
   will-change: transform, scale;
+}
+
+/* Keep the fallback's specular edge above its mirrored backdrop. */
+.lens-demo__lens.lg-glass::before {
+  z-index: 2;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.5), inset 0 2px 3px rgb(255 255 255 / 0.22);
+}
+
+.lens-demo__optics {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.lens-demo[data-optics='ready'] .lens-demo__optics {
+  visibility: visible;
+}
+
+.lens-demo[data-optics='ready'] .lens-demo__poster > span {
+  visibility: hidden;
+}
+
+.lens-demo[data-optics='ready'] .lens-demo__lens.lg-glass {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.lens-demo[data-optics='ready'] .lens-demo__lens::before,
+.lens-demo[data-optics='ready'] .lens-demo__lens::after,
+.lens-demo[data-optics='ready'] .lens-demo__lens > .lg-mirror {
+  display: none;
 }
 
 .lens-demo__lens:active {

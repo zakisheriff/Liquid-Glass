@@ -25,10 +25,6 @@
   will-change: scale, translate;
 }
 
-.lg-input__field[data-focused] {
-  background-color: var(--lg-fill-pressed);
-}
-
 .lg-input__field::after {
   display: none;
 }
@@ -45,7 +41,7 @@
   color: inherit;
   caret-color: var(--lg-input-tint, var(--lg-accent));
   font: inherit;
-  font-size: 17px;
+  font-size: 16px;
   letter-spacing: -0.02em;
 }
 

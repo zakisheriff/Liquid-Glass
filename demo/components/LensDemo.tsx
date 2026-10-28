@@ -2,14 +2,19 @@
 
 import { useEffect, useRef } from 'react';
 import { SPRINGS, createSpring, usePress, useRefraction } from '@zakisheriff/liquid-glass';
+import { mountLensOptics } from './lensOptics';
 
 /** A free-floating droplet you can drag over type to watch light bend. */
 export function LensDemo() {
   const stage = useRef<HTMLDivElement>(null);
   const lens = useRef<HTMLDivElement>(null);
   const poster = useRef<HTMLDivElement>(null);
-  useRefraction(lens, { kind: 'lens', zoom: 1.12, thickness: 64, bezel: 40, dispersion: 0.7 }, true, poster);
+  const canvas = useRef<HTMLCanvasElement>(null);
+  useRefraction(lens, { kind: 'lens', zoom: 1.035, thickness: 64, bezel: 40, dispersion: 0.7 }, true, poster,
+    () => stage.current?.dataset.optics !== 'ready');
   usePress(lens, { grow: 0.12, lean: 0, stretch: 0.14 });
+
+  useEffect(() => mountLensOptics(stage.current!, poster.current!, lens.current!, canvas.current!), []);
 
   useEffect(() => {
     const area = stage.current!;
@@ -79,6 +84,7 @@ export function LensDemo() {
       <div ref={stage} className="lens-demo">
         <div ref={poster} className="lens-demo__poster" aria-hidden="true">
           <span>Liquid Glass</span>
+          <canvas ref={canvas} className="lens-demo__optics" />
         </div>
         <div ref={lens} className="lg-glass lens-demo__lens" role="img" aria-label="Draggable glass lens" />
       </div>
