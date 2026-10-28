@@ -22,7 +22,6 @@ export function MockApp() {
   const [tab, setTab] = useState(0);
   const [segment, setSegment] = useState(0);
   const [saved, setSaved] = useState([1, 4]);
-  const [collection, setCollection] = useState([0]);
   const [selected, setSelected] = useState<number | null>(null);
   const [query, setQuery] = useState('');
   const [searching, setSearching] = useState(false);
@@ -47,7 +46,7 @@ export function MockApp() {
     requestAnimationFrame(() => search.current?.focus({ preventScroll: true }));
   };
   const visible = PALETTES.map((_, index) => index).filter((index) =>
-    (tab === 0 || (tab === 1 ? saved : collection).includes(index)) &&
+    (tab === 0 || saved.includes(index)) &&
     palettes[index].name.toLowerCase().includes(query.toLowerCase()),
   );
   if (sort) visible.sort((a, b) => palettes[a].name.localeCompare(palettes[b].name));
@@ -70,7 +69,7 @@ export function MockApp() {
         </> : <>
           <GlassButton size="sm" icon={<ArrowLeft size={16} />} onClick={() => setSelected(null)}>Back</GlassButton>
           <div className="mock__preview" style={selected === 0 ? studioArtwork(studio) : { backgroundColor: background(selected) }} aria-label={`${palettes[selected].name} palette`} />
-          <div className="mock__actions"><GlassButton icon={<Bookmark size={18} />} onClick={() => toggleSaved(selected)}>{saved.includes(selected) ? 'Saved' : 'Save'}</GlassButton><GlassButton variant="filled" icon={<Check size={18} />} onClick={() => {setCollection((items) => items.includes(selected) ? items : [...items, selected]);changeTab(2);}}>Add to collection</GlassButton></div>
+          <div className="mock__actions"><GlassButton icon={<Bookmark size={18} />} onClick={() => toggleSaved(selected)}>{saved.includes(selected) ? 'Saved' : 'Save'}</GlassButton><GlassButton variant="filled" icon={<Check size={18} />} onClick={() => {setSaved((items) => items.includes(selected) ? items : [...items, selected]);changeTab(1);}}>Show in Saved</GlassButton></div>
         </>}
       </div>
       <div className="device__top">
@@ -87,7 +86,7 @@ export function MockApp() {
           ]}
         />
       </div>
-      <AppDock tab={searching ? 3 : tab} onChange={changeTab} onSearch={startSearch} />
+      <AppDock tab={searching ? 2 : tab} onChange={changeTab} onSearch={startSearch} />
     </div>
   );
 }

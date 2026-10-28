@@ -922,6 +922,31 @@ html[data-morph] .hero__title-text[data-docked] {
   .hero__stage {
     margin-top: 44px;
   }
+
+  /* A narrower screen gets a proportionally narrower island, with the time
+     and status icons tucked either side of it, never on it. */
+  .status {
+    height: 48px;
+    padding: 3px 22px 0 30px;
+  }
+
+  .status__time {
+    font-size: 14px;
+  }
+
+  .status__island {
+    top: 10px;
+    width: 30%;
+    height: 30px;
+    margin-left: -15%;
+    border-radius: 16px;
+  }
+
+  .status__icons {
+    gap: 4px;
+    transform: scale(0.86);
+    transform-origin: right center;
+  }
 }
 
 /* ------------------------------------------------------------------ */

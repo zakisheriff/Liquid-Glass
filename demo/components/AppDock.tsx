@@ -2,12 +2,13 @@
 
 import { useRef } from 'react';
 import { GlassButton, GlassNav, useRefraction, type GlassNavItem } from '@zakisheriff/liquid-glass';
-import { Bookmark, Compass, Grid, Search } from './icons';
+import { Bookmark, Compass, Search } from './icons';
 
+// Three tabs keep each slot wide enough for the selection to stay a capsule
+// on a narrow phone, as on iOS.
 const TABS = [
   { label: 'Explore', icon: <Compass /> },
   { label: 'Saved', icon: <Bookmark /> },
-  { label: 'Library', icon: <Grid /> },
   { label: 'Search', icon: <Search /> },
 ];
 
