@@ -6,7 +6,7 @@
 <br />
 
 [![npm version](https://img.shields.io/npm/v/@zakisheriff/liquid-glass?style=for-the-badge&logo=npm&color=cb3837)](https://www.npmjs.com/package/@zakisheriff/liquid-glass)
-[![npm downloads](https://img.shields.io/npm/dm/@zakisheriff/liquid-glass?style=for-the-badge&color=0a84ff)](https://www.npmjs.com/package/@zakisheriff/liquid-glass)
+[![Total npm downloads](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.npmjs.org%2Fdownloads%2Fpoint%2F2026-05-31%3A2100-01-01%2F%40zakisheriff%2Fliquid-glass&query=%24.downloads&label=total%20downloads&style=for-the-badge&color=0a84ff)](https://www.npmjs.com/package/@zakisheriff/liquid-glass)
 [![Bundle size](https://img.shields.io/bundlephobia/minzip/@zakisheriff/liquid-glass?style=for-the-badge&label=gzip&color=30d158)](https://bundlephobia.com/package/@zakisheriff/liquid-glass)
 [![Zero dependencies](https://img.shields.io/badge/dependencies-0-30d158?style=for-the-badge)](https://www.npmjs.com/package/@zakisheriff/liquid-glass?activeTab=dependencies)
 <br />
