@@ -44,7 +44,7 @@ export function usePress(ref: React.RefObject<HTMLElement | null>, options: Pres
         s.set(targets[i]);
       });
 
-    let pointer: { id: number; x: number; y: number; box: DOMRect; base: number } | null = null;
+    let pointer: { id: number; x: number; y: number; box: DOMRect; base: number; w: number; h: number } | null = null;
 
     const light = (event: PointerEvent, box: DOMRect) => {
       el.style.setProperty('--lg-x', `${((event.clientX - box.left) / box.width) * 100}%`);
@@ -53,21 +53,27 @@ export function usePress(ref: React.RefObject<HTMLElement | null>, options: Pres
 
     const track = (event: PointerEvent) => {
       if (!pointer) return;
-      const { box, base } = pointer;
+      const { box, base, w, h } = pointer;
       light(event, box);
       const dx = event.clientX - pointer.x;
       const dy = event.clientY - pointer.y;
-      const tx = rubberband(dx, lean * 2.2, 0.5);
-      const ty = rubberband(dy, lean * 2.2, 0.5);
       const dist = Math.hypot(dx, dy);
-      // Surface tension: the drop elongates toward the finger, then saturates.
-      // The stretch blends continuously with direction (cos²/sin²), so moving
-      // from a sideways drag to a downward one morphs instead of flipping.
-      const pull = 1 - 1 / (1 + dist / 55);
-      const k = stretch * pull;
+      // Surface tension: the drop stays held in its place and is drawn out
+      // toward the finger, like taffy. The far edge barely moves; only the
+      // near edge reaches, saturating so it never tears free. The stretch
+      // blends with direction (cos²/sin²), so a sideways drag morphs into a
+      // downward one instead of flipping.
       const cx = dist ? (dx / dist) ** 2 : 0;
       const cy = dist ? (dy / dist) ** 2 : 0;
-      to([base * (1 + k * cx - k * 0.5 * cy), base * (1 + k * cy - k * 0.5 * cx), tx, ty], FOLLOW);
+      const span = Math.min(w * cx + h * cy, 64);
+      const reach = rubberband(dist, span * stretch * 2, 0.55);
+      const ex = (reach * cx) / w;
+      const ey = (reach * cy) / h;
+      // Half the added length shifts the centre, pinning the trailing edge;
+      // a small lean on top lets the whole drop give a little.
+      const tx = Math.sign(dx) * (reach * cx * base) / 2 + rubberband(dx, lean * 0.6, 0.4);
+      const ty = Math.sign(dy) * (reach * cy * base) / 2 + rubberband(dy, lean * 0.6, 0.4);
+      to([base * (1 + ex - ey * 0.35), base * (1 + ey - ex * 0.35), tx, ty], FOLLOW);
     };
 
     const move = (event: PointerEvent) => {
@@ -93,7 +99,7 @@ export function usePress(ref: React.RefObject<HTMLElement | null>, options: Pres
       const natural = Math.min(0.22, Math.max(0.07, 9 / Math.sqrt(w * h)));
       const amount = (grow ?? natural) * (event.pointerType === 'mouse' ? 0.75 : 1);
       const base = 1 + amount;
-      pointer = { id: event.pointerId, x: event.clientX, y: event.clientY, box, base };
+      pointer = { id: event.pointerId, x: event.clientX, y: event.clientY, box, base, w, h };
       el.dataset.pressed = '';
       light(event, box);
       to([base, base, 0, 0], SPRINGS.press);
