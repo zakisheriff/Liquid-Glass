@@ -111,10 +111,6 @@ img {
   white-space: nowrap;
 }
 
-.nav__brand img {
-  border-radius: 6px;
-}
-
 .nav__links {
   display: flex;
   align-items: center;

@@ -20,7 +20,6 @@ export function Nav() {
     <header className="nav-wrap">
       <div ref={bar} className="lg-glass nav">
         <a className="nav__brand" href="#top" aria-label="Liquid Glass home">
-          <img src="/LG-Logo.png" alt="" width={22} height={22} />
           <span>Liquid Glass</span>
         </a>
         <nav className="nav__links" aria-label="Sections">
