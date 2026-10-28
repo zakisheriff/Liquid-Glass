@@ -13,6 +13,9 @@
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
   vertical-align: middle;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 /* Generous touch target */

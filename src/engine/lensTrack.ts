@@ -7,6 +7,7 @@
  * drops into the nearest slot with a wobble.
  */
 import { useEffect, useRef } from 'react';
+import { guardSelection } from './selection';
 import { SPRINGS, clamp, createSpring, rubberband } from './spring';
 import { haptic } from './haptics';
 
@@ -344,6 +345,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     x.set(current * slot, true);
     bar.dataset.ready = '';
     observer.observe(bar);
+    const unguard = guardSelection(bar);
     bar.addEventListener('pointerdown', onDown);
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
@@ -359,6 +361,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       clearTimeout(dropTimer);
       api.current = null;
       [x, lift, swell].forEach((s) => s.stop());
+      unguard();
       observer.disconnect();
       bar.removeEventListener('pointerdown', onDown);
       window.removeEventListener('pointermove', onMove);

@@ -2,6 +2,7 @@ import React, { useEffect, useImperativeHandle, useRef } from 'react';
 import { SPRINGS, clamp, createSpring, rubberband } from '../../engine/spring';
 import { canRefractBackdrop, useRefraction } from '../../engine/refraction';
 import { haptic } from '../../engine/haptics';
+import { guardSelection } from '../../engine/selection';
 import './GlassSlider.css';
 
 export interface GlassSliderProps
@@ -124,6 +125,7 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
       // Hit-test the custom surface, not WebKit's native range control.
       // On iOS the native thumb can cancel pointer events as it takes over
       // the drag, dropping the glass lift while values continue changing.
+      const unguard = guardSelection(root);
       root.addEventListener('pointerdown', down);
       root.addEventListener('pointermove', move);
       root.addEventListener('pointerup', up);
@@ -132,6 +134,7 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
       window.addEventListener('blur', release);
       return () => {
         release();
+        unguard();
         root.removeEventListener('pointerdown', down);
         root.removeEventListener('pointermove', move);
         root.removeEventListener('pointerup', up);

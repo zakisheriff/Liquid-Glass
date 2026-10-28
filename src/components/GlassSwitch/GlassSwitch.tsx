@@ -5,6 +5,7 @@ import { SPRINGS, clamp, createSpring, rubberband, springFrom } from '../../engi
 const SETTLE = springFrom(0.36, 0.68);
 import { useRefraction } from '../../engine/refraction';
 import { haptic } from '../../engine/haptics';
+import { guardSelection } from '../../engine/selection';
 import './GlassSwitch.css';
 
 export interface GlassSwitchProps
@@ -168,6 +169,7 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
         sync.current?.(next);
       };
 
+      const unguard = guardSelection(el);
       el.addEventListener('pointerdown', down);
       el.addEventListener('pointermove', move);
       el.addEventListener('pointerup', up);
@@ -176,6 +178,7 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
       return () => {
         clearTimeout(dropTimer);
         [position, lift, color].forEach((s) => s.stop());
+        unguard();
         el.removeEventListener('pointerdown', down);
         el.removeEventListener('pointermove', move);
         el.removeEventListener('pointerup', up);

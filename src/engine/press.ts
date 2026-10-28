@@ -5,6 +5,7 @@
  */
 import { useEffect } from 'react';
 import { SPRINGS, createSpring, rubberband, springFrom } from './spring';
+import { guardSelection } from './selection';
 
 /** Finger-following feel: quick but never twitchy. */
 const FOLLOW = springFrom(0.2, 0.82);
@@ -113,12 +114,14 @@ export function usePress(ref: React.RefObject<HTMLElement | null>, options: Pres
     const hold = (event: TouchEvent) => {
       if (pointer && event.cancelable) event.preventDefault();
     };
+    const unguard = guardSelection(el);
     el.addEventListener('touchmove', hold, { passive: false });
     el.addEventListener('pointerdown', down);
     window.addEventListener('blur', blur);
     return () => {
       up();
       springs.forEach((s) => s.stop());
+      unguard();
       el.removeEventListener('pointerdown', down);
       el.removeEventListener('touchmove', hold);
       window.removeEventListener('blur', blur);
