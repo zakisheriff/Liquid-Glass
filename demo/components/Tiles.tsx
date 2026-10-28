@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { Children, cloneElement, isValidElement, useRef, useState } from 'react';
 import {
   GlassButton,
   GlassCard,
@@ -12,9 +12,12 @@ import {
   GlassSwitch,
   type GlassSliderProps,
 } from '@zakisheriff/liquid-glass';
-import { COVERS, Cover } from './art';
+import { Cover } from './art';
 import { Bookmark, Check, Compass, Ellipsis, Grid, Heart, HeartFill, MapIcon, Mic, Note, Person, Pin, Plus, Search, Share, Speaker, Star, Sun } from './icons';
 import { AppDock } from './AppDock';
+import { PreviewThemeContext, PreviewThemeToggle, usePreviewMode } from './PreviewTheme';
+import { SheetFrame } from './SheetFrame';
+import { PreviewMorphContext, usePreviewChange, usePreviewMorph } from './PreviewMorph';
 
 function Tile({
   title,
@@ -30,14 +33,27 @@ function Tile({
   options?: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const [mode, setMode] = usePreviewMode();
+  const { ref: stage, morph } = usePreviewMorph();
   return (
-    <article className={['tile', wide ? 'tile--wide' : '', dark ? 'tile--dark' : ''].join(' ')}>
+    <PreviewThemeContext.Provider value={mode}>
+    <PreviewMorphContext.Provider value={morph}>
+    <article data-theme={mode} className={['tile preview-scope', wide ? 'tile--wide' : '', dark ? 'tile--dark' : ''].join(' ')}>
       <header className="tile__copy">
         <h2 className="tile__title">{title}</h2>
         {options && <div className="tile__options">{options}</div>}
       </header>
-      <div className="tile__stage">{children}</div>
+      <div ref={stage} className="tile__stage">{Children.map(children, (child) => {
+        if (!isValidElement<React.HTMLAttributes<HTMLDivElement> & { 'data-theme'?: string }>(child) || !child.props.className?.split(' ').includes('stage')) return child;
+        return cloneElement(child, {
+          className: `${child.props.className} preview-scope`,
+          'data-theme': mode,
+          children: <><PreviewThemeToggle label={title} mode={mode} onChange={setMode} />{child.props.children}</>,
+        });
+      })}</div>
     </article>
+    </PreviewMorphContext.Provider>
+    </PreviewThemeContext.Provider>
   );
 }
 
@@ -48,6 +64,7 @@ function Choice<T extends string | number>({ label, options, value, onChange }: 
   value: T;
   onChange: (value: T) => void;
 }) {
+  const change = usePreviewChange();
   const items = options.map((option) => (typeof option === 'object' ? option : { value: option, label: String(option) }));
   return (
     <div className="choice">
@@ -56,7 +73,7 @@ function Choice<T extends string | number>({ label, options, value, onChange }: 
         size="sm"
         options={items.map((item) => item.label)}
         value={Math.max(0, items.findIndex((item) => item.value === value))}
-        onChange={(index) => onChange(items[index].value)}
+        onChange={(index) => change(() => onChange(items[index].value))}
         aria-label={label}
       />
     </div>
@@ -128,7 +145,6 @@ function TabTile() {
       <div className="stage stage--gradient" style={{ '--gradient-hue': `${(selected * 64) % 360}deg` } as React.CSSProperties}>
         <div className="stage__gradient" aria-hidden="true" />
         <AppDock
-          key={`${layout}-${count}-${labels}`}
           showLabels={labels === 'show'}
           tab={selected}
           onChange={setTab}
@@ -158,8 +174,8 @@ function SegmentTile() {
     >
       <div className="stage stage--type">
         <div className="stage__column">
-          <GlassSegmented options={['Chat', 'Work']} value={value} onChange={setValue} size={scale} aria-label="Mode" />
-          <GlassSegmented key={`${count}-${scale}`} options={RANGES.slice(0, count)} value={Math.min(size, count - 1)} onChange={setSize} size={scale} aria-label="Range" />
+          <GlassSegmented options={['Chat', 'Work']} value={value} onChange={setValue} size={scale} style={{ width: `${2 * (scale === 'sm' ? 64 : 72) + 8}px` }} aria-label="Mode" />
+          <GlassSegmented options={RANGES.slice(0, count)} value={Math.min(size, count - 1)} onChange={setSize} size={scale} style={{ width: `${count * (scale === 'sm' ? 64 : 72) + 8}px` }} aria-label="Range" />
         </div>
       </div>
     </Tile>
@@ -247,7 +263,6 @@ function ButtonTile() {
 
 function SearchTile() {
   const [query, setQuery] = useState('');
-  const results = COVERS.filter((c) => c.title.toLowerCase().includes(query.toLowerCase())).slice(0, 5);
   return (
     <Tile title="Search">
       <div className="stage stage--ocean">
@@ -258,23 +273,8 @@ function SearchTile() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             trailing={<Mic size={18} />}
-            aria-label="Search covers"
+            aria-label="Search preview"
           />
-          <GlassCard className="stage__results" padding="6px" radius="24px">
-            {results.length ? (
-              results.map((c) => (
-                <div key={c.title} className="result">
-                  <Cover index={COVERS.indexOf(c)} className="result__art" />
-                  <span>
-                    <strong>{c.title}</strong>
-                    <small>{c.by}</small>
-                  </span>
-                </div>
-              ))
-            ) : (
-              <p className="result result--empty">No results</p>
-            )}
-          </GlassCard>
         </div>
       </div>
     </Tile>
@@ -293,6 +293,7 @@ function SheetTile() {
         </GlassButton>
       </div>
       <GlassSheet open={open} onClose={() => setOpen(false)} detents={['medium', 'large']} aria-label="Now playing">
+        <SheetFrame footer={<GlassButton size="lg" onClick={() => setOpen(false)} style={{ width: '100%' }}>Done</GlassButton>}>
         <div className="sheet-demo">
           <Cover index={2} className="sheet-demo__art" />
           <h3>Bloom</h3>
@@ -302,10 +303,8 @@ function SheetTile() {
             <span className="setting__label">Notify me</span>
             <GlassSwitch checked={notify} onChange={setNotify} aria-label="Notify me" />
           </div>
-          <GlassButton size="lg" onClick={() => setOpen(false)} style={{ width: '100%' }}>
-            Done
-          </GlassButton>
         </div>
+        </SheetFrame>
       </GlassSheet>
     </Tile>
   );

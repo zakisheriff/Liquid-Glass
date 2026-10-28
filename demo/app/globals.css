@@ -27,6 +27,68 @@
   color-scheme: dark;
 }
 
+.preview-scope[data-theme='light'] {
+  --tile: #ffffff;
+  --screen: #ffffff;
+  --text: #1d1d1f;
+  --muted: #6e6e73;
+  --hairline: rgb(0 0 0 / 0.08);
+  --code-bg: #ffffff;
+  --link: #0066cc;
+  color: var(--text);
+  color-scheme: light;
+}
+
+.preview-scope[data-theme='dark'] {
+  --tile: #1c1c1e;
+  --screen: #000000;
+  --text: #f5f5f7;
+  --muted: #86868b;
+  --hairline: rgb(255 255 255 / 0.1);
+  --code-bg: #1d1d1f;
+  --link: #2997ff;
+  color: var(--text);
+  color-scheme: dark;
+}
+
+.preview-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--lg-fg);
+}
+
+/* Only named preview surfaces morph; the rest of the page stays still. */
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-group(*) {
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-group(root),
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+::view-transition-old(root) {
+  opacity: 0;
+}
+
+/* Mirror clones must never duplicate their source's transition identity. */
+[data-lg-copy], [data-lg-copy] * {
+  view-transition-name: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*) {
+    animation-duration: 0s;
+  }
+}
+
 *,
 *::before,
 *::after {
@@ -695,6 +757,11 @@ html[data-morph] .hero__title-text[data-docked] {
 }
 
 .phone-studio__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  container-type: inline-size;
   margin: 0 4px 18px;
 }
 
@@ -708,10 +775,16 @@ html[data-morph] .hero__title-text[data-docked] {
 
 .phone-studio__heading h2 {
   margin: 0;
-  font-size: 28px;
+  font-size: clamp(20px, 9cqw, 28px);
   font-weight: 650;
   line-height: 1.15;
   letter-spacing: -0.045em;
+  white-space: nowrap;
+}
+
+.phone-studio__heading > .preview-theme-toggle {
+  flex: none;
+  gap: 4px;
 }
 
 .phone-studio__canvas {
@@ -1068,8 +1141,20 @@ html[data-morph] .hero__title-text[data-docked] {
 }
 
 .tile__copy {
+  position: relative;
   padding: 48px 24px 28px;
   text-align: center;
+}
+
+.stage > .preview-theme-toggle {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 6;
+  width: auto;
+  padding: 6px 8px;
+  border-radius: 22px;
+  background: var(--lg-fill);
 }
 
 .tile__title {
@@ -1154,7 +1239,7 @@ html[data-morph] .hero__title-text[data-docked] {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 22px 22px 0;
+  padding: 74px 22px 0;
 }
 
 .stage__toolbar h3 {
@@ -1192,6 +1277,7 @@ html[data-morph] .hero__title-text[data-docked] {
 .tile__stage {
   position: relative;
   flex: 1;
+  min-width: 0;
   display: flex;
   padding: 0 24px 24px;
 }
@@ -1200,7 +1286,9 @@ html[data-morph] .hero__title-text[data-docked] {
   position: relative;
   flex: 1;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   place-items: center;
+  min-width: 0;
   min-height: 420px;
   overflow: visible;
   border-radius: 22px;
@@ -1271,6 +1359,7 @@ html[data-morph] .hero__title-text[data-docked] {
   align-items: center;
   gap: 22px;
   width: 100%;
+  min-width: 0;
   padding: 0 18px;
 }
 
@@ -1334,16 +1423,42 @@ html[data-morph] .hero__title-text[data-docked] {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  min-width: 0;
+  padding: 64px 16px 32px;
   gap: 18px;
 }
 
 .stage__row {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
   gap: 14px;
 }
 
+.stage__buttons .lg-button {
+  max-width: 100%;
+}
+
+.stage__buttons .lg-button__label {
+  white-space: normal;
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .stage__column {
+    padding-inline: 12px;
+  }
+
+  .stage__column .lg-track__item {
+    padding-inline: 2px;
+    font-size: 12px;
+  }
+}
+
 .stage--ocean {
-  align-items: start;
   background: #2eac8d url('/wallpapers/mint.svg') center / cover;
 }
 
@@ -1352,43 +1467,6 @@ html[data-morph] .hero__title-text[data-docked] {
   flex-direction: column;
   gap: 12px;
   width: min(380px, 88%);
-  margin-top: 40px;
-}
-
-.result {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 10px;
-  border-radius: 18px;
-}
-
-.result strong,
-.result small {
-  display: block;
-  line-height: 1.25;
-}
-
-.result small {
-  color: var(--lg-fg-muted);
-  font-size: 13px;
-}
-
-.result--empty {
-  margin: 0;
-  justify-content: center;
-  color: var(--lg-fg-muted);
-}
-
-.result__art {
-  flex: none;
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-}
-
-.result__art .cover__title {
-  display: none;
 }
 
 .stage--candy {
@@ -1401,6 +1479,35 @@ html[data-morph] .hero__title-text[data-docked] {
   align-items: center;
   gap: 14px;
   text-align: center;
+}
+
+.lg-sheet--detents.lg-glass:has(.sheet-frame) {
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.lg-sheet__content:has(> .sheet-frame) {
+  padding-bottom: 0;
+}
+
+.sheet-frame {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sheet-frame__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
+.sheet-frame__footer {
+  flex: none;
+  padding: 14px 0 max(16px, env(safe-area-inset-bottom));
 }
 
 .sheet-demo__art {
@@ -1440,10 +1547,20 @@ html[data-morph] .hero__title-text[data-docked] {
 
 .lens-demo {
   position: relative;
-  height: 560px;
+  min-height: 560px;
   margin-top: 48px;
   overflow: hidden;
   border-radius: 28px;
+}
+
+.lens-demo > .preview-theme-toggle {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  z-index: 3;
+  padding: 8px 10px;
+  border-radius: 24px;
+  background: var(--lg-fill);
 }
 
 /* Wallpaper with a glossy swoosh and big white type, as in Apple's art. */
@@ -1457,12 +1574,112 @@ html[data-morph] .hero__title-text[data-docked] {
 }
 
 .lens-demo__poster span {
+  position: absolute;
+  top: 90px;
+  left: 50%;
+  transform: translate(-50%, -50%);
   color: #f1f3f6;
   font-family: var(--display);
-  font-size: clamp(64px, 11vw, 150px);
+  font-size: clamp(32px, 5vw, 64px);
   font-weight: 700;
   letter-spacing: -0.03em;
   text-shadow: 0 2px 30px rgb(0 0 0 / 0.08);
+  white-space: nowrap;
+}
+
+.playground {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  padding: 210px 24px 28px;
+  color: var(--lg-fg);
+  pointer-events: none;
+}
+
+.playground__search {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  grid-column: 1 / -1;
+}
+
+.playground__search > *, .playground__panel {
+  pointer-events: auto;
+}
+
+.playground__search .lg-input {
+  width: min(380px, 100%);
+}
+
+.playground__panel.lg-card, .playground__sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+
+.playground__panel h3, .playground__panel p, .playground__sheet p {
+  margin: 0;
+}
+
+.playground__panel p {
+  color: var(--lg-fg-muted);
+  font-size: 13px;
+}
+
+.playground__panel--menu {
+  /* Reserve the menu's full open height inside the rounded scene. */
+  padding-bottom: 126px !important;
+}
+
+.playground__sheet-trigger, .playground__menu {
+  align-self: flex-start;
+}
+
+.playground__menu > .lg-button[data-icon-only] {
+  width: auto;
+  padding-inline: 16px;
+}
+
+.playground__menu .lg-button__icon {
+  width: auto;
+  height: auto;
+}
+
+.playground__menu-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.playground__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.playground__panel .lg-nav, .playground__search .lg-track {
+  --lg-item-w: 0px;
+  max-width: 100%;
+}
+
+.playground__panel .lg-nav {
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .playground {
+    grid-template-columns: minmax(0, 1fr);
+    padding-inline: 16px;
+  }
+
+  .playground__buttons .lg-button {
+    max-width: 100%;
+  }
 }
 
 .lens-demo__lens.lg-glass {
@@ -1589,7 +1806,10 @@ html[data-morph] .hero__title-text[data-docked] {
 
 .install__links {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 12px;
+  max-width: 100%;
 }
 
 /* Agent hand-off */

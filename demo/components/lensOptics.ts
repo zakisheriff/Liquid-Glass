@@ -139,7 +139,9 @@ export function mountLensOptics(stage: HTMLElement, poster: HTMLElement, lens: H
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     context.fillStyle = getComputedStyle(title).color;
-    context.fillText(title.textContent || '', width / 2, height / 2);
+    const area = stage.getBoundingClientRect();
+    const text = title.getBoundingClientRect();
+    context.fillText(title.textContent || '', (text.left - area.left + text.width / 2) * width / area.width, (text.top - area.top + text.height / 2) * height / area.height);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
     gl.viewport(0, 0, canvas.width, canvas.height);

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { GlassButton, GlassCard, GlassSlider, GlassSwitch } from '@zakisheriff/liquid-glass';
 import { SUPPORT_URL } from '@/lib/site';
 import { MockApp } from './MockApp';
+import { PreviewThemeContext, PreviewThemeControlsContext, usePreviewMode } from './PreviewTheme';
 import { Battery, Bolt, Cellular, Heart, Plane, Speaker, Sun, Wifi } from './icons';
 
 function useClock() {
@@ -36,8 +37,11 @@ function StatusBar() {
 }
 
 function Device({ display }: { display: number }) {
+  const [mode, setMode] = usePreviewMode();
   return (
-    <div className="device" aria-label="Interactive glass app">
+    <PreviewThemeContext.Provider value={mode}>
+    <PreviewThemeControlsContext.Provider value={{ mode, onChange: setMode }}>
+    <div className="device preview-scope" data-theme={mode} aria-label="Interactive glass app">
       <span className="device__button device__button--action" aria-hidden="true" />
       <span className="device__button device__button--up" aria-hidden="true" />
       <span className="device__button device__button--down" aria-hidden="true" />
@@ -47,6 +51,8 @@ function Device({ display }: { display: number }) {
         <MockApp />
       </div>
     </div>
+    </PreviewThemeControlsContext.Provider>
+    </PreviewThemeContext.Provider>
   );
 }
 

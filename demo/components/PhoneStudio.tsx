@@ -2,6 +2,8 @@
 
 import { useState, type CSSProperties } from 'react';
 import { GlassButton, GlassCard, GlassInput, GlassSegmented, GlassSheet, GlassSlider, GlassSwitch } from '@zakisheriff/liquid-glass';
+import { SheetFrame } from './SheetFrame';
+import { PhonePreviewThemeToggle } from './PreviewTheme';
 import { Bookmark, Check, Copy, Drop, Sun } from './icons';
 
 export type StudioPalette = { brightness: number; hue: number; vivid: boolean; name: string };
@@ -64,6 +66,7 @@ export function PhoneStudio({ container, palette, onChange, saved, onSave }: {
     <div className="phone-studio">
       <header className="phone-studio__heading">
         <h2>The Atom</h2>
+        <PhonePreviewThemeToggle />
       </header>
       <section className="phone-studio__canvas" style={{ '--studio-art': studioColor(palette) } as CSSProperties} aria-label="Palette editor">
         <div className="phone-studio__art" style={artwork} aria-hidden="true" />
@@ -112,14 +115,15 @@ export function PhoneStudio({ container, palette, onChange, saved, onSave }: {
         </GlassCard>
       </div>
       {container && <GlassSheet open={sheet} onClose={() => setSheet(false)} container={container} detents={['medium', 'large']} aria-label="Palette preview">
+        <SheetFrame footer={<GlassButton onClick={() => setSheet(false)} style={{ width: '100%' }}>Keep creating</GlassButton>}>
         <div className="phone-studio__sheet">
           <div className="phone-studio__swatch"><div className="phone-studio__art" style={artwork} /></div>
           <p>YOUR PALETTE</p>
           <h3>{name.trim() || 'Untitled palette'}</h3>
           <span>{Math.round(brightness)}% light · {Math.round(hue)}° color · {vivid ? 'Vivid' : 'Soft'}</span>
           <GlassButton variant="filled" icon={saved ? <Check size={17} /> : <Bookmark size={17} />} onClick={onSave}>{saved ? 'Saved to your palettes' : 'Save palette'}</GlassButton>
-          <GlassButton onClick={() => setSheet(false)}>Keep creating</GlassButton>
         </div>
+        </SheetFrame>
       </GlassSheet>}
     </div>
   );

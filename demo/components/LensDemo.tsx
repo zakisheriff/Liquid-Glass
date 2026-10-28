@@ -3,9 +3,12 @@
 import { useEffect, useRef } from 'react';
 import { SPRINGS, createSpring, usePress, useRefraction } from '@zakisheriff/liquid-glass';
 import { mountLensOptics } from './lensOptics';
+import { PreviewThemeContext, PreviewThemeToggle, usePreviewMode } from './PreviewTheme';
+import { RefractionPlayground } from './RefractionPlayground';
 
 /** A free-floating droplet you can drag over type to watch light bend. */
 export function LensDemo() {
+  const [mode, setMode] = usePreviewMode();
   const stage = useRef<HTMLDivElement>(null);
   const lens = useRef<HTMLDivElement>(null);
   const poster = useRef<HTMLDivElement>(null);
@@ -33,7 +36,7 @@ export function LensDemo() {
     });
     const center = () => {
       x.set((area.clientWidth - el.offsetWidth) / 2, true);
-      y.set((area.clientHeight - el.offsetHeight) / 2, true);
+      y.set(18, true);
     };
     center();
 
@@ -77,17 +80,21 @@ export function LensDemo() {
   }, []);
 
   return (
+    <PreviewThemeContext.Provider value={mode}>
     <section className="lens-section" id="refraction">
       <header className="section-head">
         <h2>Light, bent for real.</h2>
       </header>
-      <div ref={stage} className="lens-demo">
+      <div ref={stage} className="lens-demo preview-scope" data-theme={mode}>
+        <PreviewThemeToggle label="Refraction" mode={mode} onChange={setMode} />
         <div ref={poster} className="lens-demo__poster" aria-hidden="true">
           <span>Liquid Glass</span>
           <canvas ref={canvas} className="lens-demo__optics" />
         </div>
         <div ref={lens} className="lg-glass lens-demo__lens" role="img" aria-label="Draggable glass lens" />
+        <RefractionPlayground />
       </div>
     </section>
+    </PreviewThemeContext.Provider>
   );
 }
