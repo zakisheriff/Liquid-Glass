@@ -17,7 +17,19 @@ export default function Page() {
       </main>
       <footer className="footer">
         <div className="footer__inner">
-          <p>
+          <p className="footer__brand">Liquid Glass</p>
+          <nav className="footer__links" aria-label="Footer">
+            <a href="#components">Components</a>
+            <a href="#refraction">Refraction</a>
+            <a href="#install">Install</a>
+            <a href="https://www.npmjs.com/package/@zakisheriff/liquid-glass" target="_blank" rel="noreferrer">
+              npm
+            </a>
+            <a href="https://github.com/zakisheriff/Liquid-Glass" target="_blank" rel="noreferrer">
+              GitHub
+            </a>
+          </nav>
+          <p className="footer__credit">
             Built by{' '}
             <a href="https://github.com/zakisheriff" target="_blank" rel="noreferrer">
               Zaki Sheriff
@@ -25,7 +37,7 @@ export default function Page() {
             · The Atom
           </p>
           <p className="footer__legal">
-            MIT License · Copyright © {new Date().getFullYear()} Zaki Sheriff. Not affiliated with Apple Inc.
+            MIT License · © {new Date().getFullYear()} Zaki Sheriff · Not affiliated with Apple Inc.
           </p>
         </div>
       </footer>

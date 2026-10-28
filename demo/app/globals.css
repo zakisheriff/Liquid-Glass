@@ -965,7 +965,7 @@ img {
 /* ------------------------------------------------------------------ */
 
 .lens-section {
-  padding: 96px 24px 40px;
+  padding: 120px 24px 0;
   max-width: 1148px;
   margin: 0 auto;
 }
@@ -1032,7 +1032,7 @@ img {
   flex-direction: column;
   align-items: center;
   gap: 28px;
-  padding: 120px 16px 140px;
+  padding: 200px 16px 160px;
 }
 
 .install__command {
@@ -1075,22 +1075,54 @@ img {
   color: var(--muted);
   font-size: 12px;
   letter-spacing: -0.01em;
+  text-align: center;
   transition: background-color 400ms ease;
 }
 
 .footer__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
   max-width: 980px;
   margin: 0 auto;
-  padding: 18px 16px 26px;
+  padding: 44px 16px calc(40px + env(safe-area-inset-bottom));
 }
 
 .footer__inner p {
   margin: 0;
-  padding: 6px 0;
+}
+
+.footer__brand {
+  color: var(--text);
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 24px;
+}
+
+.footer__links a {
+  color: var(--text);
+  font-size: 13px;
+  opacity: 0.72;
+  transition: opacity 200ms ease;
+}
+
+.footer__links a:hover {
+  opacity: 1;
 }
 
 .footer__legal {
+  padding-top: 14px;
   border-top: 0.5px solid var(--hairline);
+  min-width: min(560px, 100%);
 }
 
 @media (max-width: 640px) {
