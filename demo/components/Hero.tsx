@@ -1,17 +1,46 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { GlassButton, GlassCard, GlassNav, GlassSegmented, GlassSlider, GlassSwitch } from '@zakisheriff/liquid-glass';
 import { COVERS, Cover } from './art';
 import { ArrowUpRight, Bolt, Ellipsis, Grid, Home, Menu, Note, Plane, Play, Search, Speaker, Sun, Wifi } from './icons';
 
+const TABS = [
+  { label: 'Home', icon: <Home /> },
+  { label: 'Browse', icon: <Grid /> },
+  { label: 'Library', icon: <Note /> },
+];
+
+/** iOS 26 Music: scrolling down tucks the player into a minimised tab bar. */
+function useMinimised(feed: React.RefObject<HTMLDivElement | null>) {
+  const [minimised, setMinimised] = useState(false);
+  useEffect(() => {
+    const el = feed.current;
+    if (!el) return;
+    let last = el.scrollTop;
+    const onScroll = () => {
+      const y = el.scrollTop;
+      const delta = y - last;
+      last = y;
+      if (y < 24) setMinimised(false);
+      else if (delta > 3) setMinimised(true);
+      else if (delta < -3) setMinimised(false);
+    };
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [feed]);
+  return minimised;
+}
+
 function Device() {
   const [tab, setTab] = useState(0);
   const [segment, setSegment] = useState(0);
+  const feed = useRef<HTMLDivElement>(null);
+  const minimised = useMinimised(feed);
   return (
     <div className="device" aria-label="Interactive demo">
       <div className="device__screen">
-        <div className="device__feed">
+        <div ref={feed} className="device__feed">
           <h3 className="device__heading">{segment === 0 ? 'For You' : 'Library'}</h3>
           <Cover index={segment === 0 ? 0 : 4} className="device__feature" />
           <div className="device__grid">
@@ -33,7 +62,18 @@ function Device() {
           <GlassButton size="md" icon={<Ellipsis size={20} />} aria-label="More" />
         </div>
 
-        <div className="device__bottom">
+        <div className="device__bottom" data-minimised={minimised ? '' : undefined}>
+          <div className="device__tabs">
+            <GlassNav activeIndex={tab} onChange={setTab} items={TABS} />
+          </div>
+          <GlassButton
+            size="lg"
+            className="device__mini-tab"
+            icon={TABS[tab].icon}
+            aria-label={`${TABS[tab].label}, show tabs`}
+            tabIndex={minimised ? 0 : -1}
+            onClick={() => feed.current?.scrollTo({ top: 0, behavior: 'smooth' })}
+          />
           <GlassButton className="device__player" size="lg">
             <Cover index={0} className="device__player-art" />
             <span className="device__player-text">
@@ -42,18 +82,7 @@ function Device() {
             </span>
             <Play size={20} />
           </GlassButton>
-          <div className="device__tabs">
-            <GlassNav
-              activeIndex={tab}
-              onChange={setTab}
-              items={[
-                { label: 'Home', icon: <Home /> },
-                { label: 'Browse', icon: <Grid /> },
-                { label: 'Library', icon: <Note /> },
-              ]}
-            />
-            <GlassButton size="lg" icon={<Search size={22} />} aria-label="Search" className="device__search" />
-          </div>
+          <GlassButton size="lg" icon={<Search size={22} />} aria-label="Search" className="device__search" />
         </div>
       </div>
     </div>

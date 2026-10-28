@@ -7,8 +7,9 @@ import { SPRINGS, createSpring, usePress, useRefraction } from '@zakisheriff/liq
 export function LensDemo() {
   const stage = useRef<HTMLDivElement>(null);
   const lens = useRef<HTMLDivElement>(null);
-  useRefraction(lens, { kind: 'lens', zoom: 1.35, thickness: 70, bezel: 46, dispersion: 1 });
-  usePress(lens, { grow: 24, lean: 0, stretch: 0.1 });
+  const poster = useRef<HTMLDivElement>(null);
+  useRefraction(lens, { kind: 'lens', zoom: 1.35, thickness: 70, bezel: 46, dispersion: 1 }, true, poster);
+  usePress(lens, { grow: 0.12, lean: 0, stretch: 0.14 });
 
   useEffect(() => {
     const area = stage.current!;
@@ -77,7 +78,7 @@ export function LensDemo() {
         <p>Drag the drop.</p>
       </header>
       <div ref={stage} className="lens-demo">
-        <div className="lens-demo__poster" aria-hidden="true">
+        <div ref={poster} className="lens-demo__poster" aria-hidden="true">
           <span>Refraction</span>
           <span>Dispersion</span>
           <span>Magnification</span>
