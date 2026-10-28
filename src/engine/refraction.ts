@@ -9,6 +9,9 @@
  * read as glass with blur + rim.
  */
 import { useEffect } from 'react';
+// Components reach the material through this module, so the tokens always load
+// even when a bundler skips the barrel's side effects.
+import '../styles/base.css';
 import { clamp } from './spring';
 
 export type GlassKind = 'surface' | 'lens';
@@ -139,12 +142,10 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
 
       const i = y * cw + x;
       const s = shift(d) * shape.strength * direction;
-      let vx = nx * s;
-      let vy = ny * s;
-      if (magnify) {
-        vx -= px * magnify;
-        vy -= py * magnify;
-      }
+      // Edge bend only; magnification runs as its own pass so colour
+      // splits only where the glass actually curves.
+      const vx = nx * s;
+      const vy = ny * s;
       dx[i] = vx;
       dy[i] = vy;
       const m = Math.max(Math.abs(vx), Math.abs(vy));
@@ -180,6 +181,25 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   ctx.putImageData(field, 0, 0);
   const map = canvas.toDataURL();
 
+  const reach = Math.max(hw, hh);
+  let zoomMap = '';
+  if (magnify) {
+    const ramp = ctx.createImageData(cw, ch);
+    for (let y = 0; y < ch; y++) {
+      for (let x = 0; x < cw; x++) {
+        const o = (y * cw + x) * 4;
+        const px = ((x + 0.5) * width) / cw - hw;
+        const py = ((y + 0.5) * height) / ch - hh;
+        ramp.data[o] = Math.round(127.5 - (px / reach) * 127.5);
+        ramp.data[o + 1] = Math.round(127.5 - (py / reach) * 127.5);
+        ramp.data[o + 2] = 128;
+        ramp.data[o + 3] = 255;
+      }
+    }
+    ctx.putImageData(ramp, 0, 0);
+    zoomMap = canvas.toDataURL();
+  }
+
   const shine = ctx.createImageData(cw, ch);
   for (let i = 0; i < cw * ch; i++) {
     const o = i * 4;
@@ -212,10 +232,25 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
     'color-interpolation-filters': 'sRGB',
   });
   filter.append(el('feImage', { href: map, ...box, preserveAspectRatio: 'none', result: 'field' }));
+  let source = 'SourceGraphic';
+  if (zoomMap) {
+    filter.append(
+      el('feImage', { href: zoomMap, ...box, preserveAspectRatio: 'none', result: 'zoom' }),
+      el('feDisplacementMap', {
+        in: 'SourceGraphic',
+        in2: 'zoom',
+        scale: 2 * reach * magnify,
+        xChannelSelector: 'R',
+        yChannelSelector: 'G',
+        result: 'magnified',
+      }),
+    );
+    source = 'magnified';
+  }
 
   const scale = max * 2;
   if (shape.dispersion > 0) {
-    const spread = 0.12 * shape.dispersion;
+    const spread = 0.16 * shape.dispersion;
     const channels: Array<[string, number, string]> = [
       ['r', 1 + spread, '1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0'],
       ['g', 1, '0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0'],
@@ -224,7 +259,7 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
     for (const [name, factor, matrix] of channels) {
       filter.append(
         el('feDisplacementMap', {
-          in: 'SourceGraphic',
+          in: source,
           in2: 'field',
           scale: scale * factor,
           xChannelSelector: 'R',
@@ -241,7 +276,7 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   } else {
     filter.append(
       el('feDisplacementMap', {
-        in: 'SourceGraphic',
+        in: source,
         in2: 'field',
         scale,
         xChannelSelector: 'R',
