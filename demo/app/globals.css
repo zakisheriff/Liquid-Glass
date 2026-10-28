@@ -122,6 +122,65 @@ img {
   opacity: 1;
 }
 
+/* Compositor-synced title morph (Safari 26+, Chrome 115+). */
+@property --p {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+html[data-morph='native'] .nav {
+  animation: lg-brand-slot linear both;
+  animation-timeline: scroll(root);
+  animation-range: 0 var(--fly-distance);
+}
+
+html[data-morph='native'] .nav__brand span {
+  animation: lg-brand-show linear both;
+  animation-timeline: scroll(root);
+  animation-range: 0 var(--fly-distance);
+}
+
+html[data-morph='native'] .hero__title-text {
+  animation: lg-title-fly both;
+  animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  animation-timeline: scroll(root);
+  animation-range: 0 var(--fly-distance);
+}
+
+@keyframes lg-brand-slot {
+  from {
+    --p: 0;
+  }
+  to {
+    --p: 1;
+  }
+}
+
+@keyframes lg-brand-show {
+  0%,
+  98% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes lg-title-fly {
+  0% {
+    transform: none;
+    opacity: 1;
+  }
+  98% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--fly-x), var(--fly-y)) scale(var(--fly-k));
+    opacity: 0;
+  }
+}
+
 .nav__links {
   display: flex;
   align-items: center;
