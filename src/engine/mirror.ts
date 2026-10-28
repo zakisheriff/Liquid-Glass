@@ -82,6 +82,25 @@ const stateOf = (el: HTMLElement) =>
 
 const BACKGROUND = ['background-color', 'background-image', 'background-size', 'background-position', 'background-repeat', 'border-radius'];
 
+// align() owns the clone root's placement. Animation variables and colours
+// still follow the source without clearing and rebuilding that placement.
+const PLACEMENT = new Set(['position', 'left', 'top', 'margin', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'width', 'height', 'max-width', 'max-height', 'min-width', 'min-height', 'scale', 'translate', 'transform-origin', 'transform']);
+
+function syncStyle(original: HTMLElement, copy: HTMLElement, root: boolean) {
+  for (const name of Array.from(copy.style)) {
+    if (root && PLACEMENT.has(name)) continue;
+    if (!original.style.getPropertyValue(name)) copy.style.removeProperty(name);
+  }
+  for (const name of Array.from(original.style)) {
+    if (root && PLACEMENT.has(name)) continue;
+    const value = original.style.getPropertyValue(name);
+    const priority = original.style.getPropertyPriority(name);
+    if (copy.style.getPropertyValue(name) !== value || copy.style.getPropertyPriority(name) !== priority) {
+      copy.style.setProperty(name, value, priority);
+    }
+  }
+}
+
 export function mirrorBackdrop(
   glass: HTMLElement,
   source: HTMLElement,
@@ -196,12 +215,9 @@ export function mirrorBackdrop(
       const cls = pair.original.className.toString();
       if (css !== pair.css) {
         pair.css = css;
-        if (pair.copy !== copy.root) pair.copy.style.cssText = css;
-        else {
-          // Keep the root's own colours/vars but not its motion; align() owns placement.
-          pair.copy.style.cssText = css;
-          placed = '';
-        }
+        // Reassigning cssText also resets unchanged mask images. Safari can
+        // drop their cached pixels during a drag, especially after reload.
+        syncStyle(pair.original, pair.copy, pair.copy === copy.root);
       }
       if (cls !== pair.cls) {
         pair.cls = cls;
@@ -261,8 +277,15 @@ export function mirrorBackdrop(
     if (records.every((r) => layer.contains(r.target) || r.target === layer || r.target === glass)) return;
     const structural = records.some((r) => r.type !== 'attributes' && !layer.contains(r.target));
     if (structural && !pending) pending = requestAnimationFrame(recopy);
+    else if (!structural && !stopped && visible && !document.hidden && active()) {
+      // Spring callbacks can run after our rAF tick. Follow their final
+      // styles before this frame is painted so the copy and hide mask agree.
+      applyZoom();
+      sync();
+      align();
+    }
   });
-  mutations.observe(source, { childList: true, characterData: true, subtree: true });
+  mutations.observe(source, { childList: true, characterData: true, attributes: true, attributeFilter: ['style', 'class'], subtree: true });
 
   const io =
     typeof IntersectionObserver === 'function'

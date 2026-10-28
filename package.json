@@ -61,6 +61,7 @@
     "@vercel/analytics": "^2.0.1",
     "liquid-glass-release": "npm:@zakisheriff/liquid-glass@0.3.2",
     "next": "^16.4.3",
+    "patch-package": "8.0.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "tsup": "^8.0.0",
@@ -71,7 +72,7 @@
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run build",
-    "site": "next dev demo",
-    "site:build": "next build demo"
+    "site": "patch-package --error-on-fail && next dev demo",
+    "site:build": "patch-package --error-on-fail && next build demo"
   }
 }
