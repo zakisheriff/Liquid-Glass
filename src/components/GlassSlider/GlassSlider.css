@@ -4,6 +4,8 @@
   width: 100%;
   height: 38px;
   font-family: var(--lg-font);
+  touch-action: none;
+  cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -97,6 +99,9 @@
   height: 100%;
   margin: 0;
   opacity: 0;
+  /* The wrapper owns pointer gestures; keep the native input for keyboard,
+     form semantics and assistive technology without the iOS range gesture. */
+  pointer-events: none;
   cursor: pointer;
   touch-action: none;
   -webkit-appearance: none;
@@ -129,6 +134,7 @@
 
 .lg-slider:has(.lg-slider__input:disabled) {
   opacity: 0.4;
+  cursor: default;
 }
 
 /* ------------------------------------------------------------------ */

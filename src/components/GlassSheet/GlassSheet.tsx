@@ -71,6 +71,7 @@ export const GlassSheet: React.FC<GlassSheetProps> = ({ open, onClose, intensity
 
     let gesture: { id: number; y: number; t: number; v: number } | null = null;
     const down = (event: PointerEvent) => {
+      if (event.defaultPrevented) return;
       const target = event.target as HTMLElement;
       if (!target.closest('.lg-sheet__grabber-zone') && sheet.scrollTop > 0) return;
       if (target.closest('input, textarea, button, a, [role="slider"], [role="switch"]')) return;

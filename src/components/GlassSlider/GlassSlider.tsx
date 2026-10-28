@@ -88,7 +88,10 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
       const down = (event: PointerEvent) => {
         if (input.disabled || !event.isPrimary || event.button !== 0 || drag) return;
         event.preventDefault();
-        input.focus({ preventScroll: true });
+        delete root.dataset.keyboard;
+        // Focusing the hidden native range during a touch can immediately
+        // blur it on iOS. Pointer capture, not input focus, owns the gesture.
+        if (event.pointerType !== 'touch') input.focus({ preventScroll: true });
         const box = root.getBoundingClientRect();
         const inset = showThumb ? 19 * box.width / root.offsetWidth : 0;
         const current = max > min ? clamp((input.valueAsNumber - min) / (max - min), 0, 1) : 0;
@@ -96,7 +99,7 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
         const offset = showThumb && Math.abs(event.clientX - center) <= inset ? event.clientX - center : 0;
         drag = { id: event.pointerId, left: box.left, width: box.width, offset };
         root.dataset.dragging = '';
-        input.setPointerCapture(event.pointerId);
+        root.setPointerCapture(event.pointerId);
         update(event.clientX);
       };
       const move = (event: PointerEvent) => {
@@ -109,26 +112,29 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
         const id = drag.id;
         drag = null;
         delete root.dataset.dragging;
-        if (input.hasPointerCapture(id)) input.releasePointerCapture(id);
+        if (root.hasPointerCapture(id)) root.releasePointerCapture(id);
       };
       const up = (event: PointerEvent) => {
         if (event.pointerId !== drag?.id) return;
         update(event.clientX);
         release();
       };
-      input.addEventListener('pointerdown', down);
-      input.addEventListener('pointermove', move);
-      input.addEventListener('pointerup', up);
-      input.addEventListener('pointercancel', release);
-      input.addEventListener('lostpointercapture', release);
+      // Hit-test the custom surface, not WebKit's native range control.
+      // On iOS the native thumb can cancel pointer events as it takes over
+      // the drag, dropping the glass lift while values continue changing.
+      root.addEventListener('pointerdown', down);
+      root.addEventListener('pointermove', move);
+      root.addEventListener('pointerup', up);
+      root.addEventListener('pointercancel', release);
+      root.addEventListener('lostpointercapture', release);
       window.addEventListener('blur', release);
       return () => {
         release();
-        input.removeEventListener('pointerdown', down);
-        input.removeEventListener('pointermove', move);
-        input.removeEventListener('pointerup', up);
-        input.removeEventListener('pointercancel', release);
-        input.removeEventListener('lostpointercapture', release);
+        root.removeEventListener('pointerdown', down);
+        root.removeEventListener('pointermove', move);
+        root.removeEventListener('pointerup', up);
+        root.removeEventListener('pointercancel', release);
+        root.removeEventListener('lostpointercapture', release);
         window.removeEventListener('blur', release);
       };
     }, [min, max, step, showThumb]);
@@ -172,7 +178,7 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
       let lastX = 0;
       let lastT = 0;
       const down = (event: PointerEvent) => {
-        if (input.disabled) return;
+        if (input.disabled || !event.isPrimary || event.button !== 0) return;
         lastX = event.clientX;
         lastT = event.timeStamp;
         root.dataset.lifted = '';
@@ -196,20 +202,20 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
         stretch.tune(SPRINGS.release);
         stretch.set(0);
       };
-      input.addEventListener('pointerdown', down);
+      root.addEventListener('pointerdown', down);
       window.addEventListener('pointermove', move);
       window.addEventListener('pointerup', up);
       window.addEventListener('pointercancel', up);
-      input.addEventListener('blur', up);
+      root.addEventListener('lostpointercapture', up);
       window.addEventListener('blur', up);
       return () => {
         lift.stop();
         stretch.stop();
-        input.removeEventListener('pointerdown', down);
+        root.removeEventListener('pointerdown', down);
         window.removeEventListener('pointermove', move);
         window.removeEventListener('pointerup', up);
         window.removeEventListener('pointercancel', up);
-        input.removeEventListener('blur', up);
+        root.removeEventListener('lostpointercapture', up);
         window.removeEventListener('blur', up);
         delete root.dataset.lifted;
       };
@@ -220,6 +226,7 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
       if (showThumb) return;
       const input = inputRef.current!;
       const block = blockRef.current!;
+      const root = rootRef.current!;
       const v = { swell: 0, over: 0 };
       const paint = () => {
         const w = block.offsetWidth || 1;
@@ -238,7 +245,7 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
       });
       let active: { id: number; box: DOMRect } | null = null;
       const down = (event: PointerEvent) => {
-        if (input.disabled) return;
+        if (input.disabled || !event.isPrimary || event.button !== 0) return;
         active = { id: event.pointerId, box: block.getBoundingClientRect() };
         swell.tune(SPRINGS.press);
         swell.set(1);
@@ -252,22 +259,29 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
         // A short, firm overscroll: the block only gives a few px past its end.
         over.set(rubberband(past, 26, 0.6));
       };
-      const up = (event: PointerEvent) => {
-        if (event.pointerId !== active?.id) return;
+      const reset = () => {
+        if (!active) return;
         active = null;
         swell.tune(SPRINGS.release);
         swell.set(0);
         over.tune(SPRINGS.release);
         over.set(0);
       };
-      input.addEventListener('pointerdown', down);
+      const up = (event: PointerEvent) => {
+        if (event.pointerId === active?.id) reset();
+      };
+      root.addEventListener('pointerdown', down);
+      root.addEventListener('lostpointercapture', reset);
+      window.addEventListener('blur', reset);
       window.addEventListener('pointermove', move);
       window.addEventListener('pointerup', up);
       window.addEventListener('pointercancel', up);
       return () => {
         swell.stop();
         over.stop();
-        input.removeEventListener('pointerdown', down);
+        root.removeEventListener('pointerdown', down);
+        root.removeEventListener('lostpointercapture', reset);
+        window.removeEventListener('blur', reset);
         window.removeEventListener('pointermove', move);
         window.removeEventListener('pointerup', up);
         window.removeEventListener('pointercancel', up);
