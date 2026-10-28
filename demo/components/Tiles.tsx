@@ -292,7 +292,7 @@ function SheetTile() {
           Open sheet
         </GlassButton>
       </div>
-      <GlassSheet open={open} onClose={() => setOpen(false)} aria-label="Now playing">
+      <GlassSheet open={open} onClose={() => setOpen(false)} detents={['medium', 'large']} aria-label="Now playing">
         <div className="sheet-demo">
           <Cover index={2} className="sheet-demo__art" />
           <h3>Bloom</h3>

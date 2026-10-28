@@ -40,6 +40,19 @@
   display: none;
 }
 
+/* With detents the sheet is full height and parks part-way down (medium);
+   its content only scrolls once it's fully raised, otherwise a drag
+   anywhere moves the sheet. */
+.lg-sheet--detents.lg-glass {
+  height: calc(100% - 10px - max(8px, env(safe-area-inset-bottom)));
+  max-height: none;
+}
+
+.lg-sheet--detents:not([data-raised]) {
+  overflow: hidden;
+  touch-action: none;
+}
+
 .lg-sheet__grabber-zone {
   display: flex;
   justify-content: center;
