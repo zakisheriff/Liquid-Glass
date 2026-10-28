@@ -1,7 +1,7 @@
 {
   "name": "@zakisheriff/liquid-glass",
   "version": "0.2.0",
-  "description": "Real refracting liquid glass UI components for React \u2014 iOS 26's Liquid Glass, on the web.",
+  "description": "Real refracting liquid glass UI components for React — iOS 26's Liquid Glass, on the web.",
   "author": "Zaki Sheriff",
   "license": "MIT",
   "main": "dist/index.js",
@@ -53,6 +53,7 @@
     "react-dom": ">=17"
   },
   "devDependencies": {
+    "@types/node": "^22.20.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vercel/analytics": "^2.0.1",
