@@ -6,7 +6,9 @@ import { Check, Copy } from './icons';
 
 const COMMAND = 'npm i @zakisheriff/liquid-glass';
 
-const SNIPPET = `import { useState } from 'react';
+const SNIPPET = `'use client';
+
+import { useState } from 'react';
 import { GlassSwitch } from '@zakisheriff/liquid-glass';
 import '@zakisheriff/liquid-glass/styles.css';
 
@@ -15,7 +17,7 @@ export function Settings() {
   return <GlassSwitch checked={on} onChange={setOn} />;
 }`;
 
-const PROMPT = `Add Apple-style Liquid Glass to this React app using @zakisheriff/liquid-glass.
+const PROMPT = `Add Apple-style Liquid Glass to this React / Next.js app using @zakisheriff/liquid-glass.
 
 1. Install it: npm i @zakisheriff/liquid-glass
 2. Import the stylesheet once at the app root: import '@zakisheriff/liquid-glass/styles.css'
@@ -29,7 +31,7 @@ const PROMPT = `Add Apple-style Liquid Glass to this React app using @zakisherif
    - Panels → GlassCard · Bottom sheets / modals → GlassSheet (open, onClose)
 4. Glass needs something behind it to bend: place bars and controls over images, gradients or scrolling content, not flat white.
 5. Theme: follow the system, or set data-theme="light" | "dark" on <html>.
-6. In Next.js the package is already marked "use client".
+6. In Next.js, add 'use client' to components that own interactive state. Import the stylesheet from app/layout.tsx (App Router) or pages/_app.tsx (Pages Router).
 
 Docs: https://github.com/zakisheriff/Liquid-Glass#readme`;
 

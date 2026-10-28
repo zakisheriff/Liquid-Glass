@@ -13,9 +13,7 @@ import { haptic } from './haptics';
 export interface LensTrackRefs {
   bar: React.RefObject<HTMLElement | null>;
   lens: React.RefObject<HTMLElement | null>;
-  tint: React.RefObject<HTMLElement | null>;
   select: React.RefObject<HTMLElement | null>;
-  row: React.RefObject<HTMLElement | null>;
   glass: React.RefObject<HTMLElement | null>;
 }
 
@@ -39,11 +37,9 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
   useEffect(() => {
     const bar = refs.bar.current;
     const lens = refs.lens.current;
-    const tint = refs.tint.current;
-    const row = refs.row.current;
     const glass = refs.glass.current;
     const select = refs.select.current;
-    if (!bar || !lens || !tint || !row || !glass || !select) return;
+    if (!bar || !lens || !glass || !select) return;
 
     let slot = 0;
     let height = 0;
@@ -73,15 +69,11 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       const { overhang, spread } = latest.current;
       W = Math.round(slot * (1 + spread));
       H = Math.round(bar.offsetHeight + overhang);
-      for (const el of [lens, tint]) {
-        el.style.width = `${W}px`;
-        el.style.height = `${H}px`;
-        el.style.left = `${pad + (slot - W) / 2}px`;
-        el.style.top = `${pad + (height - H) / 2}px`;
-      }
+      lens.style.width = `${W}px`;
+      lens.style.height = `${H}px`;
+      lens.style.left = `${pad + (slot - W) / 2}px`;
+      lens.style.top = `${pad + (height - H) / 2}px`;
       select.style.width = `${slot}px`;
-      row.style.width = `${slot * latest.current.count}px`;
-      row.style.height = `${height}px`;
     };
 
     const paint = () => {
@@ -92,9 +84,6 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       const ky = ((height + (H - height) * lift) / H) * (1 - squash * 0.6);
       const transform = `translateX(${x}px) scale(${kx}, ${ky})`;
       lens.style.transform = transform;
-      tint.style.transform = transform;
-      // Keep the tinted copy of the row exactly over the real row.
-      row.style.transform = `translate(${W / 2 + (-slot / 2 - x) / kx}px, ${H / 2 - height / (2 * ky)}px) scale(${1 / kx}, ${1 / ky})`;
       select.style.transform = `translateX(${x}px)`;
       lens.style.opacity = String(clamp(lift * 4, 0, 1));
       const grow = 1 + (latest.current.swell / Math.max(bar.offsetWidth, 1)) * swell;

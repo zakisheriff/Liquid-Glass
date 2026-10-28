@@ -1,6 +1,8 @@
 import React, { useImperativeHandle, useRef, useState } from 'react';
 import { usePress } from '../../engine/press';
 import { useRefraction } from '../../engine/refraction';
+import { Symbol } from '../internal/Symbol';
+import { searchSymbol, clearSymbol } from '../internal/inputSymbols';
 import './GlassInput.css';
 
 export interface GlassInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
@@ -21,19 +23,8 @@ export interface GlassInputProps extends Omit<React.InputHTMLAttributes<HTMLInpu
   onClear?: () => void;
 }
 
-const Magnifier = (
-  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
-    <circle cx="8.5" cy="8.5" r="5.75" />
-    <path d="m13 13 4 4" />
-  </svg>
-);
-
-const ClearGlyph = (
-  <svg viewBox="0 0 20 20" aria-hidden="true">
-    <circle cx="10" cy="10" r="9" fill="currentColor" />
-    <path d="m7 7 6 6m0-6-6 6" stroke="var(--lg-clear-x, #fff)" strokeWidth={1.7} strokeLinecap="round" />
-  </svg>
-);
+const Magnifier = <Symbol source={searchSymbol} size={20} />;
+const ClearGlyph = <Symbol source={clearSymbol} size={20} />;
 
 /** iOS 26 search / text field on regular glass. */
 export const GlassInput = React.forwardRef<HTMLInputElement, GlassInputProps>(

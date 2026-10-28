@@ -5,14 +5,14 @@ import {
   GlassButton,
   GlassCard,
   GlassInput,
-  GlassNav,
   GlassSegmented,
   GlassSheet,
   GlassSlider,
   GlassSwitch,
 } from '@zakisheriff/liquid-glass';
 import { COVERS, Cover } from './art';
-import { Grid, Heart, Home, Mic, Note, Person, Plus, Share, Speaker, Sun } from './icons';
+import { Heart, HeartFill, Mic, Plus, Share, Speaker, Sun } from './icons';
+import { AppDock } from './AppDock';
 
 function Tile({
   title,
@@ -58,27 +58,22 @@ function SwitchTile() {
 }
 
 function TabTile() {
-  const [tab, setTab] = useState(1);
+  const [tab, setTab] = useState(0);
+  const [searching, setSearching] = useState(false);
+  const [query, setQuery] = useState('');
+  const covers = COVERS.concat(COVERS)
+    .map((_, i) => (i + tab * 3) % COVERS.length)
+    .filter((index) => COVERS[index].title.toLowerCase().includes(query.toLowerCase()));
   return (
     <Tile title="Tab bar">
       <div className="stage stage--scroll">
-        <div className="stage__covers">
-          {COVERS.concat(COVERS).map((_, i) => (
-            <Cover key={i} index={i + 3} />
-          ))}
+        <div className="stage__covers" data-searching={searching ? '' : undefined}>
+          {covers.map((index, i) => <Cover key={`${index}-${i}`} index={index} />)}
         </div>
-        <div className="stage__dock">
-          <GlassNav
-            activeIndex={tab}
-            onChange={setTab}
-            items={[
-              { label: 'Home', icon: <Home /> },
-              { label: 'Browse', icon: <Grid /> },
-              { label: 'Library', icon: <Note /> },
-              { label: 'You', icon: <Person /> },
-            ]}
-          />
-        </div>
+        {searching && <div className="stage__cover-search">
+          <GlassInput type="search" placeholder="Search covers" aria-label="Search tab bar covers" autoFocus value={query} onChange={(event) => setQuery(event.target.value)} />
+        </div>}
+        <AppDock tab={tab} onChange={setTab} onSearch={() => {setSearching((value) => !value);setQuery('');}} />
       </div>
     </Tile>
   );
@@ -131,7 +126,7 @@ function ButtonTile() {
             <GlassButton size="lg" icon={<Plus size={22} />} aria-label="Add" />
             <GlassButton
               size="lg"
-              icon={<Heart size={22} fill={liked ? 'currentColor' : 'none'} />}
+              icon={liked ? <HeartFill size={22} /> : <Heart size={22} />}
               aria-label="Like"
               tint={liked ? '#ff375f' : undefined}
               onClick={() => setLiked((v) => !v)}

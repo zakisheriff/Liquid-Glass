@@ -114,6 +114,22 @@
 /*  The material                                                       */
 /* ------------------------------------------------------------------ */
 
+.lg-symbol {
+  display: inline-block;
+  flex: none;
+  width: var(--lg-symbol-size, 24px);
+  height: var(--lg-symbol-size, 24px);
+  vertical-align: middle;
+  background-color: currentColor;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  pointer-events: none;
+}
+
 .lg-glass {
   position: relative;
   box-sizing: border-box;

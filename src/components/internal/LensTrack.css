@@ -30,8 +30,7 @@
   transition-duration: 120ms;
 }
 
-.lg-track__item,
-.lg-track__copy {
+.lg-track__item {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -42,6 +41,10 @@
   padding: 0 10px;
   font: inherit;
   white-space: nowrap;
+}
+
+.lg-track__item[aria-selected='true'] {
+  color: var(--lg-track-active, var(--lg-accent));
 }
 
 .lg-track__item {
@@ -61,7 +64,6 @@
   outline-offset: -3px;
 }
 
-.lg-track__tint,
 .lg-track__lens,
 .lg-track__select {
   position: absolute;
@@ -72,22 +74,6 @@
   border-radius: 999px;
   pointer-events: none;
   transform: translateX(calc(100% * var(--lg-index)));
-}
-
-/* Accent-coloured copy of the row, clipped to the selection. */
-.lg-track__tint {
-  z-index: 3;
-  overflow: hidden;
-  color: var(--lg-track-active, var(--lg-accent));
-}
-
-.lg-track__row {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  width: calc(100% * var(--lg-count));
-  height: 100%;
-  transform-origin: 0 0;
 }
 
 /* The selection: a flat pill at rest, a clear refracting lens when lifted. */
@@ -124,8 +110,7 @@
   backdrop-filter: var(--lg-filter, ) blur(0.3px) saturate(1.5) brightness(1.06);
 }
 
-.lg-track:not([data-ready]) .lg-track__lens,
-.lg-track:not([data-ready]) .lg-track__tint {
+.lg-track:not([data-ready]) .lg-track__lens {
   transition: none;
 }
 
@@ -147,7 +132,7 @@
   height: 26px;
 }
 
-.lg-track--tabbar .lg-nav__icon > svg {
+.lg-track--tabbar .lg-nav__icon > :is(svg, .lg-symbol) {
   width: 100%;
   height: 100%;
 }
@@ -177,8 +162,7 @@
   letter-spacing: -0.01em;
 }
 
-.lg-track--segmented .lg-track__item,
-.lg-track--segmented .lg-track__copy {
+.lg-track--segmented .lg-track__item {
   flex-direction: row;
   gap: 6px;
   padding: 0 16px;

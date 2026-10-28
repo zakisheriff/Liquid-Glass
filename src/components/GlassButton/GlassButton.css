@@ -50,7 +50,7 @@
   height: calc(var(--lg-h) * 0.48);
 }
 
-.lg-button__icon > svg {
+.lg-button__icon > :is(svg, .lg-symbol) {
   width: 100%;
   height: 100%;
 }

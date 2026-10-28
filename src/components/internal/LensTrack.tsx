@@ -29,8 +29,6 @@ export function LensTrack({
   const bar = useRef<HTMLDivElement>(null);
   const glass = useRef<HTMLSpanElement>(null);
   const lens = useRef<HTMLSpanElement>(null);
-  const tint = useRef<HTMLSpanElement>(null);
-  const row = useRef<HTMLSpanElement>(null);
   const select = useRef<HTMLSpanElement>(null);
   const strength = Math.max(1, Math.min(10, intensity)) / 5;
 
@@ -42,7 +40,7 @@ export function LensTrack({
 
   const tabbar = variant === 'tabbar';
   useLensTrack(
-    { bar, glass, lens, tint, row, select },
+    { bar, glass, lens, select },
     {
       count: items.length,
       index,
@@ -78,15 +76,6 @@ export function LensTrack({
           {item}
         </button>
       ))}
-      <span ref={tint} className="lg-track__tint" aria-hidden="true">
-        <span ref={row} className="lg-track__row">
-          {items.map((item, i) => (
-            <span key={i} className="lg-track__copy">
-              {item}
-            </span>
-          ))}
-        </span>
-      </span>
       <span ref={lens} className="lg-glass lg-track__lens" aria-hidden="true" />
     </div>
   );
