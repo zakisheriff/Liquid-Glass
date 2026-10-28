@@ -907,14 +907,20 @@ html[data-morph] .hero__title-text[data-docked] {
 }
 
 @media (max-width: 480px) {
+  /* On a phone the mockup stays clearly smaller than the screen it's on. */
   .device {
-    width: min(402px, calc(100vw - 28px));
-    height: 780px;
-    border-radius: 60px;
+    width: min(340px, calc(100vw - 60px));
+    height: 710px;
+    padding: 10px;
+    border-radius: 54px;
   }
 
   .device__screen {
-    border-radius: 46px;
+    border-radius: 42px;
+  }
+
+  .hero__stage {
+    margin-top: 44px;
   }
 }
 
