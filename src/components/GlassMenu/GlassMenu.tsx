@@ -34,9 +34,9 @@ export interface GlassMenuProps {
   className?: string;
 }
 
-const OPEN = springFrom(0.4, 0.78);
+const OPEN = springFrom(0.38, 0.72);
 const CLOSE = springFrom(0.32, 0.92);
-const FADE = springFrom(0.22, 1);
+const FADE = springFrom(0.26, 1);
 const FADE_OUT = springFrom(0.14, 1);
 
 const Tick = () => (
@@ -95,9 +95,14 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
     const shape = (p: number) => {
       // Grow from the trigger's own box: same corner, same size at p = 0.
       // The shape may overshoot a little; that's the liquid feel.
-      panel.style.width = `${w + (W - w) * p}px`;
-      panel.style.height = `${h + (H - h) * p}px`;
-      panel.style.borderRadius = `${h / 2 + (24 - h / 2) * clamp(p, 0, 1)}px`;
+      const cw = w + (W - w) * p;
+      const ch = h + (H - h) * p;
+      panel.style.width = `${cw}px`;
+      panel.style.height = `${ch}px`;
+      // In flight it's a round droplet (fully rounded on its short side) and
+      // only squares off into the menu's corners as it lands.
+      const land = clamp((p - 0.5) / 0.5, 0, 1);
+      panel.style.borderRadius = `${(Math.min(cw, ch) / 2) * (1 - land) + 24 * land}px`;
       // Near the button's size the two shapes coincide, so the button and the
       // menu cross-fade there: the button melts into the menu on open and
       // reappears smoothly as the menu folds back, instead of popping in.
@@ -112,7 +117,7 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
     // shape has settled.
     const reveal = (q: number) => {
       const t = clamp(q, 0, 1);
-      const blur = 6 * (1 - t) ** 3;
+      const blur = 9 * (1 - t) ** 2.5;
       content.style.opacity = String(t);
       content.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : 'none';
     };
