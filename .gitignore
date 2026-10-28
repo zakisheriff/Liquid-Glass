@@ -7,3 +7,5 @@ Reference
 demo/out
 demo/.next
 demo/next-env.d.ts
+demo/tsconfig.tsbuildinfo
+.claude/
