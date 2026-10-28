@@ -104,7 +104,7 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
         lastX = event.clientX;
         lastT = event.timeStamp;
         stretch.tune(SPRINGS.drag);
-        stretch.set(clamp(speed * 0.06, 0, 0.16));
+        stretch.set(clamp(speed * 0.03, 0, 0.07));
       };
       const up = () => {
         if (lift.target === 0) return;
@@ -163,7 +163,8 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
         const { box } = active;
         const past = event.clientX < box.left ? event.clientX - box.left : event.clientX > box.right ? event.clientX - box.right : 0;
         over.tune(SPRINGS.drag);
-        over.set(rubberband(past, box.width, 0.25));
+        // A short, firm overscroll: the block only gives a few px past its end.
+        over.set(rubberband(past, 26, 0.6));
       };
       const up = (event: PointerEvent) => {
         if (event.pointerId !== active?.id) return;
@@ -198,6 +199,8 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
         disabled={disabled}
         aria-label={rest['aria-label'] ?? label}
         onChange={(event) => onChange?.(Number(event.currentTarget.value))}
+        onKeyDown={() => rootRef.current?.setAttribute('data-keyboard', '')}
+        onPointerDown={() => rootRef.current?.removeAttribute('data-keyboard')}
         className="lg-slider__input"
         {...rest}
       />

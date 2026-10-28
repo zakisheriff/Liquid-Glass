@@ -96,7 +96,13 @@
   border: 0;
 }
 
-.lg-slider:has(.lg-slider__input:focus-visible) .lg-slider__thumb {
+.lg-slider__input:focus {
+  outline: none;
+}
+
+/* Focus ring only for keyboard use; browsers flag clicked range inputs as focus-visible. */
+.lg-slider[data-keyboard]:has(.lg-slider__input:focus) .lg-slider__thumb,
+.lg-slider[data-keyboard]:has(.lg-slider__input:focus) .lg-slider__block {
   outline: 2px solid var(--lg-ring);
   outline-offset: 4px;
 }
