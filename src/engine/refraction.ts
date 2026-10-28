@@ -13,6 +13,7 @@ import { useEffect } from 'react';
 // even when a bundler skips the barrel's side effects.
 import '../styles/base.css';
 import { clamp } from './spring';
+import { mirrorBackdrop } from './mirror';
 
 export type GlassKind = 'surface' | 'lens';
 
@@ -337,11 +338,16 @@ function cornerRadius(element: HTMLElement, width: number, height: number): numb
 /**
  * Bakes refraction for `ref`'s current box (untransformed) and keeps it fresh
  * on resize. Writes `--lg-filter` (Chromium) and `--lg-rim` on the element.
+ *
+ * `mirror` names the content that sits beneath the glass. Where the browser
+ * can't refract the live backdrop (Safari, Firefox), a live copy of it is
+ * refracted inside the glass instead, so lenses still bend light everywhere.
  */
 export function useRefraction(
   ref: React.RefObject<HTMLElement | null>,
   shape: GlassShape = {},
   enabled = true,
+  mirror?: React.RefObject<HTMLElement | null>,
 ) {
   const signature = JSON.stringify(shape);
   useEffect(() => {
@@ -349,12 +355,14 @@ export function useRefraction(
     if (!element || !enabled) return;
     const live = canRefractBackdrop();
     let cancel: (() => void) | undefined;
+    let filter = '';
 
     const fit = () => {
       const width = element.offsetWidth;
       const height = element.offsetHeight;
       if (!width || !height) return;
       const baked = glassFor(width, height, cornerRadius(element, width, height), shape);
+      filter = baked.filter;
       if (live) element.style.setProperty('--lg-filter', baked.filter);
       element.style.setProperty('--lg-rim', baked.rim);
     };
@@ -366,12 +374,16 @@ export function useRefraction(
     observer.observe(element);
     fit();
 
+    const source = mirror?.current;
+    const unmirror = !live && source ? mirrorBackdrop(element, source, () => filter) : undefined;
+
     return () => {
       cancel?.();
+      unmirror?.();
       observer.disconnect();
       element.style.removeProperty('--lg-filter');
       element.style.removeProperty('--lg-rim');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ref, signature, enabled]);
+  }, [ref, signature, enabled, mirror]);
 }

@@ -34,7 +34,7 @@ export function LensTrack({
   const strength = Math.max(1, Math.min(10, intensity)) / 5;
 
   useRefraction(glass, { kind: 'surface', strength });
-  useRefraction(lens, { kind: 'lens', strength, zoom: variant === 'tabbar' ? 1.14 : 1.1 });
+  useRefraction(lens, { kind: 'lens', strength, zoom: variant === 'tabbar' ? 1.14 : 1.1 }, true, bar);
 
   const tabbar = variant === 'tabbar';
   useLensTrack(

@@ -61,7 +61,7 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
     const strength = Math.max(1, Math.min(10, intensity)) / 5;
     const progress = max > min ? clamp((Number(value) - min) / (max - min), 0, 1) : 0;
 
-    useRefraction(thumbRef, { kind: 'lens', zoom: 1.18, strength }, showThumb);
+    useRefraction(thumbRef, { kind: 'lens', zoom: 1.18, strength }, showThumb, rootRef);
     useRefraction(blockRef, { kind: 'surface', strength }, !showThumb);
 
     // Thumb lift (thin slider)
@@ -214,11 +214,18 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
           style={vars}
         >
           <div ref={blockRef} className="lg-glass lg-slider__block">
-            <span className="lg-slider__block-fill" aria-hidden="true" />
             <span className="lg-slider__block-content" aria-hidden="true">
               {icon && <span className="lg-slider__icon">{icon}</span>}
               {label && <span className="lg-slider__label">{label}</span>}
               <span className="lg-slider__value">{Number(value)}</span>
+            </span>
+            {/* The lit part, with its own dark glyphs so they read on white. */}
+            <span className="lg-slider__block-fill" aria-hidden="true">
+              <span className="lg-slider__block-content lg-slider__block-content--lit">
+                {icon && <span className="lg-slider__icon">{icon}</span>}
+                {label && <span className="lg-slider__label">{label}</span>}
+                <span className="lg-slider__value">{Number(value)}</span>
+              </span>
             </span>
           </div>
           {input}

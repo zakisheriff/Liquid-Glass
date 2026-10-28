@@ -188,3 +188,7 @@
   --lg-pad: 3px;
   font-size: 13px;
 }
+
+.lg-track:not([data-lifted]) .lg-track__lens > .lg-mirror {
+  visibility: hidden;
+}

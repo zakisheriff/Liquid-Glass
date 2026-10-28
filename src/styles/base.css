@@ -9,8 +9,8 @@
   --lg-red: #ff383c;
 
   /* Regular glass: bars, buttons, fields */
-  --lg-fill: rgb(255 255 255 / 0.52);
-  --lg-fill-pressed: rgb(255 255 255 / 0.78);
+  --lg-fill: rgb(255 255 255 / 0.66);
+  --lg-fill-pressed: rgb(255 255 255 / 0.92);
   --lg-blur: 6px;
   --lg-saturate: 1.9;
   --lg-brightness: 1.04;
@@ -32,6 +32,9 @@
   --lg-segment-selection: rgb(0 0 0 / 0.08);
   --lg-track: rgb(120 120 128 / 0.16);
   --lg-rail: rgb(120 120 128 / 0.2);
+  --lg-block-well: rgb(120 120 128 / 0.24);
+  --lg-block-lit: #ffffff;
+  --lg-block-lit-fg: rgb(0 0 0 / 0.78);
   --lg-thumb: #ffffff;
   --lg-thumb-shadow: 0 3px 8px rgb(0 0 0 / 0.15), 0 1px 1px rgb(0 0 0 / 0.06), 0 0 0 0.5px rgb(0 0 0 / 0.04);
   --lg-scrim: rgb(0 0 0 / 0.18);
@@ -63,6 +66,9 @@
   --lg-segment-selection: rgb(255 255 255 / 0.14);
   --lg-track: rgb(120 120 128 / 0.36);
   --lg-rail: rgb(120 120 128 / 0.4);
+  --lg-block-well: rgb(120 120 128 / 0.3);
+  --lg-block-lit: #ffffff;
+  --lg-block-lit-fg: rgb(0 0 0 / 0.78);
   --lg-thumb: #ffffff;
   --lg-thumb-shadow: 0 3px 8px rgb(0 0 0 / 0.3), 0 1px 1px rgb(0 0 0 / 0.16);
   --lg-scrim: rgb(0 0 0 / 0.4);
@@ -95,6 +101,7 @@
     --lg-track: rgb(120 120 128 / 0.36);
     --lg-rail: rgb(120 120 128 / 0.4);
     --lg-thumb-shadow: 0 3px 8px rgb(0 0 0 / 0.3), 0 1px 1px rgb(0 0 0 / 0.16);
+    --lg-block-well: rgb(120 120 128 / 0.3);
     --lg-scrim: rgb(0 0 0 / 0.4);
     --lg-ring: rgb(0 145 255 / 0.7);
   }
@@ -167,4 +174,28 @@
   .lg-glass::after {
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Safari / Firefox: a live copy of what's beneath, refracted inside the glass. */
+.lg-glass > .lg-mirror {
+  position: absolute !important;
+  inset: 0;
+  z-index: 0 !important;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.lg-mirror * {
+  transition: none !important;
+  animation: none !important;
+}
+
+.lg-mirror .lg-glass {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+.lg-mirror .lg-glass::after {
+  display: none;
 }
