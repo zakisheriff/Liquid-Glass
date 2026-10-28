@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { useLensTrack } from '../../engine/lensTrack';
-import { useRefraction } from '../../engine/refraction';
+import { canRefractBackdrop, useRefraction } from '../../engine/refraction';
 import './LensTrack.css';
 
 export interface LensTrackProps {
@@ -53,6 +53,7 @@ export function LensTrack({
       overhang: tabbar ? 14 : 12,
       spread: tabbar ? 0.3 : 0.16,
       contentZoom: zoom,
+      copied: typeof window !== 'undefined' && !canRefractBackdrop(),
       swell: tabbar ? 8 : 14,
     },
   );

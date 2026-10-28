@@ -28,6 +28,12 @@ export interface LensTrackOptions {
   spread: number;
   /** Magnification applied by the backdrop filter to the original glyphs. */
   contentZoom?: number;
+  /**
+   * The lens draws a magnified copy of the bar (Safari, Firefox). The real
+   * glyphs then fade out beneath the lens so they don't show doubled through
+   * its clear glass.
+   */
+  copied?: boolean;
   /** How much the whole bar swells while touched (px on its long side). */
   swell: number;
 }
@@ -68,7 +74,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     let suppressClick = false;
     // Direct children only: a copied lens (Safari) holds inert clones of them.
     const buttons = Array.from(bar.querySelectorAll<HTMLElement>(':scope > [data-lg-item]'));
-    let glyphs: Array<{ node: HTMLElement; x: number; y: number; width: number; height: number; label: boolean }> = [];
+    let glyphs: Array<{ node: HTMLElement; x: number; y: number; width: number; height: number; label: boolean; host: HTMLElement; dx: number; dy: number }> = [];
     const preview = (index?: number) => {
       if (index === undefined) delete bar.dataset.previewing;
       else bar.dataset.previewing = '';
@@ -93,14 +99,25 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       select.style.width = `${slot}px`;
       select.style.left = `${pad}px`;
       glyphs = buttons.flatMap((button) =>
-        Array.from(button.querySelectorAll<HTMLElement>('.lg-nav__label, .lg-nav__icon > .lg-symbol')).map((node) => ({
-          node,
-          x: button.offsetLeft + node.offsetLeft - pad,
-          y: node.offsetTop,
-          width: node.offsetWidth,
-          height: node.offsetHeight,
-          label: node.classList.contains('lg-nav__label'),
-        })),
+        Array.from(button.querySelectorAll<HTMLElement>('.lg-nav__label, .lg-nav__icon > .lg-symbol')).map((node) => {
+          // Symbols are already masked to their shape, so their hide mask
+          // goes on the icon box around them.
+          const label = node.classList.contains('lg-nav__label');
+          const host = label ? node : (node.parentElement as HTMLElement);
+          const n = node.getBoundingClientRect();
+          const h = host.getBoundingClientRect();
+          return {
+            node,
+            x: button.offsetLeft + node.offsetLeft - pad,
+            y: node.offsetTop,
+            width: node.offsetWidth,
+            height: node.offsetHeight,
+            label,
+            host,
+            dx: n.left - h.left,
+            dy: n.top - h.top,
+          };
+        }),
       );
     };
 
@@ -126,7 +143,24 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
         if (lift <= 0.02 && !gesture) {
           glyph.node.style.removeProperty('--lg-content-tint');
           glyph.node.style.removeProperty('transform');
+          glyph.host.style.removeProperty('--lg-content-hide');
           continue;
+        }
+        if (latest.current.copied) {
+          // Cut the lens's true footprint out of the real glyph.
+          const hy = H * ky / 2;
+          const hx = H * kx / 2;
+          const run = Math.max(0, (W - H) * kx / 2);
+          const ccx = x + slot / 2 - glyph.x + glyph.dx;
+          const ccy = height / 2 - glyph.y + glyph.dy;
+          const fade = clamp(lift * 3, 0, 1);
+          const solid = `rgb(0 0 0 / ${fade})`;
+          glyph.host.style.setProperty('--lg-content-hide', [
+            'linear-gradient(#000, #000)',
+            `radial-gradient(ellipse ${hx}px ${hy}px at ${ccx - run}px ${ccy}px, ${solid} calc(100% - 1px), transparent 100%)`,
+            `radial-gradient(ellipse ${hx}px ${hy}px at ${ccx + run}px ${ccy}px, ${solid} calc(100% - 1px), transparent 100%)`,
+            `linear-gradient(${solid}, ${solid}) ${ccx - run}px ${ccy - hy}px / ${run * 2}px ${hy * 2}px no-repeat`,
+          ].join(', '));
         }
         const zoom = latest.current.contentZoom ?? 1;
         const ry = H * ky / (2 * zoom);
@@ -375,9 +409,10 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       delete bar.dataset.ready;
       delete bar.dataset.lifted;
       preview();
-      glyphs.forEach(({ node }) => {
+      glyphs.forEach(({ node, host }) => {
         node.style.removeProperty('--lg-content-tint');
         node.style.removeProperty('transform');
+        host.style.removeProperty('--lg-content-hide');
       });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -49,7 +49,7 @@ export const GlassSegmented: React.FC<GlassSegmentedProps> = ({
       items={normalized.map((option, i) => (
         <React.Fragment key={i}>
           {option.icon}
-          <span>{option.label}</span>
+          <span className="lg-nav__label">{option.label}</span>
         </React.Fragment>
       ))}
     />

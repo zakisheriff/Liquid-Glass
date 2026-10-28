@@ -224,10 +224,13 @@
   font-size: 13px;
 }
 
-/* Copied lens (Safari, Firefox): a solid base the colour of the bar, so the
-   real icons underneath don't show through the magnified copy. */
-.lg-track__lens > .lg-mirror {
-  background: var(--lg-track-lens-base);
+/* Copied lens (Safari, Firefox): the real glyphs fade out under the clear
+   lens (lensTrack writes --lg-content-hide), leaving only the magnified copy. */
+.lg-track[data-lifted]:not([data-lg-copy]) > .lg-track__item :is(.lg-nav__label, .lg-nav__icon) {
+  -webkit-mask: var(--lg-content-hide, none);
+  mask: var(--lg-content-hide, none);
+  -webkit-mask-composite: source-out, source-over, source-over, source-over;
+  mask-composite: subtract, add, add, add;
 }
 
 .lg-track:not([data-lifted]) .lg-track__lens > .lg-mirror {
