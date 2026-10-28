@@ -35,11 +35,10 @@ export interface GlassMenuProps {
 }
 
 const OPEN = springFrom(0.36, 0.74);
-const CLOSE = springFrom(0.34, 0.9);
+/** Underdamped, so the droplet lands in the button with a slight jiggle. */
+const CLOSE = springFrom(0.42, 0.66);
 const FADE = springFrom(0.24, 1);
-const FADE_OUT = springFrom(0.14, 1);
-/** The squishy settle of the button as the menu lands back in it. */
-const JELLY = springFrom(0.42, 0.4);
+const FADE_OUT = springFrom(0.2, 1);
 
 const Tick = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -78,8 +77,14 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
   usePress(surfaceRef, { grow: 0.035, lean: 6, stretch: 0.1, disabled: !mounted });
 
   useEffect(() => {
-    if (open) setMounted(true);
-    else if (spring.current) {
+    if (open) {
+      setMounted(true);
+      // Reopened mid-close: grow back out from wherever the droplet is.
+      if (spring.current) {
+        spring.current.tune(OPEN);
+        spring.current.set(1);
+      }
+    } else if (spring.current) {
       spring.current.tune(CLOSE);
       spring.current.set(0);
     }
@@ -105,6 +110,7 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
     // The live droplet outline, shared by the glass and the items above it.
     const box = { cw: w, ch: h, r: h / 2 };
     let scaleNow = 1;
+    let closing = false;
     const clipContent = () => {
       // Items are scaled about the trigger's corner; clip in their own units.
       const k = scaleNow;
@@ -133,9 +139,14 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
       // Near the button's size the two shapes coincide, so the button and the
       // menu cross-fade there: the button melts into the menu on open and
       // reappears inside the shrinking droplet on close.
-      const k = clamp(p / 0.35, 0, 1);
-      panel.style.opacity = String(k);
+      // Closing, the button starts showing through early so the droplet
+      // never sits as a blank pill between the items and the label.
+      const k = clamp(p / (closing ? 0.7 : 0.35), 0, 1);
+      panel.style.opacity = String(closing ? Math.min(1, k * 1.4) : k);
       trigger.style.opacity = String(1 - k);
+      // Past the button's size the close overshoots: the button squashes
+      // and springs back as part of the same motion.
+      trigger.style.scale = closing && p < -0.0005 ? `${1 - p * 0.6} ${1 + p * 1.2}` : '';
     };
     // The items ride above the glass on their own layer: they grow out of a
     // blur as the droplet lands, on a critically damped curve so they sharpen
@@ -151,15 +162,12 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
     };
     shape(0);
     reveal(0);
-    const s = createSpring(0, OPEN, (p) => {
+    const s = createSpring(0, OPEN, (p, v) => {
       shape(p);
-      if (p <= 0.02 && s.target === 0) {
+      // Unmount only once the landing jiggle has fully settled.
+      if (s.target === 0 && p === 0 && v === 0) {
         trigger.style.opacity = '';
-        // The droplet lands in the button with a small squish.
-        const jelly = createSpring(0.07, JELLY, (v) => {
-          trigger.style.scale = Math.abs(v) < 0.0005 ? '' : `${1 - v} ${1 + v}`;
-        });
-        jelly.set(0);
+        trigger.style.scale = '';
         setMounted(false);
       }
     });
@@ -168,6 +176,9 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
       ...s,
       tune: s.tune,
       set(target: number, instant?: boolean) {
+        closing = target === 0;
+        // A closing menu lets clicks through to the button beneath it.
+        surface.style.pointerEvents = closing ? 'none' : '';
         fade.tune(target ? FADE : FADE_OUT);
         fade.set(target, instant);
         s.set(target, instant);
@@ -180,6 +191,7 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
       fade.stop();
       spring.current = null;
       trigger.style.opacity = '';
+      trigger.style.scale = '';
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mounted]);
