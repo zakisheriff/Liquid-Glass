@@ -1,0 +1,75 @@
+.lg-switch {
+  --lg-lift: 0;
+  position: relative;
+  flex: none;
+  width: 64px;
+  height: 28px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--lg-track);
+  cursor: pointer;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+  vertical-align: middle;
+}
+
+/* Generous touch target */
+.lg-switch::before {
+  content: '';
+  position: absolute;
+  inset: -8px -6px;
+}
+
+.lg-switch__fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--lg-switch-on, var(--lg-green));
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Lens box at full lift (58×38); scaled to a 38×25 pill at rest. */
+.lg-switch__thumb.lg-glass {
+  position: absolute;
+  top: 50%;
+  left: calc(21px - 29px);
+  width: 58px;
+  height: 38px;
+  border-radius: 999px;
+  pointer-events: none;
+  transform: translate(0, -50%) scale(0.655);
+  transform-origin: center;
+  background-color: rgb(255 255 255 / calc(var(--lg-lift) * 0.08));
+  -webkit-backdrop-filter: blur(0.5px) saturate(1.6) brightness(1.08);
+  backdrop-filter: var(--lg-filter, ) blur(0.3px) saturate(1.6) brightness(1.08);
+  box-shadow:
+    0 calc(2px + var(--lg-lift) * 8px) calc(6px + var(--lg-lift) * 20px) rgb(0 0 0 / calc(0.12 + var(--lg-lift) * 0.08)),
+    0 0.5px 1px rgb(0 0 0 / calc(0.08 * (1 - var(--lg-lift)))),
+    inset 0 0 0 0.5px rgb(255 255 255 / calc(var(--lg-lift) * 0.3));
+  transition: none;
+  will-change: transform;
+}
+
+.lg-switch__thumb.lg-glass::before {
+  opacity: calc(var(--lg-lift) * 1.3);
+}
+
+.lg-switch__face {
+  position: absolute !important;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--lg-thumb);
+}
+
+.lg-switch:focus-visible {
+  outline: 2px solid var(--lg-ring);
+  outline-offset: 3px;
+}
+
+.lg-switch:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
