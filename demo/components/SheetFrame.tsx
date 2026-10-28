@@ -16,9 +16,14 @@ export function SheetFrame({ children, footer }: { children: React.ReactNode; fo
     const layer = sheet?.parentElement;
     if (!element || !content || !sheet || !layer) return;
     const fit = () => {
-      const bottom = layer.getBoundingClientRect().bottom;
+      const box = layer.getBoundingClientRect();
       const top = element.getBoundingClientRect().top;
-      element.style.height = `${Math.max(0, bottom - top)}px`;
+      // Never shorter than at the medium detent (top half of the screen):
+      // below it, as when closing, the action rides down with the sheet
+      // instead of staying pinned while the sheet slides over it.
+      const offset = top - sheet.getBoundingClientRect().top;
+      const floor = box.height / 2 - offset;
+      element.style.height = `${Math.max(0, box.bottom - top, floor)}px`;
     };
     // The grabber owns sheet dragging; the body owns scrolling. Interactive
     // controls retain their own pointer handlers and the sheet ignores them.
