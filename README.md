@@ -41,16 +41,36 @@ Works with Next.js (the bundle is marked `"use client"`), Vite and CRA.
 
 | Component | What it does |
 | --- | --- |
-| `GlassButton` | Pill or circle (`icon` with no children). Swells, leans toward a drag, wobbles on release. Variants `default`, `clear`, `filled`, `destructive`. |
+| `GlassButton` | Pill or circle (`icon` with no children). Swells, leans toward a drag, wobbles on release. |
 | `GlassSwitch` | The knob lifts into a clear lens that refracts the track. Tap, or drag with rubber-banding. |
 | `GlassNav` | Floating tab bar. The selection inflates into a lens you can drag across tabs. |
 | `GlassSegmented` | Segmented control. The whole control swells and the selection becomes a draggable lens. |
-| `GlassSlider` | Thin track with a lens thumb, or `showThumb={false}` for a Control Center block that stretches past its ends. |
+| `GlassSlider` | Thin track with a lens thumb that magnifies the rail, or `showThumb={false}` for a Control Center block. |
 | `GlassInput` | Search / text field with icon, trailing accessory and clear button. |
 | `GlassCard` | Refracting panel, `regular` or `clear`. |
 | `GlassSheet` | Floating bottom sheet. Spring entrance, drag or flick to dismiss. |
 
+### Buttons
+
+| Look | Code |
+| --- | --- |
+| Glass | `<GlassButton>Glass</GlassButton>` |
+| Filled | `<GlassButton variant="filled">Filled</GlassButton>` |
+| Tinted | `<GlassButton variant="tinted">Tinted</GlassButton>` |
+| Tinted filled | `<GlassButton variant="filled" tint="#af52de">Tinted filled</GlassButton>` |
+| Clear | `<GlassButton variant="clear">Clear</GlassButton>` |
+| Destructive | `<GlassButton destructive>Delete</GlassButton>` |
+| Destructive filled | `<GlassButton variant="filled" destructive>Delete</GlassButton>` |
+| Icon circle | `<GlassButton icon={<PlusIcon />} aria-label="Add" />` |
+
+`tint` takes any CSS colour: it colours the label for `tinted` and the fill for `filled`. Sizes: `size="sm" | "md" | "lg"` (36 / 44 / 52 px).
+
+### Everything else
+
 ```tsx
+<GlassSwitch checked={on} onChange={setOn} aria-label="Wi-Fi" />
+<GlassSwitch checked={on} onChange={setOn} tint="#ff9f0a" aria-label="Focus" />
+
 <GlassNav
   activeIndex={tab}
   onChange={setTab}
@@ -61,15 +81,33 @@ Works with Next.js (the bundle is marked `"use client"`), Vite and CRA.
 />
 
 <GlassSegmented options={['Chat', 'Work']} value={mode} onChange={setMode} />
+<GlassSegmented size="sm" options={[{ label: 'Light', icon: <SunIcon /> }, 'Dark']} value={t} onChange={setT} />
 
 <GlassSlider value={volume} onChange={setVolume} />
 <GlassSlider showThumb={false} value={brightness} onChange={setBrightness} icon={<SunIcon />} label="Display" />
 
-<GlassButton icon={<PlusIcon />} aria-label="Add" />
-<GlassButton variant="filled">Continue</GlassButton>
+<GlassInput type="search" placeholder="Search" value={q} onChange={(e) => setQ(e.target.value)} trailing={<MicIcon />} />
+
+<GlassCard padding="20px" radius="28px">…</GlassCard>
+<GlassCard variant="clear">…</GlassCard>
+
+<GlassSheet open={open} onClose={() => setOpen(false)} aria-label="Details">…</GlassSheet>
 ```
 
-Most components accept `intensity` (1–10 refraction strength) and `tint`.
+### Props reference
+
+| Component | Props |
+| --- | --- |
+| `GlassButton` | `variant` (`glass` · `clear` · `tinted` · `filled`), `destructive`, `tint`, `size`, `icon`, `shimmer`, `intensity`, `thickness`, plus all `<button>` props |
+| `GlassSwitch` | `checked`, `defaultChecked`, `onChange(checked)`, `tint`, `disabled`, `intensity` |
+| `GlassNav` | `items: { label, icon? }[]`, `activeIndex`, `onChange(index)`, `intensity` |
+| `GlassSegmented` | `options: (string \| { label, icon? })[]`, `value`, `onChange(index)`, `size` (`sm` · `md`), `intensity` |
+| `GlassSlider` | `value`, `min`, `max`, `step`, `onChange(value)`, `showThumb`, `icon`, `label`, `tint`, `intensity` |
+| `GlassInput` | `type`, `value`, `onChange(event)`, `placeholder`, `label`, `icon`, `trailing`, `onClear`, `tint`, `intensity` |
+| `GlassCard` | `variant` (`regular` · `clear`), `padding`, `radius`, `tint`, `thickness`, `intensity` |
+| `GlassSheet` | `open`, `onClose()`, `tint`, `aria-label`, `intensity` |
+
+`intensity` (1–10) scales refraction strength everywhere.
 
 ## Light and dark
 
@@ -92,8 +130,9 @@ function Droplet() {
 
 ## Browser support
 
-- **Chrome / Edge / Arc:** full live refraction of the backdrop through `backdrop-filter: url(#svg)`.
-- **Safari / Firefox:** the same shapes, motion, specular rims and frosting, without live backdrop displacement.
+- **Chrome / Edge / Arc:** live refraction of anything behind the glass through `backdrop-filter: url(#svg)`.
+- **Safari:** lenses (switch, slider, tab bar, segmented) refract a live copy of the content beneath them, including magnification and the colour split. Bars, buttons and cards over arbitrary page content get frosting, rims and motion.
+- **Firefox:** uses the same path as Safari; not yet tested.
 - Respects `prefers-reduced-motion` and `prefers-reduced-transparency`.
 
 ## Develop
