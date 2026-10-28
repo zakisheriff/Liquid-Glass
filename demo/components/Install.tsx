@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { GlassButton } from '@zakisheriff/liquid-glass';
-import { Check, Copy, Sparkle } from './icons';
+import { Check, Copy } from './icons';
 
 const COMMAND = 'npm i @zakisheriff/liquid-glass';
 
@@ -76,13 +76,11 @@ export function Install() {
 
       <div className="agent">
         <header className="section-head">
-          <h2>Or let your AI agent do it.</h2>
+          <h2>Prompt your AI agent.</h2>
         </header>
         <div className="agent__card">
           <div className="agent__bar">
-            <span className="agent__label">
-              <Sparkle size={16} /> Prompt for Claude Code, Cursor or Copilot
-            </span>
+            <span className="agent__label">Claude Code · Codex · Cursor · Copilot</span>
             <GlassButton
               size="sm"
               variant={copied === 'prompt' ? 'tinted' : 'filled'}

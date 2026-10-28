@@ -34,7 +34,9 @@
 }
 
 html {
-  scroll-padding-top: 80px;
+  /* Sections carry their own top padding to clear the floating nav, so
+     anchor jumps land on the section edge and nothing above peeks through. */
+  scroll-padding-top: 0;
 }
 
 body {
@@ -1177,10 +1179,6 @@ html[data-morph='native'] .hero__title-text {
   gap: 8px;
   color: var(--muted);
   font-size: 13px;
-}
-
-.agent__label svg {
-  color: var(--lg-accent);
 }
 
 .agent__prompt {

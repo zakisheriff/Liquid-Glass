@@ -34,7 +34,10 @@ export default function Page() {
             <a href="https://github.com/zakisheriff" target="_blank" rel="noreferrer">
               Zaki Sheriff
             </a>{' '}
-            · The Atom
+            ·{' '}
+            <a href="https://theatom.lk" target="_blank" rel="noreferrer">
+              The Atom
+            </a>
           </p>
           <p className="footer__legal">
             MIT License · © {new Date().getFullYear()} Zaki Sheriff · Not affiliated with Apple Inc.
