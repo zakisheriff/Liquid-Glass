@@ -49,36 +49,37 @@ export function RefractionPlayground() {
         <GlassInput type="search" placeholder="Search" value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Playground search" />
         <GlassSegmented options={['Design', 'Code', 'Preview']} value={segment} onChange={setSegment} aria-label="Playground segments" />
       </div>
-      <GlassCard className="playground__panel" padding="20px" radius="26px">
+      <GlassCard className="playground__panel" padding="16px 18px" radius="24px">
         <h3>Buttons</h3>
-        <div className="playground__buttons">
-          <GlassButton>Glass</GlassButton>
-          <GlassButton variant="filled">Filled</GlassButton>
-          <GlassButton variant="tinted" tint="#ff375f">Tinted</GlassButton>
-          <GlassButton variant="filled" tint="#af52de">Tinted filled</GlassButton>
-          <GlassButton destructive>Destructive</GlassButton>
-          <GlassButton icon={liked ? <HeartFill size={18} /> : <Heart size={18} />} aria-label="Like playground" aria-pressed={liked} tint={liked ? '#ff375f' : undefined} onClick={() => setLiked(!liked)} />
-          <GlassButton icon={<Share size={18} />} aria-label="Share playground" />
+        <div className="playground__rows">
+          <div className="playground__buttons">
+            <GlassButton>Glass</GlassButton>
+            <GlassButton variant="filled">Filled</GlassButton>
+            <GlassButton variant="tinted" tint="#ff375f">Tinted</GlassButton>
+            <GlassButton variant="filled" tint="#af52de">Tinted filled</GlassButton>
+          </div>
+          <div className="playground__buttons">
+            <GlassButton destructive>Destructive</GlassButton>
+            <GlassButton variant="filled" tint="#30d158" icon={<Play size={16} />}>Play</GlassButton>
+            <GlassButton variant="tinted" icon={<Plus size={16} />}>Add</GlassButton>
+            <GlassButton icon={liked ? <HeartFill size={18} /> : <Heart size={18} />} aria-label="Like playground" aria-pressed={liked} tint={liked ? '#ff375f' : undefined} onClick={() => setLiked(!liked)} />
+            <GlassButton icon={<Share size={18} />} aria-label="Share playground" />
+          </div>
         </div>
-        <div className="playground__buttons">
-          <GlassButton size="sm">Small</GlassButton>
-          <GlassButton>Medium</GlassButton>
-          <GlassButton size="lg">Large</GlassButton>
-          <GlassButton variant="filled" tint="#30d158" icon={<Play size={16} />}>Play</GlassButton>
-          <GlassButton variant="tinted" icon={<Plus size={16} />}>Add</GlassButton>
-        </div>
-        <GlassButton className="playground__wide" size="lg" variant="filled">Continue</GlassButton>
+        <GlassButton className="playground__wide" variant="filled">Continue</GlassButton>
       </GlassCard>
-      <GlassCard className="playground__panel" padding="20px" radius="26px">
+      <GlassCard className="playground__panel" padding="16px 18px" radius="24px">
         <h3>Controls</h3>
         <div className="mixer">
           <GlassSlider showThumb={false} value={display} onChange={setDisplay} icon={<Sun size={18} />} label="Display" aria-label="Playground display" />
           <GlassSlider showThumb={false} value={sound} onChange={setSound} icon={<Speaker size={18} />} label="Sound" aria-label="Playground sound" />
         </div>
-        <GlassSlider value={volume} onChange={setVolume} icon={<Speaker size={18} />} label="Volume" aria-label="Playground volume" />
-        <div className="setting"><span className="setting__label">Notifications</span><GlassSwitch checked={notify} onChange={setNotify} aria-label="Playground notifications" /></div>
+        <div className="playground__inline">
+          <GlassSlider value={volume} onChange={setVolume} aria-label="Playground volume" />
+          <GlassSwitch checked={notify} onChange={setNotify} aria-label="Playground notifications" />
+        </div>
       </GlassCard>
-      <GlassCard className="playground__panel" padding="20px" radius="26px">
+      <GlassCard className="playground__panel" padding="16px 18px" radius="24px">
         <h3>Tab bar</h3>
         <div className="playground__dock">
           <GlassNav items={tabs} showLabels={false} activeIndex={Math.min(tab, tabs.length - 1)} onChange={setTab} aria-label="Playground navigation" />
@@ -89,12 +90,13 @@ export function RefractionPlayground() {
           <div className="setting"><span className="setting__label">Search on its own</span><GlassSwitch checked={searchApart} onChange={setSearchApart} aria-label="Search on its own" /></div>
         </div>
       </GlassCard>
-      <GlassCard className="playground__panel playground__panel--menu" padding="20px" radius="26px">
+      <GlassCard className="playground__panel playground__panel--menu" padding="16px 18px" radius="24px">
         <h3>Menu &amp; sheet</h3>
         <div className="playground__menu-row">
           <div className="playground__menu-actions">
-            <GlassButton className="playground__sheet-trigger" variant="filled" aria-label="Open playground sheet" onClick={() => setSheet(true)}>Open sheet</GlassButton>
             <GlassMenu className="playground__menu" align="start" icon={<span className="playground__menu-label"><Ellipsis size={20} /><span>{sort}</span></span>} aria-label="Playground menu" width={200} check={<Check size={16} />} items={Object.keys(SORTS).map((label) => ({ label, checked: sort === label, onSelect: () => setSort(label) }))} />
+            {/* Below the menu, so the open menu grows down inside the card. */}
+            <GlassButton className="playground__sheet-trigger" variant="filled" aria-label="Open playground sheet" onClick={() => setSheet(true)}>Open sheet</GlassButton>
           </div>
           {/* The menu really sorts this list. */}
           <ul className="playground__list" aria-label="Wallpapers">

@@ -1124,6 +1124,8 @@ html[data-morph] .hero__title-text[data-docked] {
   padding: 24px;
   max-width: 1148px;
   margin: 0 auto;
+  /* The #components jump lands the tiles a little below the floating nav. */
+  scroll-margin-top: calc(58px + env(safe-area-inset-top, 0px));
 }
 
 .tile {
@@ -1576,13 +1578,13 @@ html[data-morph] .hero__title-text[data-docked] {
 
 .lens-demo__title {
   position: absolute;
-  top: 105px;
+  top: 70px;
   left: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
   color: #f1f3f6;
   font-family: var(--display);
-  font-size: clamp(40px, 10vw, 112px);
+  font-size: clamp(40px, 8vw, 92px);
   line-height: 1;
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -1595,8 +1597,9 @@ html[data-morph] .hero__title-text[data-docked] {
   z-index: 2;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-  padding: 210px 24px 28px;
+  gap: 14px;
+  /* Compact, so the whole scene fits one screen under the nav. */
+  padding: 132px 18px 18px;
   color: var(--lg-fg);
   pointer-events: none;
 }
@@ -1620,7 +1623,7 @@ html[data-morph] .hero__title-text[data-docked] {
 .playground__panel.lg-card, .playground__sheet {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
   min-width: 0;
 }
 
@@ -1633,9 +1636,30 @@ html[data-morph] .hero__title-text[data-docked] {
   font-size: 13px;
 }
 
-.playground__panel--menu {
-  /* Reserve the menu's full open height inside the rounded scene. */
-  padding-bottom: 40px !important;
+.playground__rows {
+  display: grid;
+  gap: 10px;
+}
+
+/* A thumb slider and a switch share one line. */
+.playground__inline {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: auto;
+}
+
+.playground__inline > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.playground__panel .setting {
+  min-height: 44px;
+}
+
+.playground__panel .mixer {
+  gap: 10px;
 }
 
 /* Actions on the left, the list they sort on the right. */
@@ -1650,13 +1674,12 @@ html[data-morph] .hero__title-text[data-docked] {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 18px;
-  min-height: 170px;
+  gap: 14px;
 }
 
 .playground__list {
   display: grid;
-  gap: 8px;
+  gap: 6px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1666,8 +1689,8 @@ html[data-morph] .hero__title-text[data-docked] {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 14px 8px 8px;
-  border-radius: 18px;
+  padding: 6px 14px 6px 6px;
+  border-radius: 16px;
   background: color-mix(in srgb, var(--lg-fg) 6%, transparent);
   font-size: 14px;
   font-weight: 500;
@@ -1683,9 +1706,9 @@ html[data-morph] .hero__title-text[data-docked] {
 
 .playground__swatch {
   flex: none;
-  width: 34px;
-  height: 34px;
-  border-radius: 11px;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
 }
 
 @media (max-width: 480px) {
@@ -1767,10 +1790,10 @@ html[data-morph] .hero__title-text[data-docked] {
   position: absolute;
   /* Centred from the first paint, before script takes over the position;
      otherwise a slow load shows it in the corner, then jumps. */
-  top: 18px;
-  left: calc(50% - clamp(110px, 20%, 210px));
-  width: clamp(220px, 40%, 420px);
-  height: 174px;
+  top: 20px;
+  left: calc(50% - clamp(100px, 16%, 160px));
+  width: clamp(200px, 32%, 320px);
+  height: 100px;
   border-radius: 999px;
   cursor: grab;
   /* Only lens drags own the gesture; swipes on the poster scroll the page. */
@@ -1907,7 +1930,7 @@ html[data-morph] .hero__title-text[data-docked] {
 
 .agent__card {
   width: min(720px, 100%);
-  overflow: hidden;
+  /* Not clipped: a pressed Copy button swells and leans past the card edge. */
   border-radius: 22px;
   background: var(--tile);
 }
@@ -1934,6 +1957,7 @@ html[data-morph] .hero__title-text[data-docked] {
   margin: 0;
   padding: 20px 24px 24px;
   overflow: auto;
+  border-radius: 0 0 22px 22px;
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 13px;
   line-height: 1.65;

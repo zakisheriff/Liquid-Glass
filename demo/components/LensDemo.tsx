@@ -39,7 +39,7 @@ export function LensDemo() {
     el.style.left = '0';
     const center = () => {
       x.set((area.clientWidth - el.offsetWidth) / 2, true);
-      y.set(18, true);
+      y.set(20, true);
     };
     center();
 
