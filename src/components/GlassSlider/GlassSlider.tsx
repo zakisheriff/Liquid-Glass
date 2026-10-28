@@ -1,6 +1,6 @@
 import React, { useEffect, useImperativeHandle, useRef } from 'react';
 import { SPRINGS, clamp, createSpring, rubberband } from '../../engine/spring';
-import { useRefraction } from '../../engine/refraction';
+import { canRefractBackdrop, useRefraction } from '../../engine/refraction';
 import { haptic } from '../../engine/haptics';
 import './GlassSlider.css';
 
@@ -59,10 +59,13 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
     useImperativeHandle(forwardedRef, () => inputRef.current!);
 
     const strength = Math.max(1, Math.min(10, intensity)) / 5;
+    // Safari/Firefox draw the magnified rail as a copy inside the thumb.
+    const [mirrored, setMirrored] = React.useState(false);
+    useEffect(() => setMirrored(!canRefractBackdrop()), []);
     const progress = max > min ? clamp((Number(value) - min) / (max - min), 0, 1) : 0;
 
     // iOS magnifies the rail ~2× inside the lifted thumb.
-    useRefraction(thumbRef, { kind: 'lens', zoom: 1.95, strength, dispersion: 0.6 }, showThumb, rootRef, () =>
+    useRefraction(thumbRef, { kind: 'lens', zoom: 1.95, bezel: 7, thickness: 16, strength, dispersion: 0.6 }, showThumb, rootRef, () =>
       parseFloat(rootRef.current?.style.getPropertyValue('--lg-lift') || '0') > 0.01,
     );
     useRefraction(blockRef, { kind: 'surface', strength }, !showThumb);
@@ -240,12 +243,18 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
     }
 
     return (
-      <div ref={rootRef} className={['lg-slider', className].filter(Boolean).join(' ')} data-liquid-glass="" style={vars}>
+      <div
+        ref={rootRef}
+        className={['lg-slider', className].filter(Boolean).join(' ')}
+        data-liquid-glass=""
+        data-mirror={mirrored ? '' : undefined}
+        style={vars}
+      >
         <span className="lg-slider__rail" aria-hidden="true">
           <span className="lg-slider__fill" />
         </span>
         <span className="lg-slider__thumb-slot" aria-hidden="true">
-          <span ref={thumbRef} className="lg-glass lg-slider__thumb">
+          <span ref={thumbRef} className="lg-glass lg-slider__thumb" data-lg-mirror-bare="">
             <span ref={faceRef} className="lg-slider__face" />
           </span>
         </span>

@@ -53,9 +53,18 @@
   box-shadow:
     0 calc(2px + var(--lg-lift) * 8px) calc(6px + var(--lg-lift) * 20px) rgb(0 0 0 / calc(0.14 + var(--lg-lift) * 0.06)),
     0 0.5px 1px rgb(0 0 0 / calc(0.08 * (1 - var(--lg-lift)))),
-    inset 0 0 0 0.5px rgb(255 255 255 / calc(var(--lg-lift) * 0.3));
+    inset 0 0 0 0.75px color-mix(in srgb, var(--lg-lens-ring) calc(var(--lg-lift) * 100%), transparent);
   transition: none;
   will-change: scale;
+}
+
+/* With a mirrored lens, the real rail opens a gap under it so the rail
+   isn't drawn twice (once magnified in the lens, once behind it). */
+.lg-slider[data-mirror] > .lg-slider__rail {
+  --x: calc(19px + (100% - 38px) * var(--lg-progress));
+  --r: calc(26px * var(--lg-lift));
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(var(--x) - var(--r)), transparent calc(var(--x) - var(--r)), transparent calc(var(--x) + var(--r)), #000 calc(var(--x) + var(--r)));
+  mask-image: linear-gradient(90deg, #000 calc(var(--x) - var(--r)), transparent calc(var(--x) - var(--r)), transparent calc(var(--x) + var(--r)), #000 calc(var(--x) + var(--r)));
 }
 
 .lg-slider__thumb.lg-glass::before {

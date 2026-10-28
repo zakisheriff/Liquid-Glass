@@ -31,6 +31,8 @@ function clone(source: HTMLElement): { root: HTMLElement; pairs: Pair[] } {
     pairs.push({ original, copy, css: original.style.cssText, cls: original.className.toString() });
   });
   root.querySelectorAll(`[${SELF}], .lg-mirror, [data-lg-mirror-skip], input, textarea, select`).forEach((n) => n.remove());
+  // The source may cut a hole for the lens (data-mirror); the copy must not.
+  root.removeAttribute('data-mirror');
   root.setAttribute('inert', '');
   root.setAttribute('aria-hidden', 'true');
   return { root, pairs };
@@ -51,6 +53,9 @@ const alpha = (color: string) => {
  */
 function backdropChain(glass: HTMLElement, source: HTMLElement): HTMLElement[] {
   const chain: HTMLElement[] = [];
+  // Bare lenses (e.g. a slider thumb over its rail) show only the copied
+  // source; the real frosted backdrop shows through around it.
+  if (glass.hasAttribute('data-lg-mirror-bare')) return chain;
   for (let node = glass.parentElement; node; node = node.parentElement) {
     if (node === source || source.contains(node)) continue;
     const cs = getComputedStyle(node);
