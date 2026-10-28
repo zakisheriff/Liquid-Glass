@@ -1,0 +1,106 @@
+.lg-menu-anchor {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+}
+
+/* The menu lives in the trigger's box and grows out of its corner. */
+.lg-menu.lg-glass {
+  --lg-glass-fill: var(--lg-menu-fill);
+  --lg-glass-blur: var(--lg-panel-blur);
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 50;
+  overflow: hidden;
+  color: var(--lg-fg);
+  font-family: var(--lg-font);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.16), inset 0 0 0 0.5px var(--lg-edge);
+  transition: none;
+  will-change: width, height;
+}
+
+.lg-menu-anchor[data-align='start'] .lg-menu.lg-glass {
+  right: auto;
+  left: 0;
+}
+
+.lg-menu::after {
+  display: none;
+}
+
+.lg-menu__content {
+  position: absolute;
+  top: 0;
+  right: 0;
+  box-sizing: border-box;
+  padding: 6px;
+  transform-origin: top right;
+}
+
+.lg-menu-anchor[data-align='start'] .lg-menu__content {
+  right: auto;
+  left: 0;
+  transform-origin: top left;
+}
+
+.lg-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 18px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lg-menu__item:hover,
+.lg-menu__item:focus-visible {
+  background: color-mix(in srgb, var(--lg-fg) 8%, transparent);
+  outline: none;
+}
+
+.lg-menu__item:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.lg-menu__item[data-destructive] {
+  color: var(--lg-tint-default, #ff3b30);
+}
+
+.lg-menu__icon {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+.lg-menu__icon > :is(svg, .lg-symbol) {
+  width: 100%;
+  height: 100%;
+}
+
+.lg-menu__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lg-menu__check {
+  display: grid;
+  place-items: center;
+  flex: none;
+  color: var(--lg-accent);
+}

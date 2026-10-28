@@ -666,38 +666,6 @@ html[data-morph] .hero__title-text[data-docked] {
   flex-wrap: wrap;
 }
 
-.mock__menu {
-  position: absolute;
-  top: 110px;
-  left: 14px;
-  right: 14px;
-  max-width: calc(100% - 28px);
-  box-sizing: border-box;
-  z-index: 5;
-  padding: 8px;
-  border-radius: 20px;
-  overflow: hidden;
-}
-
-.mock__menu button {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  min-width: 0;
-  padding: 12px;
-  border: 0;
-  background: none;
-  color: var(--text);
-  font: inherit;
-  font-size: 14px;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  cursor: pointer;
-}
-
 .phone-studio__heading {
   margin: 0 4px 18px;
 }

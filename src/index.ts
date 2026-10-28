@@ -16,6 +16,9 @@ export type { GlassInputProps } from './components/GlassInput';
 export { GlassSheet } from './components/GlassSheet';
 export type { GlassSheetProps } from './components/GlassSheet';
 
+export { GlassMenu } from './components/GlassMenu';
+export type { GlassMenuProps, GlassMenuItem } from './components/GlassMenu';
+
 export { GlassNav } from './components/GlassNav';
 export type { GlassNavProps, GlassNavItem } from './components/GlassNav';
 

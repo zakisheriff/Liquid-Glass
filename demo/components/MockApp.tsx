@@ -1,10 +1,10 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { GlassButton, GlassInput, GlassSegmented } from '@zakisheriff/liquid-glass';
+import { GlassButton, GlassInput, GlassMenu, GlassSegmented } from '@zakisheriff/liquid-glass';
 import { AppDock } from './AppDock';
 import { PhoneStudio, studioArtwork, type StudioPalette } from './PhoneStudio';
-import { ArrowLeft, Bookmark, Check, Close, Ellipsis } from './icons';
+import { ArrowLeft, Bookmark, Check, Close, Ellipsis, Grid, Star } from './icons';
 
 const PALETTES = [
   { name: 'Slate', color: '#5a768f' },
@@ -26,7 +26,6 @@ export function MockApp() {
   const [selected, setSelected] = useState<number | null>(null);
   const [query, setQuery] = useState('');
   const [searching, setSearching] = useState(false);
-  const [menu, setMenu] = useState(false);
   const [sort, setSort] = useState(false);
   const [sheetHost, setSheetHost] = useState<HTMLDivElement | null>(null);
   const [studio, setStudio] = useState<StudioPalette>({ name: 'Slate', brightness: 76, hue: 212, vivid: true });
@@ -36,7 +35,6 @@ export function MockApp() {
   const changeTab = (index: number) => {
     setTab(index);
     setSelected(null);
-    setMenu(false);
     setSearching(false);
     setQuery('');
     feed.current?.scrollTo({ top: 0 });
@@ -45,7 +43,6 @@ export function MockApp() {
   const startSearch = () => {
     setSearching(true);
     setSelected(null);
-    setMenu(false);
     feed.current?.scrollTo({ top: 0 });
     requestAnimationFrame(() => search.current?.focus({ preventScroll: true }));
   };
@@ -79,11 +76,17 @@ export function MockApp() {
       <div className="device__top">
         <span className="device__top-spacer" aria-hidden="true" />
         <GlassSegmented options={['Studio', 'Palettes']} value={segment} onChange={(value) => {setSegment(value);changeTab(0);}} aria-label="Palette feed" />
-        <GlassButton size="md" icon={<Ellipsis size={20} />} aria-label="More options" aria-expanded={menu} onClick={() => setMenu((value) => !value)} />
+        <GlassMenu
+          icon={<Ellipsis size={20} />}
+          aria-label="More options"
+          width={220}
+          check={<Check size={16} />}
+          items={[
+            { label: 'Recommended', icon: <Star size={18} />, checked: !sort, onSelect: () => setSort(false) },
+            { label: 'Name A–Z', icon: <Grid size={18} />, checked: sort, onSelect: () => setSort(true) },
+          ]}
+        />
       </div>
-      {menu && <div className="lg-glass mock__menu" role="menu" aria-label="Palette options">
-        <button role="menuitem" onClick={() => {setSort(false);setMenu(false);}}>Recommended {!sort && <Check size={16} />}</button><button role="menuitem" onClick={() => {setSort(true);setMenu(false);}}>Name A–Z {sort && <Check size={16} />}</button><button role="menuitem" onClick={() => setMenu(false)}>Close</button>
-      </div>}
       <AppDock tab={searching ? 3 : tab} onChange={changeTab} onSearch={startSearch} />
     </div>
   );

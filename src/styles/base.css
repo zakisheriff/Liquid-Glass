@@ -34,6 +34,7 @@
 
   /* Thick material: sheets, menus, cards */
   --lg-panel-fill: rgb(255 255 255 / 0.62);
+  --lg-menu-fill: rgb(250 250 252 / 0.94);
   --lg-panel-blur: 28px;
 
   --lg-tab-selection: rgb(0 0 0 / 0.07);
@@ -77,6 +78,7 @@
   --lg-selection-lens-brightness: 1.06;
   --lg-switch-face-fade: 0.92;
   --lg-panel-fill: rgb(30 30 33 / 0.62);
+  --lg-menu-fill: rgb(38 38 42 / 0.94);
   --lg-tab-selection: rgb(0 0 0 / 0.36);
   --lg-segment-selection: rgb(255 255 255 / 0.14);
   --lg-track: rgb(120 120 128 / 0.36);
@@ -118,6 +120,7 @@
     --lg-selection-lens-brightness: 1.06;
     --lg-switch-face-fade: 0.92;
     --lg-panel-fill: rgb(30 30 33 / 0.62);
+    --lg-menu-fill: rgb(38 38 42 / 0.94);
     --lg-tab-selection: rgb(0 0 0 / 0.36);
     --lg-segment-selection: rgb(255 255 255 / 0.14);
     --lg-track: rgb(120 120 128 / 0.36);
