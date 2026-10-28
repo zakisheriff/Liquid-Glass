@@ -3,7 +3,7 @@
   "framework": null,
   "installCommand": "npm install",
   "buildCommand": "npm run site:build",
-  "outputDirectory": "demo/out",
+  "outputDirectory": "out",
   "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
