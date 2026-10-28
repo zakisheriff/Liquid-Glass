@@ -80,6 +80,7 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
       const color = createSpring(checked ? 1 : 0, SPRINGS.fade, (value) => {
         fill.style.opacity = String(clamp(value, 0, 1));
       });
+      fill.style.opacity = checked ? '1' : '0';
       paint();
 
       sync.current = (value) => {
