@@ -45,12 +45,13 @@ Works with Next.js (the bundle is marked `"use client"`), Vite and CRA.
 | --- | --- |
 | `GlassButton` | Pill or circle (`icon` with no children). Swells, leans toward a drag, wobbles on release. |
 | `GlassSwitch` | The knob lifts into a clear lens that refracts the track. Tap, or drag with rubber-banding. |
-| `GlassNav` | Floating tab bar. The selection inflates into a lens you can drag across tabs. |
+| `GlassNav` | Floating tab bar. The selection inflates into a lens you can drag across tabs. Icons with labels, or icons only. |
 | `GlassSegmented` | Segmented control. The whole control swells and the selection becomes a draggable lens. |
 | `GlassSlider` | Thin track with a lens thumb that magnifies the rail, or `showThumb={false}` for a Control Center block. |
 | `GlassInput` | Search / text field with icon, trailing accessory and clear button. |
 | `GlassCard` | Refracting panel, `regular` or `clear`. |
-| `GlassSheet` | Floating bottom sheet. Spring entrance, drag or flick to dismiss. |
+| `GlassMenu` | Pull-down menu that grows out of its glass button and folds back into it. Slide a finger across the items to pick one. |
+| `GlassSheet` | Floating bottom sheet. Spring entrance, drag or flick to dismiss. With `detents` it opens at half height and expands to full screen. |
 
 ### Buttons
 
@@ -82,6 +83,17 @@ Works with Next.js (the bundle is marked `"use client"`), Vite and CRA.
   ]}
 />
 
+<GlassNav showLabels={false} activeIndex={tab} onChange={setTab} items={tabs} />
+
+<GlassMenu
+  icon={<EllipsisIcon />}
+  aria-label="More"
+  items={[
+    { label: 'View as Gallery', icon: <GridIcon />, checked: view === 'gallery', onSelect: () => setView('gallery') },
+    { label: 'Delete', destructive: true, onSelect: remove },
+  ]}
+/>
+
 <GlassSegmented options={['Chat', 'Work']} value={mode} onChange={setMode} />
 <GlassSegmented size="sm" options={[{ label: 'Light', icon: <SunIcon /> }, 'Dark']} value={t} onChange={setT} />
 
@@ -94,6 +106,7 @@ Works with Next.js (the bundle is marked `"use client"`), Vite and CRA.
 <GlassCard variant="clear">…</GlassCard>
 
 <GlassSheet open={open} onClose={() => setOpen(false)} aria-label="Details">…</GlassSheet>
+<GlassSheet open={open} onClose={() => setOpen(false)} detents={['medium', 'large']} aria-label="Details">…</GlassSheet>
 ```
 
 Sliders drag continuously by default (`step="any"`). Pass a numeric `step`, such as `step={5}`, when values should snap to fixed increments. `onChange` receives the full-precision value while block labels show a rounded number.
@@ -106,12 +119,13 @@ Pass a positioned element as a sheet's `container` to keep the sheet inside that
 | --- | --- |
 | `GlassButton` | `variant` (`glass` · `clear` · `tinted` · `filled`), `destructive`, `tint`, `size`, `icon`, `shimmer`, `intensity`, `thickness`, plus all `<button>` props |
 | `GlassSwitch` | `checked`, `defaultChecked`, `onChange(checked)`, `tint`, `disabled`, `intensity` |
-| `GlassNav` | `items: { label, icon? }[]`, `activeIndex`, `onChange(index)`, `intensity` |
+| `GlassNav` | `items: { label, icon? }[]`, `activeIndex`, `onChange(index)`, `showLabels`, `intensity` |
+| `GlassMenu` | `icon`, `items: { label, icon?, checked?, destructive?, disabled?, onSelect? }[]`, `aria-label`, `align` (`end` · `start`), `size`, `width`, `check` |
 | `GlassSegmented` | `options: (string \| { label, icon? })[]`, `value`, `onChange(index)`, `size` (`sm` · `md`), `intensity` |
 | `GlassSlider` | `value`, `min`, `max`, `step`, `onChange(value)`, `showThumb`, `icon`, `label`, `tint`, `intensity` |
 | `GlassInput` | `type`, `value`, `onChange(event)`, `placeholder`, `label`, `icon`, `trailing`, `onClear`, `tint`, `intensity` |
 | `GlassCard` | `variant` (`regular` · `clear`), `padding`, `radius`, `tint`, `thickness`, `intensity` |
-| `GlassSheet` | `open`, `onClose()`, `container`, `tint`, `aria-label`, `intensity` |
+| `GlassSheet` | `open`, `onClose()`, `detents` (`['medium', 'large']`), `container`, `tint`, `aria-label`, `intensity` |
 
 `intensity` (1–10) scales refraction strength everywhere.
 
