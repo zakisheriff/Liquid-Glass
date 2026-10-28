@@ -59,8 +59,10 @@ function StatusBar() {
             <rect key={i} x={i * 4.8} y={9 - i * 3} width="3.2" height={3 + i * 3} rx="1" fill="currentColor" />
           ))}
         </svg>
-        <svg width="16" height="12" viewBox="0 0 16 12">
-          <path d="M8 2.2c2.4 0 4.6.9 6.2 2.5l1.2-1.3A10.4 10.4 0 0 0 8 .4 10.4 10.4 0 0 0 .6 3.4l1.2 1.3A8.6 8.6 0 0 1 8 2.2zm0 3.6c1.4 0 2.7.5 3.7 1.4l1.2-1.3A7.1 7.1 0 0 0 8 4a7.1 7.1 0 0 0-4.9 1.9l1.2 1.3c1-.9 2.3-1.4 3.7-1.4zm0 3.5c.5 0 .9.2 1.3.5L8 11.2 6.7 9.8c.4-.3.8-.5 1.3-.5z" fill="currentColor" />
+        <svg width="17" height="12" viewBox="0 0 17 12">
+          <path d="M1.4 4.5a10.1 10.1 0 0 1 14.2 0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path d="M4.1 7.2a6.3 6.3 0 0 1 8.8 0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path d="M8.5 11.6 6.2 9.3a3.3 3.3 0 0 1 4.6 0z" fill="currentColor" />
         </svg>
         <svg width="27" height="13" viewBox="0 0 27 13">
           <rect x="0.5" y="0.5" width="22" height="12" rx="3.8" fill="none" stroke="currentColor" strokeOpacity="0.4" />
