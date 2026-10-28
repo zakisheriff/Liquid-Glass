@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
-import { GlassButton, GlassSegmented, useRefraction } from '@zakisheriff/liquid-glass';
+import { GlassButton, useRefraction } from '@zakisheriff/liquid-glass';
 import { useTheme } from './theme';
 import { GitHub, Moon, Sun } from './icons';
 
@@ -14,7 +14,7 @@ const LINKS = [
 export function Nav() {
   const bar = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
-  useRefraction(bar, { kind: 'surface', bezel: 10, thickness: 14 });
+  useRefraction(bar, { kind: 'surface', bezel: 14, thickness: 22, strength: 1.3 });
 
   return (
     <header className="nav-wrap">
@@ -34,16 +34,18 @@ export function Nav() {
           </a>
         </nav>
         <div className="nav__actions">
-          <GlassSegmented
+          <GlassButton
             size="sm"
-            aria-label="Appearance"
-            value={theme === 'dark' ? 1 : 0}
-            onChange={(i) => setTheme(i === 1 ? 'dark' : 'light')}
-            options={[
-              { label: 'Light', icon: <Sun size={14} /> },
-              { label: 'Dark', icon: <Moon size={14} /> },
-            ]}
             className="nav__theme"
+            data-mode={theme}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            icon={
+              <span className="nav__theme-icons">
+                <Sun size={18} />
+                <Moon size={17} />
+              </span>
+            }
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           />
           <GlassButton
             size="sm"
