@@ -63,7 +63,6 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
       const el = ref.current!;
       const thumb = thumbRef.current!;
       const fill = fillRef.current!;
-      const face = faceRef.current!;
       const v = { x: checked ? 1 : 0, lift: 0, stretch: 0 };
 
       const paint = () => {
@@ -72,8 +71,8 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
         const sy = s * (1 - v.stretch * 0.5);
         thumb.style.transform = `translate(${v.x * TRAVEL}px, -50%) scale(${sx}, ${sy})`;
         const l = clamp(v.lift, 0, 1);
-        face.style.opacity = String(1 - l * 0.92);
         el.style.setProperty('--lg-lift', String(l));
+        el.toggleAttribute('data-lifted', l > 0.01);
       };
       const position = createSpring(v.x, SPRINGS.snap, (value, velocity) => {
         v.x = value;

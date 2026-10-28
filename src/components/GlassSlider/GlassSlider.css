@@ -7,6 +7,11 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+.lg-slider[data-lifted],
+.lg-slider[data-dragging] {
+  z-index: 10;
+}
+
 .lg-slider__rail {
   position: absolute;
   left: 0;
@@ -48,14 +53,19 @@
   border-radius: 999px;
   scale: 0.655;
   background-color: color-mix(in srgb, var(--lg-lens-fill) calc(var(--lg-lift) * 100%), transparent);
-  -webkit-backdrop-filter: blur(0.5px) saturate(1.6) brightness(1.08);
-  backdrop-filter: var(--lg-filter, ) blur(0.3px) saturate(1.6) brightness(1.08);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
   box-shadow:
     0 calc(2px + var(--lg-lift) * 8px) calc(6px + var(--lg-lift) * 20px) rgb(0 0 0 / calc(0.14 + var(--lg-lift) * 0.06)),
     0 0.5px 1px rgb(0 0 0 / calc(0.08 * (1 - var(--lg-lift)))),
     inset 0 0 0 0.75px color-mix(in srgb, var(--lg-lens-ring) calc(var(--lg-lift) * 100%), transparent);
   transition: none;
   will-change: scale;
+}
+
+.lg-slider[data-lifted] .lg-slider__thumb.lg-glass {
+  -webkit-backdrop-filter: blur(0.5px) saturate(1.6) brightness(1.08);
+  backdrop-filter: var(--lg-filter, ) blur(0.3px) saturate(1.6) brightness(1.08);
 }
 
 /* With a mirrored lens, the real rail opens a gap under it so the rail
@@ -69,6 +79,7 @@
 
 .lg-slider__thumb.lg-glass::before {
   opacity: calc(var(--lg-lift) * 1.3);
+  z-index: 2;
 }
 
 .lg-slider__face {

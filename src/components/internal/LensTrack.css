@@ -4,6 +4,7 @@
   --lg-item-w: 68px;
   --lg-lift: 0;
   position: relative;
+  overflow: visible;
   display: inline-grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(var(--lg-item-w), 1fr);
@@ -18,6 +19,7 @@
 }
 
 .lg-track__glass {
+  --lg-glass-fill: var(--lg-navigation-fill);
   position: absolute;
   inset: 0;
   border-radius: inherit;
@@ -105,12 +107,13 @@
 /* The selection: a flat pill at rest, a clear refracting lens when lifted. */
 .lg-track__lens.lg-glass {
   z-index: 1;
-  background-color: rgb(255 255 255 / calc(var(--lg-lift) * 0.06));
+  background-color: color-mix(in srgb, var(--lg-selection-lens-fill) calc(var(--lg-lift) * 100%), transparent);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   box-shadow:
     0 calc(var(--lg-lift) * 8px) calc(var(--lg-lift) * 26px) rgb(0 0 0 / calc(var(--lg-lift) * 0.18)),
-    inset 0 0 0 0.5px rgb(255 255 255 / calc(var(--lg-lift) * 0.25));
+    inset 0 0 0 0.5px color-mix(in srgb, var(--lg-selection-lens-edge) calc(var(--lg-lift) * 100%), transparent),
+    var(--lg-selection-lens-bevel);
   transition: none;
 }
 
@@ -132,8 +135,8 @@
 
 .lg-track[data-lifted] .lg-track__lens.lg-glass {
   z-index: 4;
-  -webkit-backdrop-filter: blur(0.6px) saturate(1.5) brightness(1.06);
-  backdrop-filter: var(--lg-filter, ) blur(0.3px) saturate(1.5) brightness(1.06);
+  -webkit-backdrop-filter: blur(0.6px) saturate(1.5) brightness(var(--lg-selection-lens-brightness));
+  backdrop-filter: var(--lg-filter, ) blur(0.3px) saturate(1.5) brightness(var(--lg-selection-lens-brightness));
 }
 
 .lg-track:not([data-ready]) .lg-track__lens {

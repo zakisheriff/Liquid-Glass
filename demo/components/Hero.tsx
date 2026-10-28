@@ -34,14 +34,14 @@ function StatusBar() {
   );
 }
 
-function Device() {
+function Device({ display }: { display: number }) {
   return (
     <div className="device" aria-label="Interactive glass app">
       <span className="device__button device__button--action" aria-hidden="true" />
       <span className="device__button device__button--up" aria-hidden="true" />
       <span className="device__button device__button--down" aria-hidden="true" />
       <span className="device__button device__button--power" aria-hidden="true" />
-      <div className="device__screen">
+      <div className="device__screen" style={{ filter: `brightness(${0.35 + display / 72 * 0.65})` }}>
         <StatusBar />
         <MockApp />
       </div>
@@ -72,14 +72,13 @@ function ControlCard() {
   );
 }
 
-function MixerCard() {
-  const [bright, setBright] = useState(72);
+function MixerCard({ display, onDisplay }: { display: number; onDisplay: (value: number) => void }) {
   const [volume, setVolume] = useState(48);
   const [scrub, setScrub] = useState(34);
   return (
     <GlassCard className="hero__float hero__float--right" padding="18px" radius="30px">
       <div className="mixer">
-        <GlassSlider showThumb={false} value={bright} onChange={setBright} icon={<Sun size={18} />} label="Display" />
+        <GlassSlider showThumb={false} value={display} onChange={onDisplay} icon={<Sun size={18} />} label="Display" />
         <GlassSlider showThumb={false} value={volume} onChange={setVolume} icon={<Speaker size={18} />} label="Sound" />
         <GlassSlider value={scrub} onChange={setScrub} aria-label="Playback position" />
       </div>
@@ -88,6 +87,7 @@ function MixerCard() {
 }
 
 export function Hero() {
+  const [display, setDisplay] = useState(72);
   return (
     <section className="hero" id="top">
       <div className="hero__copy">
@@ -113,8 +113,8 @@ export function Hero() {
       </div>
       <div className="hero__stage">
         <ControlCard />
-        <Device />
-        <MixerCard />
+        <Device display={display} />
+        <MixerCard display={display} onDisplay={setDisplay} />
       </div>
     </section>
   );

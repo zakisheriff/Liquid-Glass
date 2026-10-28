@@ -74,8 +74,10 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       slot = (bar.clientWidth - pad - (parseFloat(style.paddingRight) || 0)) / latest.current.count;
       height = bar.clientHeight - (parseFloat(style.paddingTop) || 0) - (parseFloat(style.paddingBottom) || 0);
       const { overhang, spread } = latest.current;
-      W = Math.round(slot * (1 + spread));
       H = Math.round(bar.offsetHeight + overhang);
+      // Give narrow segments the same lifted clearance at their sides as
+      // above/below. A percentage alone leaves short labels tightly boxed.
+      W = Math.round(Math.max(slot * (1 + spread), slot + H - height));
       lens.style.width = `${W}px`;
       lens.style.height = `${H}px`;
       lens.style.left = `${pad + (slot - W) / 2}px`;

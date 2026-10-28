@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   GlassButton,
   GlassCard,
@@ -9,6 +9,7 @@ import {
   GlassSheet,
   GlassSlider,
   GlassSwitch,
+  type GlassSliderProps,
 } from '@zakisheriff/liquid-glass';
 import { COVERS, Cover } from './art';
 import { Heart, HeartFill, Mic, Plus, Share, Speaker, Sun } from './icons';
@@ -84,17 +85,33 @@ function SegmentTile() {
   );
 }
 
+// Keep each controlled input's state local. Scrubbing one control must not
+// rerender the other controls or rebuild the wallpaper behind their glass.
+function PreviewSlider({ initialValue, onValue, ...props }: Omit<GlassSliderProps, 'value' | 'onChange'> & {
+  initialValue: number;
+  onValue: (value: number) => void;
+}) {
+  const [value, setValue] = useState(initialValue);
+  return <GlassSlider {...props} value={value} onChange={(next) => {
+    setValue(next);
+    onValue(next);
+  }} />;
+}
+
 function SliderTile() {
-  const [a, setA] = useState(64);
-  const [b, setB] = useState(38);
-  const [c, setC] = useState(52);
+  const backdrop = useRef<HTMLDivElement>(null);
   return (
     <Tile title="Slider">
       <div className="stage stage--aurora">
+        <div ref={backdrop} className="stage__slider-backdrop" aria-hidden="true">
+          <div className="stage__slider-art" />
+          <div className="stage__slider-color" />
+          <div className="stage__slider-shade" />
+        </div>
         <GlassCard className="stage__mixer" padding="20px" radius="28px">
-          <GlassSlider showThumb={false} value={a} onChange={setA} icon={<Sun size={18} />} label="Display" />
-          <GlassSlider showThumb={false} value={b} onChange={setB} icon={<Speaker size={18} />} label="Sound" />
-          <GlassSlider value={c} onChange={setC} aria-label="Balance" />
+          <PreviewSlider initialValue={64} onValue={(v) => backdrop.current?.style.setProperty('--slider-shade', String((1 - v / 100) * 0.6))} showThumb={false} icon={<Sun size={18} />} label="Display" />
+          <PreviewSlider initialValue={38} onValue={(v) => backdrop.current?.style.setProperty('--slider-color', String(v / 100 * 0.25))} showThumb={false} icon={<Speaker size={18} />} label="Sound" />
+          <PreviewSlider initialValue={52} onValue={(v) => backdrop.current?.style.setProperty('--slider-pan', `${(v - 50) * 0.2}%`)} aria-label="Balance" />
         </GlassCard>
       </div>
     </Tile>
@@ -183,7 +200,7 @@ function SheetTile() {
   const [rate, setRate] = useState(60);
   return (
     <Tile title="Sheet">
-      <div className="stage stage--candy">
+      <div className="stage stage--candy" style={{ backgroundPosition: `center ${rate}%`, backgroundSize: 'auto 160%' }}>
         <GlassButton size="lg" variant="filled" onClick={() => setOpen(true)}>
           Open sheet
         </GlassButton>

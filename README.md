@@ -94,6 +94,8 @@ Works with Next.js (the bundle is marked `"use client"`), Vite and CRA.
 <GlassSheet open={open} onClose={() => setOpen(false)} aria-label="Details">…</GlassSheet>
 ```
 
+Sliders drag continuously by default (`step="any"`). Pass a numeric `step`, such as `step={5}`, when values should snap to fixed increments. `onChange` receives the full-precision value while block labels show a rounded number.
+
 ### Props reference
 
 | Component | Props |

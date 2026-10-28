@@ -510,6 +510,7 @@ html[data-morph='native'] .hero__title-text {
 }
 
 .app-tabs.lg-glass {
+  --lg-glass-fill: var(--lg-navigation-fill);
   border-radius: 999px;
 }
 
@@ -794,7 +795,7 @@ html[data-morph='native'] .hero__title-text {
   display: grid;
   place-items: center;
   min-height: 420px;
-  overflow: hidden;
+  overflow: visible;
   border-radius: 22px;
   isolation: isolate;
 }
@@ -823,12 +824,14 @@ html[data-morph='native'] .hero__title-text {
 
 .stage--gradient {
   background: #1c1613;
-  overflow: clip;
+  overflow: visible;
 }
 
 .stage__gradient {
   position: absolute;
   inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
   background: #6e67dc url('/wallpapers/violet.svg') center / cover;
   filter: hue-rotate(var(--gradient-hue, 0deg));
   transition: filter 800ms ease;
@@ -858,10 +861,56 @@ html[data-morph='native'] .hero__title-text {
   flex-direction: column;
   align-items: center;
   gap: 22px;
+  width: 100%;
+  padding: 0 18px;
+}
+
+.stage__column .lg-track--segmented {
+  --lg-item-w: 0px;
+  max-width: 100%;
+}
+
+.stage__column .lg-track__item {
+  padding-inline: 8px;
 }
 
 .stage--aurora {
   background: #c88c36 url('/wallpapers/amber.svg') center / cover;
+}
+
+.stage__slider-backdrop {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Cache the wallpaper; drag only composited transforms and opacity. Moving
+   background-position or filtering the full SVG repaints under every lens. */
+.stage__slider-art {
+  position: absolute;
+  inset: -25%;
+  background: #c88c36 url('/wallpapers/amber.svg') center / cover;
+  transform: translate3d(var(--slider-pan, 0.4%), calc(var(--slider-pan, 0.4%) * -1), 0);
+  will-change: transform;
+}
+
+.stage__slider-color,
+.stage__slider-shade {
+  position: absolute;
+  inset: 0;
+  will-change: opacity;
+}
+
+.stage__slider-color {
+  background: linear-gradient(125deg, #20d6d1, #d829bc);
+  opacity: var(--slider-color, 0.095);
+}
+
+.stage__slider-shade {
+  background: #000;
+  opacity: var(--slider-shade, 0.216);
 }
 
 .stage__mixer {
