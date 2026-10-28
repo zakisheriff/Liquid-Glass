@@ -38,16 +38,15 @@ export function mountLensOptics(stage: HTMLElement, poster: HTMLElement, lens: H
           ? normalize(corner) * sign(local)
           : (q.x > q.y ? vec2(sign(local.x), 0.) : vec2(0., sign(local.y)));
         float depth = max(-distance, 0.);
-        float bevel = radius * .42;
+        // A wide domed rim, like Apple's droplet: the bend grows smoothly
+        // from the flat centre to the edge, so letters under the rim curve
+        // into arcs instead of folding at a seam.
+        float bevel = radius * .9;
         float t = clamp(depth / bevel, 0., 1.);
-        // Snell's law through a rounded bevel. The steep edge samples beyond
-        // the rim, folding type; the flat centre magnifies it gently.
-        float slope = (1. - t) / sqrt(max(.015, 1. - (1. - t) * (1. - t)));
-        float incident = atan(slope);
-        float refracted = asin(sin(incident) / 1.46);
-        float bend = min(tan(incident - refracted) * radius * .48, radius * .65);
-        vec2 ray = center + local / 1.035 + normal * bend;
-        float split = bend * .012;
+        float edge = 1. - t;
+        float bend = radius * .62 * edge * edge * (1.35 - .35 * edge);
+        vec2 ray = center + local / 1.1 + normal * bend;
+        float split = bend * .018;
         vec3 glass = vec3(
           samplePoster(ray + normal * split).r,
           samplePoster(ray).g,

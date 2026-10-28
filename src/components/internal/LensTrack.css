@@ -161,7 +161,7 @@
 
 .lg-track--tabbar {
   --lg-navigation-fill: var(--lg-fill);
-  --lg-selection-lens-fill: rgb(255 255 255 / 0.06);
+  --lg-selection-lens-fill: rgb(255 255 255 / 0.09);
   --lg-selection-lens-edge: rgb(255 255 255 / 0.25);
   --lg-selection-lens-bevel: inset 0 0 0 transparent;
   --lg-selection-lens-brightness: 1.06;
@@ -231,6 +231,22 @@
 
 /* Copied lens (Safari, Firefox): the real glyphs fade out under the clear
    lens (lensTrack writes --lg-content-hide), leaving only the magnified copy. */
+/* Everything inside the lens takes the active colour, including what its rim
+   bends in from the neighbouring tabs. */
+.lg-track[data-lg-copy] > .lg-track__item {
+  color: var(--lg-track-active, var(--lg-accent));
+}
+
+.lg-track[data-lg-copy] .lg-nav__label {
+  background: none;
+  color: var(--lg-track-active, var(--lg-accent));
+  -webkit-text-fill-color: currentColor;
+}
+
+.lg-track[data-lg-copy] .lg-nav__icon > .lg-symbol {
+  background: var(--lg-track-active, var(--lg-accent));
+}
+
 /* The copy only carries the content. Its own bar glass and resting pill would
    show up magnified inside the lens as a second outline. */
 [data-lg-copy] > :is(.lg-track__glass, .lg-track__select) {

@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { useLensTrack } from '../../engine/lensTrack';
-import { canRefractBackdrop, useRefraction } from '../../engine/refraction';
+import { useRefraction } from '../../engine/refraction';
 import './LensTrack.css';
 
 export interface LensTrackProps {
@@ -43,7 +43,10 @@ export function LensTrack({
   const overhang = tabbar ? 14 : 12;
   // Only the part of the lens over the bar bends; where it rises past the bar
   // it stays clear glass.
-  useRefraction(lens, { kind: 'lens', strength: 0.85, zoom, dispersion: 0.35, inset: overhang / 2 }, true, bar, () =>
+  // The lens shows a magnified, fully tinted copy of the bar, bent at its rim
+  // where the browser can filter it: whatever the rim draws in is tinted too,
+  // as on iOS, instead of the real glyphs showing white through it.
+  useRefraction(lens, { kind: 'lens', strength: 0.85, zoom, dispersion: 0.25, inset: overhang / 2, copy: 'refract' }, true, bar, () =>
     bar.current?.hasAttribute('data-lifted') ?? false,
   );
 
@@ -56,7 +59,7 @@ export function LensTrack({
       overhang,
       spread: tabbar ? 0.3 : 0.16,
       contentZoom: zoom,
-      copied: typeof window !== 'undefined' && !canRefractBackdrop(),
+      copied: true,
       swell: tabbar ? 8 : 14,
     },
   );

@@ -45,9 +45,11 @@ export interface GlassShape {
   /**
    * Draw the lens from a live copy of `mirror` in every browser, not only
    * where backdrop refraction is missing. Needed for a minifying lens: a
-   * backdrop filter can't see past the element's own edge.
+   * backdrop filter can't see past the element's own edge. `'refract'` also
+   * bends the copy at the rim where SVG filters run on elements (Chromium),
+   * so content the rim draws in is styled like the rest of the copy.
    */
-  copy?: boolean;
+  copy?: boolean | 'refract';
 }
 
 interface Baked {
@@ -135,6 +137,10 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   const rimA = new Float32Array(cw * ch);
   const rimHue = new Float32Array(cw * ch);
   const inside = new Float32Array(cw * ch);
+  // Where the rim compresses the backdrop hardest. feDisplacementMap samples
+  // without filtering, so there the bent image steps and aliases; it gets a
+  // touch of smoothing while the centre stays sharp.
+  const zone = new Float32Array(cw * ch);
   let max = 0.0001;
 
   const hw = width / 2;
@@ -191,6 +197,7 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
       if (m > max) max = m;
 
       inside[i] = clamp(d / px1 + 0.5, 0, 1);
+      zone[i] = (d <= 0 ? 1 : clamp(1 - d / Math.max(1, shape.bezel), 0, 1) ** 1.3) * band(py);
 
       if (d >= -px1) {
         // Light falls from the upper left; Liquid Glass catches it on both
@@ -275,6 +282,18 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   ctx.putImageData(shapeMask, 0, 0);
   const mask = canvas.toDataURL();
 
+  let smooth = '';
+  if (lens && !simple) {
+    const soft = ctx.createImageData(cw, ch);
+    for (let i = 0; i < cw * ch; i++) {
+      const o = i * 4;
+      soft.data[o] = soft.data[o + 1] = soft.data[o + 2] = 255;
+      soft.data[o + 3] = Math.round(zone[i] * 255);
+    }
+    ctx.putImageData(soft, 0, 0);
+    smooth = canvas.toDataURL();
+  }
+
   const id = `lg-refract-${++counter}`;
   // Region in the element's own box (objectBoundingBox): WebKit only renders
   // feImage maps this way; Chromium accepts it for backdrop filters too.
@@ -345,9 +364,21 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
       }),
     );
   }
+  let out = 'bent';
+  if (smooth) {
+    // Blend a slightly softened copy in across the rim only.
+    filter.append(
+      el('feGaussianBlur', { in: 'bent', stdDeviation: 0.65, result: 'bent-soft' }),
+      el('feImage', { href: smooth, ...box, preserveAspectRatio: 'none', result: 'rim-zone' }),
+      el('feComposite', { in: 'bent-soft', in2: 'rim-zone', operator: 'in', result: 'rim-soft' }),
+      el('feComposite', { in: 'bent', in2: 'rim-zone', operator: 'out', result: 'core' }),
+      el('feComposite', { in: 'rim-soft', in2: 'core', operator: 'arithmetic', k2: 1, k3: 1, result: 'smoothed' }),
+    );
+    out = 'smoothed';
+  }
   filter.append(
     el('feImage', { href: mask, ...box, preserveAspectRatio: 'none', result: 'shape' }),
-    el('feComposite', { in: 'bent', in2: 'shape', operator: 'in' }),
+    el('feComposite', { in: out, in2: 'shape', operator: 'in' }),
   );
 
   container().append(filter);
@@ -428,6 +459,13 @@ export function useRefraction(
     let pad = 0;
     let zoom = 1;
     let zoomX = 1;
+    // Chromium can run the rim bend on the copy itself (as a normal filter).
+    const bendCopy = shape.copy === 'refract' && canRefractBackdrop() && !!mirror;
+    let copyFilter = '';
+    const applyCopyFilter = () => {
+      const viewport = element.querySelector<HTMLElement>(':scope > .lg-mirror > .lg-mirror__viewport');
+      if (viewport && copyFilter) viewport.style.filter = copyFilter;
+    };
 
     const fit = () => {
       const width = element.offsetWidth;
@@ -442,6 +480,12 @@ export function useRefraction(
         pad = Math.ceil(Math.min(width, height) * 0.45 + 6);
         ({ zoom, zoomX } = resolve(shape, width, height));
         element.style.setProperty('--lg-inner-mask', baked.inner);
+        if (bendCopy) {
+          // The copy is magnified by CSS; the filter only bends the rim. No
+          // colour split: on a transparent copy it darkens glyph edges.
+          copyFilter = glassFor(width, height, radius, { ...shape, zoom: 1, zoomX: 1, dispersion: 0 }, pad).filter;
+          applyCopyFilter();
+        }
       }
       if (live) {
         element.style.setProperty('--lg-filter', baked.filter);
@@ -460,6 +504,7 @@ export function useRefraction(
 
     const source = mirror?.current;
     const unmirror = !live && source ? mirrorBackdrop(element, source, () => pad, () => [zoomX, zoom], mirrorActive) : undefined;
+    applyCopyFilter();
 
     return () => {
       cancel?.();

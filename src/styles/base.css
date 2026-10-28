@@ -26,7 +26,7 @@
   --lg-lens-ring: rgb(0 0 0 / 0.22);
   /* A clear lens still needs a contour against a pale backdrop. */
   --lg-navigation-fill: rgb(255 255 255 / 0.48);
-  --lg-selection-lens-fill: rgb(255 255 255 / 0.025);
+  --lg-selection-lens-fill: rgb(255 255 255 / 0.18);
   --lg-selection-lens-edge: rgb(45 48 53 / 0.28);
   --lg-selection-lens-bevel: inset 0 3px 7px rgb(45 48 53 / 0.1), inset 0 -1px 2px rgb(255 255 255 / 0.8);
   --lg-selection-lens-brightness: 1;
@@ -72,7 +72,7 @@
   --lg-lens-edge: rgb(255 255 255 / 0.12);
   --lg-lens-ring: rgb(255 255 255 / 0.3);
   --lg-navigation-fill: var(--lg-fill);
-  --lg-selection-lens-fill: rgb(255 255 255 / 0.06);
+  --lg-selection-lens-fill: rgb(255 255 255 / 0.09);
   --lg-selection-lens-edge: rgb(255 255 255 / 0.25);
   --lg-selection-lens-bevel: inset 0 0 0 transparent;
   --lg-selection-lens-brightness: 1.06;
@@ -114,7 +114,7 @@
     --lg-lens-edge: rgb(255 255 255 / 0.12);
     --lg-lens-ring: rgb(255 255 255 / 0.3);
     --lg-navigation-fill: var(--lg-fill);
-    --lg-selection-lens-fill: rgb(255 255 255 / 0.06);
+    --lg-selection-lens-fill: rgb(255 255 255 / 0.09);
     --lg-selection-lens-edge: rgb(255 255 255 / 0.25);
     --lg-selection-lens-bevel: inset 0 0 0 transparent;
     --lg-selection-lens-brightness: 1.06;
