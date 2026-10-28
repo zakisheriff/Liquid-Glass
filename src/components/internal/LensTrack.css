@@ -62,7 +62,8 @@
 }
 
 .lg-track__tint,
-.lg-track__lens {
+.lg-track__lens,
+.lg-track__select {
   position: absolute;
   top: var(--lg-pad);
   left: var(--lg-pad);
@@ -105,12 +106,16 @@
   opacity: calc(var(--lg-lift) * 1.2);
 }
 
-.lg-track__pill {
-  position: absolute !important;
-  inset: 0;
-  border-radius: inherit;
+/* The resting selection pill: its own element, so it is always a true pill. */
+.lg-track__select {
+  z-index: 1;
   background: var(--lg-track-selection);
   opacity: calc(1 - var(--lg-lift) * 2.2);
+}
+
+/* The lens only exists while lifted (JS fades it in with the lift). */
+.lg-track__lens {
+  opacity: 0;
 }
 
 .lg-track[data-lifted] .lg-track__lens.lg-glass {

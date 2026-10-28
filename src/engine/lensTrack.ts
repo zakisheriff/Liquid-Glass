@@ -14,6 +14,7 @@ export interface LensTrackRefs {
   bar: React.RefObject<HTMLElement | null>;
   lens: React.RefObject<HTMLElement | null>;
   tint: React.RefObject<HTMLElement | null>;
+  select: React.RefObject<HTMLElement | null>;
   row: React.RefObject<HTMLElement | null>;
   glass: React.RefObject<HTMLElement | null>;
 }
@@ -41,12 +42,17 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     const tint = refs.tint.current;
     const row = refs.row.current;
     const glass = refs.glass.current;
-    if (!bar || !lens || !tint || !row || !glass) return;
+    const select = refs.select.current;
+    if (!bar || !lens || !tint || !row || !glass || !select) return;
 
     let slot = 0;
     let height = 0;
     let pad = 0;
-    let barHeight = 0;
+    // The lens is laid out at its full lifted size (W×H) and only scaled
+    // *down* toward the resting pill. At full lift it renders 1:1: true pill
+    // curves and a pixel-sharp baked rim, never a stretched bitmap.
+    let W = 0;
+    let H = 0;
     const state = { x: 0, lift: 0, swell: 0, squash: 0 };
     let current = latest.current.index;
     let gesture: {
@@ -63,20 +69,34 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       const style = getComputedStyle(bar);
       pad = parseFloat(style.paddingLeft) || 0;
       slot = (bar.clientWidth - pad - (parseFloat(style.paddingRight) || 0)) / latest.current.count;
-      height = lens.offsetHeight;
-      barHeight = bar.offsetHeight;
+      height = bar.clientHeight - (parseFloat(style.paddingTop) || 0) - (parseFloat(style.paddingBottom) || 0);
+      const { overhang, spread } = latest.current;
+      W = Math.round(slot * (1 + spread));
+      H = Math.round(bar.offsetHeight + overhang);
+      for (const el of [lens, tint]) {
+        el.style.width = `${W}px`;
+        el.style.height = `${H}px`;
+        el.style.left = `${pad + (slot - W) / 2}px`;
+        el.style.top = `${pad + (height - H) / 2}px`;
+      }
+      select.style.width = `${slot}px`;
+      row.style.width = `${slot * latest.current.count}px`;
+      row.style.height = `${height}px`;
     };
 
     const paint = () => {
-      const { x, lift, swell, squash } = state;
-      const { overhang, spread } = latest.current;
-      const liftH = barHeight + overhang - height;
-      const sx = 1 + spread * lift + squash;
-      const sy = 1 + (liftH / height) * lift - squash * 0.6;
-      const transform = `translateX(${x}px) scale(${sx}, ${sy})`;
+      const { x, swell, squash } = state;
+      const lift = clamp(state.lift, 0, 1.08);
+      if (!W || !H) return;
+      const kx = ((slot + (W - slot) * lift) / W) * (1 + squash);
+      const ky = ((height + (H - height) * lift) / H) * (1 - squash * 0.6);
+      const transform = `translateX(${x}px) scale(${kx}, ${ky})`;
       lens.style.transform = transform;
       tint.style.transform = transform;
-      row.style.transform = `scale(${1 / sx}, ${1 / sy}) translate(${((sx - 1) * slot) / 2 - x}px, ${((sy - 1) * height) / 2}px)`;
+      // Keep the tinted copy of the row exactly over the real row.
+      row.style.transform = `translate(${W / 2 + (-slot / 2 - x) / kx}px, ${H / 2 - height / (2 * ky)}px) scale(${1 / kx}, ${1 / ky})`;
+      select.style.transform = `translateX(${x}px)`;
+      lens.style.opacity = String(clamp(lift * 4, 0, 1));
       const grow = 1 + (latest.current.swell / Math.max(bar.offsetWidth, 1)) * swell;
       bar.style.scale = `${grow}`;
       lens.style.setProperty('--lg-lift', String(clamp(lift, 0, 1)));
@@ -87,7 +107,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     const x = createSpring(current * slot, SPRINGS.snap, (value, velocity) => {
       state.x = value;
       // Fast travel stretches the droplet along its path.
-      state.squash = clamp(Math.abs(velocity) / 4200, 0, 0.16);
+      state.squash = clamp(Math.abs(velocity) / 6000, 0, 0.08);
       paint();
     });
     const lift = createSpring(0, SPRINGS.lift, (value) => {

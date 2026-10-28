@@ -31,6 +31,7 @@ export function LensTrack({
   const lens = useRef<HTMLSpanElement>(null);
   const tint = useRef<HTMLSpanElement>(null);
   const row = useRef<HTMLSpanElement>(null);
+  const select = useRef<HTMLSpanElement>(null);
   const strength = Math.max(1, Math.min(10, intensity)) / 5;
 
   useRefraction(glass, { kind: 'surface', strength });
@@ -41,7 +42,7 @@ export function LensTrack({
 
   const tabbar = variant === 'tabbar';
   useLensTrack(
-    { bar, glass, lens, tint, row },
+    { bar, glass, lens, tint, row, select },
     {
       count: items.length,
       index,
@@ -62,6 +63,7 @@ export function LensTrack({
       style={{ ...style, '--lg-count': items.length, '--lg-index': index } as React.CSSProperties}
     >
       <span ref={glass} className="lg-glass lg-track__glass" aria-hidden="true" />
+      <span ref={select} className="lg-track__select" aria-hidden="true" />
       {items.map((item, i) => (
         <button
           key={i}
@@ -85,9 +87,7 @@ export function LensTrack({
           ))}
         </span>
       </span>
-      <span ref={lens} className="lg-glass lg-track__lens" aria-hidden="true">
-        <span className="lg-track__pill" />
-      </span>
+      <span ref={lens} className="lg-glass lg-track__lens" aria-hidden="true" />
     </div>
   );
 }

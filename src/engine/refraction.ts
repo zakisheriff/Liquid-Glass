@@ -38,7 +38,7 @@ export interface GlassShape {
 interface Baked {
   filter: string;
   rim: string;
-  /** Shape alpha feathered across the bevel (CSS mask for non-filter lenses). */
+  /** Exact shape alpha (CSS mask for non-filter lenses): a crisp rim, like real glass. */
   inner: string;
 }
 
@@ -120,7 +120,6 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   const rimA = new Float32Array(cw * ch);
   const rimHue = new Float32Array(cw * ch);
   const inside = new Float32Array(cw * ch);
-  const depth = new Float32Array(cw * ch);
   let max = 0.0001;
 
   const hw = width / 2;
@@ -169,8 +168,6 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
       if (m > max) max = m;
 
       inside[i] = clamp(d / px1 + 0.5, 0, 1);
-      const t = clamp(d / (shape.bezel * 0.9), 0, 1);
-      depth[i] = t * t * (3 - 2 * t);
 
       if (d >= -px1) {
         // Light falls from the upper left; Liquid Glass catches it on both
@@ -254,10 +251,6 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   ctx.putImageData(shapeMask, 0, 0);
   const mask = canvas.toDataURL();
 
-  for (let i = 0; i < cw * ch; i++) shapeMask.data[i * 4 + 3] = Math.round(depth[i] * 255);
-  ctx.putImageData(shapeMask, 0, 0);
-  const inner = canvas.toDataURL();
-
   const id = `lg-refract-${++counter}`;
   // Region in the element's own box (objectBoundingBox): WebKit only renders
   // feImage maps this way; Chromium accepts it for backdrop filters too.
@@ -334,7 +327,7 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   );
 
   container().append(filter);
-  return { filter: `url(#${id})`, rim: `url("${rim}")`, inner: `url("${inner}")` };
+  return { filter: `url(#${id})`, rim: `url("${rim}")`, inner: `url("${mask}")` };
 }
 
 function resolve(shape: GlassShape, width: number, height: number): Required<GlassShape> {

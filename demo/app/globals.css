@@ -578,7 +578,7 @@ html[data-morph='native'] .hero__title-text {
   display: none;
 }
 
-.device__tabs :is(.lg-track__item, .lg-track__pill, .lg-nav__label, .lg-nav__icon) {
+.device__tabs :is(.lg-track__item, .lg-track__select, .lg-nav__label, .lg-nav__icon) {
   transition:
     opacity 240ms ease,
     transform var(--morph);
@@ -617,7 +617,7 @@ html[data-morph='native'] .hero__title-text {
   );
 }
 
-.device__bottom[data-minimised] .device__tabs :is(.lg-track__item, .lg-track__pill, .lg-nav__label) {
+.device__bottom[data-minimised] .device__tabs :is(.lg-track__item, .lg-track__select, .lg-nav__label) {
   opacity: 0;
 }
 
