@@ -75,7 +75,9 @@ select,
 
 .nav-wrap {
   position: fixed;
-  top: 12px;
+  /* viewport-fit=cover lets Safari draw the page under its toolbar; the
+     inset keeps the bar below it instead of sliding half under. */
+  top: calc(12px + env(safe-area-inset-top, 0px));
   left: 0;
   right: 0;
   z-index: 50;
@@ -568,12 +570,11 @@ html[data-morph] .hero__title-text[data-docked] {
 }
 
 .device__action.lg-button {
+  /* The button sizes itself from --lg-h: a circle as tall as the bar. */
+  --lg-h: var(--bar);
   position: absolute;
   right: 0;
   bottom: 0;
-  width: var(--bar);
-  height: var(--bar);
-  padding: 0;
 }
 
 .device__action .lg-button__icon {
@@ -973,38 +974,6 @@ html[data-morph] .hero__title-text[data-docked] {
   gap: 10px;
   font-size: 13px;
   color: var(--muted);
-}
-
-.choice__set {
-  display: inline-flex;
-  padding: 3px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--text) 7%, transparent);
-}
-
-.choice__set button {
-  min-width: 34px;
-  padding: 6px 12px;
-  border: 0;
-  border-radius: 999px;
-  background: none;
-  color: var(--text);
-  font: inherit;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 200ms ease, color 200ms ease;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.choice__set button[aria-pressed='true'] {
-  background: var(--text);
-  color: var(--tile);
-}
-
-.choice__set button:focus-visible {
-  outline: 2px solid var(--accent, #0071e3);
-  outline-offset: 1px;
 }
 
 /* Menu tile: a little app toolbar for the pull-down menu to grow out of. */

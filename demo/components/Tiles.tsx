@@ -41,26 +41,24 @@ function Tile({
   );
 }
 
-/** A small labelled set of choices for a tile's live options. */
+/** A tile option, shown with the library's own segmented control. */
 function Choice<T extends string | number>({ label, options, value, onChange }: {
   label: string;
   options: Array<T | { value: T; label: string }>;
   value: T;
   onChange: (value: T) => void;
 }) {
+  const items = options.map((option) => (typeof option === 'object' ? option : { value: option, label: String(option) }));
   return (
-    <div className="choice" role="group" aria-label={label}>
+    <div className="choice">
       <span>{label}</span>
-      <span className="choice__set">
-        {options.map((option) => {
-          const item = typeof option === 'object' ? option : { value: option, label: String(option) };
-          return (
-            <button key={item.label} type="button" aria-pressed={item.value === value} onClick={() => onChange(item.value)}>
-              {item.label}
-            </button>
-          );
-        })}
-      </span>
+      <GlassSegmented
+        size="sm"
+        options={items.map((item) => item.label)}
+        value={Math.max(0, items.findIndex((item) => item.value === value))}
+        onChange={(index) => onChange(items[index].value)}
+        aria-label={label}
+      />
     </div>
   );
 }
