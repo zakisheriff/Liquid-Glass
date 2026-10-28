@@ -1673,6 +1673,23 @@ html[data-morph] .hero__title-text[data-docked] {
   width: 100%;
 }
 
+/* Icons-only tab bar; split, Search sits beside it as a circle its height. */
+.playground__dock {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.playground__dock .lg-nav {
+  flex: 1;
+  min-width: 0;
+}
+
+.playground__dock-search.lg-button {
+  --lg-h: 62px;
+  flex: none;
+}
+
 @media (max-width: 640px) {
   .playground {
     grid-template-columns: minmax(0, 1fr);
