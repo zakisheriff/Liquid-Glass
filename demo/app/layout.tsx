@@ -40,13 +40,13 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     url: '/',
     locale: 'en_US',
-    images: [{ url: '/social-card.png', width: 1200, height: 630, alt: 'Liquid Glass for Web — React and Next.js components' }],
+    images: [{ url: '/LG-Logo.png', width: 1080, height: 1080, alt: 'Liquid Glass app logo' }],
   },
   twitter: {
-    card: 'summary_large_image',
+    card: 'summary',
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    images: ['/social-card.png'],
+    images: ['/LG-Logo.png'],
   },
 };
 
