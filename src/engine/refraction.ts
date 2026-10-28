@@ -415,7 +415,11 @@ export function useRefraction(
         zoom = resolve(shape, width, height).zoom;
         element.style.setProperty('--lg-inner-mask', baked.inner);
       }
-      if (live) element.style.setProperty('--lg-filter', baked.filter);
+      if (live) {
+        element.style.setProperty('--lg-filter', baked.filter);
+        // Lets CSS keep its softening/saturation for real refraction only.
+        element.setAttribute('data-lg-refract', '');
+      }
       element.style.setProperty('--lg-rim', baked.rim);
     };
 
@@ -435,6 +439,7 @@ export function useRefraction(
       observer.disconnect();
       element.style.removeProperty('--lg-filter');
       element.style.removeProperty('--lg-rim');
+      element.removeAttribute('data-lg-refract');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ref, signature, enabled, mirror]);

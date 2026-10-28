@@ -72,8 +72,8 @@
   will-change: scale;
 }
 
-.lg-slider[data-lifted] .lg-slider__thumb.lg-glass {
-  -webkit-backdrop-filter: blur(0.5px) saturate(1.6) brightness(1.08);
+.lg-slider[data-lifted] .lg-slider__thumb.lg-glass[data-lg-refract] {
+  -webkit-backdrop-filter: var(--lg-filter, ) blur(0.3px) saturate(1.6) brightness(1.08);
   backdrop-filter: var(--lg-filter, ) blur(0.3px) saturate(1.6) brightness(1.08);
 }
 

@@ -120,6 +120,11 @@
   opacity: calc(var(--lg-lift) * 1.2);
 }
 
+/* No press bloom on the lens: its white wash greys out the label beneath. */
+.lg-track__lens.lg-glass::after {
+  display: none;
+}
+
 /* The resting selection pill: its own element, so it is always a true pill. */
 .lg-track__select {
   z-index: 1;
@@ -134,7 +139,13 @@
 
 .lg-track[data-lifted] .lg-track__lens.lg-glass {
   z-index: 4;
-  -webkit-backdrop-filter: blur(0.6px) saturate(1.5) brightness(var(--lg-selection-lens-brightness));
+}
+
+/* Only a refracting lens samples the backdrop. Elsewhere (Safari, Firefox)
+   resampling the labels underneath just blurs and washes them out, so the
+   lens stays perfectly clear and the content beneath renders sharp. */
+.lg-track[data-lifted] .lg-track__lens.lg-glass[data-lg-refract] {
+  -webkit-backdrop-filter: var(--lg-filter, ) blur(0.3px) saturate(1.5) brightness(var(--lg-selection-lens-brightness));
   backdrop-filter: var(--lg-filter, ) blur(0.3px) saturate(1.5) brightness(var(--lg-selection-lens-brightness));
 }
 
