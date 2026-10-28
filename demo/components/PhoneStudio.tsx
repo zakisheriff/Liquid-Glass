@@ -63,7 +63,7 @@ export function PhoneStudio({ container, palette, onChange, saved, onSave }: {
   return (
     <div className="phone-studio">
       <header className="phone-studio__heading">
-        <h2>Try it now.</h2>
+        <h2>The Atom</h2>
       </header>
       <section className="phone-studio__canvas" style={{ '--studio-art': studioColor(palette) } as CSSProperties} aria-label="Palette editor">
         <div className="phone-studio__art" style={artwork} aria-hidden="true" />
