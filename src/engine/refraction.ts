@@ -251,10 +251,10 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   const filter = el('filter', {
     id,
     // Generous region: the rim samples content from beyond the glass edge.
-    x: -0.5,
-    y: -0.5,
-    width: 2,
-    height: 2,
+    x: -0.25,
+    y: -0.25,
+    width: 1.5,
+    height: 1.5,
     'color-interpolation-filters': 'sRGB',
   });
   filter.append(el('feImage', { href: map, ...box, preserveAspectRatio: 'none', result: 'field' }));

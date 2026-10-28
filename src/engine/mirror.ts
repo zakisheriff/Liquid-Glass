@@ -57,8 +57,10 @@ function backdropChain(glass: HTMLElement, source: HTMLElement): HTMLElement[] {
     const image = cs.backgroundImage !== 'none';
     const a = alpha(cs.backgroundColor);
     if (image || a > 0) chain.unshift(node);
-    // A gradient/image or a solid colour hides everything further back.
-    if (image || a >= 1) break;
+    // Stop at a gradient/image or solid colour (it hides everything further
+    // back), or at the glass surface the lens rests on: past that, the real
+    // backdrop is frosted anyway and an opaque replay would read as a blob.
+    if (image || a >= 1 || node.classList.contains('lg-glass')) break;
   }
   return chain;
 }
