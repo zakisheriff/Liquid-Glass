@@ -1,6 +1,6 @@
 {
   "name": "@zakisheriff/liquid-glass",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Real refracting liquid glass UI components for React — iOS 26's Liquid Glass, on the web.",
   "author": "Zaki Sheriff",
   "license": "MIT",
@@ -59,9 +59,8 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vercel/analytics": "^2.0.1",
-    "liquid-glass-release": "npm:@zakisheriff/liquid-glass@0.3.2",
+    "liquid-glass-release": "npm:@zakisheriff/liquid-glass@0.3.3",
     "next": "^16.4.3",
-    "patch-package": "8.0.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "tsup": "^8.0.0",
@@ -72,7 +71,7 @@
     "dev": "tsup --watch",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run build",
-    "site": "patch-package --error-on-fail && next dev demo",
-    "site:build": "patch-package --error-on-fail && next build demo"
+    "site": "next dev demo",
+    "site:build": "next build demo"
   }
 }
