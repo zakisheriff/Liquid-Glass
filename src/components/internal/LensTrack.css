@@ -118,6 +118,8 @@
 
 .lg-track__lens.lg-glass::before {
   opacity: calc(var(--lg-lift) * 1.2);
+  /* Above a copied lens's contents (Safari), so the rim still catches light. */
+  z-index: 2;
 }
 
 /* No press bloom on the lens: its white wash greys out the label beneath. */
@@ -220,6 +222,12 @@
   --lg-item-h: 28px;
   --lg-pad: 3px;
   font-size: 13px;
+}
+
+/* Copied lens (Safari, Firefox): a solid base the colour of the bar, so the
+   real icons underneath don't show through the magnified copy. */
+.lg-track__lens > .lg-mirror {
+  background: var(--lg-track-lens-base);
 }
 
 .lg-track:not([data-lifted]) .lg-track__lens > .lg-mirror {

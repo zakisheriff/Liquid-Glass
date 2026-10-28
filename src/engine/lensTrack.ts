@@ -66,7 +66,8 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     } | null = null;
     let dropTimer = 0;
     let suppressClick = false;
-    const buttons = Array.from(bar.querySelectorAll<HTMLElement>('[data-lg-item]'));
+    // Direct children only: a copied lens (Safari) holds inert clones of them.
+    const buttons = Array.from(bar.querySelectorAll<HTMLElement>(':scope > [data-lg-item]'));
     let glyphs: Array<{ node: HTMLElement; x: number; y: number; width: number; height: number; label: boolean }> = [];
     const preview = (index?: number) => {
       if (index === undefined) delete bar.dataset.previewing;

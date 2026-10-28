@@ -36,8 +36,8 @@ export interface GlassMenuProps {
 
 const OPEN = springFrom(0.4, 0.78);
 const CLOSE = springFrom(0.32, 0.92);
-const FADE = springFrom(0.3, 1);
-const FADE_OUT = springFrom(0.16, 1);
+const FADE = springFrom(0.22, 1);
+const FADE_OUT = springFrom(0.14, 1);
 
 const Tick = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -98,21 +98,29 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
       panel.style.width = `${w + (W - w) * p}px`;
       panel.style.height = `${h + (H - h) * p}px`;
       panel.style.borderRadius = `${h / 2 + (24 - h / 2) * clamp(p, 0, 1)}px`;
-      trigger.style.opacity = p > 0.02 ? '0' : '';
+      // Near the button's size the two shapes coincide, so the button and the
+      // menu cross-fade there: the button melts into the menu on open and
+      // reappears smoothly as the menu folds back, instead of popping in.
+      const k = clamp(p / 0.35, 0, 1);
+      panel.style.opacity = String(k);
+      trigger.style.opacity = String(1 - k);
     };
     // The items reveal on their own critically damped curve so they sharpen
     // once and stay sharp: no bounce back into blur, no scaling (which makes
-    // browsers re-raster the text the moment motion stops).
+    // browsers re-raster the text the moment motion stops). The blur only
+    // lives in the first part of the reveal, so nothing looks soft once the
+    // shape has settled.
     const reveal = (q: number) => {
       const t = clamp(q, 0, 1);
-      content.style.opacity = String(t * t);
-      content.style.filter = t < 0.995 ? `blur(${((1 - t) * 8).toFixed(2)}px)` : 'none';
+      const blur = 6 * (1 - t) ** 3;
+      content.style.opacity = String(t);
+      content.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : 'none';
     };
     shape(0);
     reveal(0);
     const s = createSpring(0, OPEN, (p) => {
       shape(p);
-      if (p <= 0.001 && s.target === 0) {
+      if (p <= 0.02 && s.target === 0) {
         trigger.style.opacity = '';
         setMounted(false);
       }

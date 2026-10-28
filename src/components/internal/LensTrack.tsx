@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { useLensTrack } from '../../engine/lensTrack';
-import { canRefractBackdrop, useRefraction } from '../../engine/refraction';
+import { useRefraction } from '../../engine/refraction';
 import './LensTrack.css';
 
 export interface LensTrackProps {
@@ -38,7 +38,11 @@ export function LensTrack({
   // iOS: a magnified centre and a thick rounded rim that bends whatever sits
   // under its edge (icons, labels, the bar's own border) with a faint
   // rainbow fringe.
-  useRefraction(lens, { kind: 'lens', strength: 0.85, zoom, dispersion: 0.35 });
+  // Where the backdrop can't be filtered (Safari, Firefox) the lens refracts a
+  // live copy of the bar instead, so the icons still magnify inside it.
+  useRefraction(lens, { kind: 'lens', strength: 0.85, zoom, dispersion: 0.35 }, true, bar, () =>
+    bar.current?.hasAttribute('data-lifted') ?? false,
+  );
 
   useLensTrack(
     { bar, glass, lens, select },
@@ -48,7 +52,7 @@ export function LensTrack({
       onSelect: (next) => onChange?.(next),
       overhang: tabbar ? 14 : 12,
       spread: tabbar ? 0.3 : 0.16,
-      contentZoom: canRefractBackdrop() ? zoom : 1,
+      contentZoom: zoom,
       swell: tabbar ? 8 : 14,
     },
   );
@@ -78,7 +82,7 @@ export function LensTrack({
           {item}
         </button>
       ))}
-      <span ref={lens} className="lg-glass lg-track__lens" aria-hidden="true" />
+      <span ref={lens} className="lg-glass lg-track__lens" data-lg-mirror-bare="" aria-hidden="true" />
     </div>
   );
 }

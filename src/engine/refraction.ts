@@ -29,6 +29,9 @@ export interface GlassShape {
   ior?: number;
   /** Interior magnification (lens only). 1 = none, below 1 minifies. */
   zoom?: number;
+  /** Horizontal magnification of a copied lens, when it differs from `zoom`
+   *  (e.g. a switch knob thins the track without shortening it). */
+  zoomX?: number;
   /** Chromatic split strength, 0–1. */
   dispersion?: number;
   /** Overall displacement multiplier. */
@@ -346,6 +349,7 @@ function resolve(shape: GlassShape, width: number, height: number): Required<Gla
     thickness: shape.thickness ?? (lens ? short * 0.55 : clamp(short * 0.32, 8, 26)),
     ior: shape.ior ?? 1.5,
     zoom: shape.zoom ?? (lens ? 1.16 : 1),
+    zoomX: shape.zoomX ?? shape.zoom ?? (lens ? 1.16 : 1),
     dispersion: shape.dispersion ?? (lens ? 1 : 0),
     strength: shape.strength ?? 1,
     copy: shape.copy ?? false,
@@ -407,6 +411,7 @@ export function useRefraction(
     let filter = '';
     let pad = 0;
     let zoom = 1;
+    let zoomX = 1;
 
     const fit = () => {
       const width = element.offsetWidth;
@@ -419,7 +424,7 @@ export function useRefraction(
         // No SVG filters off Chromium: real Safari's GPU path paints them
         // black. The lens is a magnified copy, feathered out across the bevel.
         pad = Math.ceil(Math.min(width, height) * 0.45 + 6);
-        zoom = resolve(shape, width, height).zoom;
+        ({ zoom, zoomX } = resolve(shape, width, height));
         element.style.setProperty('--lg-inner-mask', baked.inner);
       }
       if (live) {
@@ -438,7 +443,7 @@ export function useRefraction(
     fit();
 
     const source = mirror?.current;
-    const unmirror = !live && source ? mirrorBackdrop(element, source, () => pad, () => zoom, mirrorActive) : undefined;
+    const unmirror = !live && source ? mirrorBackdrop(element, source, () => pad, () => [zoomX, zoom], mirrorActive) : undefined;
 
     return () => {
       cancel?.();

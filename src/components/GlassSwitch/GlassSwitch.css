@@ -38,10 +38,16 @@
 }
 
 /* The gap under the lifted lens (see --lg-hole). */
-.lg-switch[data-lifted] > .lg-switch__track,
-.lg-switch[data-lifted] > .lg-switch__fill {
-  -webkit-mask-image: linear-gradient(90deg, #000 clamp(0px, var(--lg-knob-x) - var(--lg-hole), 100%), transparent clamp(0px, var(--lg-knob-x) - var(--lg-hole), 100%), transparent clamp(0px, var(--lg-knob-x) + var(--lg-hole), 100%), #000 clamp(0px, var(--lg-knob-x) + var(--lg-hole), 100%));
-  mask-image: linear-gradient(90deg, #000 clamp(0px, var(--lg-knob-x) - var(--lg-hole), 100%), transparent clamp(0px, var(--lg-knob-x) - var(--lg-hole), 100%), transparent clamp(0px, var(--lg-knob-x) + var(--lg-hole), 100%), #000 clamp(0px, var(--lg-knob-x) + var(--lg-hole), 100%));
+.lg-switch[data-lifted]:not([data-lg-copy]) > .lg-switch__track,
+.lg-switch[data-lifted]:not([data-lg-copy]) > .lg-switch__fill {
+  /* Full height outside the lens, fading across its rim into the thinner
+     track drawn inside it, so the two read as one continuous track. */
+  --a: clamp(0px, var(--lg-knob-x) - var(--lg-hole) - 7px, 100%);
+  --b: clamp(0px, var(--lg-knob-x) - var(--lg-hole) + 5px, 100%);
+  --c: clamp(0px, var(--lg-knob-x) + var(--lg-hole) - 5px, 100%);
+  --d: clamp(0px, var(--lg-knob-x) + var(--lg-hole) + 7px, 100%);
+  -webkit-mask-image: linear-gradient(90deg, #000 var(--a), transparent var(--b), transparent var(--c), #000 var(--d));
+  mask-image: linear-gradient(90deg, #000 var(--a), transparent var(--b), transparent var(--c), #000 var(--d));
 }
 
 .lg-switch__fill {

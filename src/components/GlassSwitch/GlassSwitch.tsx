@@ -54,10 +54,11 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
     };
     const sync = useRef<((value: boolean) => void) | null>(null);
 
-    // iOS: the lifted knob is a lens that shrinks what's under it, so the
-    // whole track shows inside as a thinner pill ringed by the background.
-    // It's drawn from a live copy of the switch so it can show past its edge.
-    useRefraction(thumbRef, { kind: 'lens', zoom: 0.72, dispersion: 0.5, copy: true, strength: Math.max(1, Math.min(10, intensity)) / 5 }, true, ref, () =>
+    // iOS: the lifted knob is a lens that thins the track beneath it. The
+    // track runs on through the lens, thinner inside and flaring back to full
+    // height at the rim where it meets the track outside. It's drawn from a
+    // live copy of the switch so it can show past its own edge.
+    useRefraction(thumbRef, { kind: 'lens', zoom: 0.72, zoomX: 1, dispersion: 0.5, copy: true, strength: Math.max(1, Math.min(10, intensity)) / 5 }, true, ref, () =>
       parseFloat(ref.current?.style.getPropertyValue('--lg-lift') || '0') > 0.01,
     );
 

@@ -33,6 +33,8 @@ function clone(source: HTMLElement): { root: HTMLElement; pairs: Pair[] } {
   root.querySelectorAll(`[${SELF}], .lg-mirror, [data-lg-mirror-skip], input, textarea, select`).forEach((n) => n.remove());
   // The source may cut a hole for the lens (data-mirror); the copy must not.
   root.removeAttribute('data-mirror');
+  // Lets styles tell the copy apart from the real control.
+  root.setAttribute('data-lg-copy', '');
   root.setAttribute('inert', '');
   root.setAttribute('aria-hidden', 'true');
   return { root, pairs };
@@ -70,6 +72,14 @@ function backdropChain(glass: HTMLElement, source: HTMLElement): HTMLElement[] {
   return chain;
 }
 
+/** The source's own `data-*` state flags, as a sorted, space-separated list. */
+const stateOf = (el: HTMLElement) =>
+  Array.from(el.attributes)
+    .map((a) => a.name)
+    .filter((name) => name.startsWith('data-') && name !== 'data-mirror' && !name.startsWith('data-lg-mirror'))
+    .sort()
+    .join(' ');
+
 const BACKGROUND = ['background-color', 'background-image', 'background-size', 'background-position', 'background-repeat', 'border-radius'];
 
 export function mirrorBackdrop(
@@ -77,7 +87,7 @@ export function mirrorBackdrop(
   source: HTMLElement,
   padding: () => number,
   /** Interior magnification of the lens. */
-  zoom: () => number,
+  zoom: () => number | [number, number],
   /** Work only while this is true (e.g. a lens is lifted); idle otherwise. */
   active: () => boolean = () => true,
 ) {
@@ -192,11 +202,22 @@ export function mirrorBackdrop(
         pair.copy.className = cls;
       }
     }
+    // State flags on the source (data-lifted, data-previewing, …) drive how
+    // its content is painted, so the copy follows them too.
+    const flags = stateOf(source);
+    if (flags !== copyFlags) {
+      const now = new Set(flags.split(' '));
+      for (const name of copyFlags.split(' ')) if (name && !now.has(name)) copy.root.removeAttribute(name);
+      for (const name of flags.split(' ')) if (name) copy.root.setAttribute(name, source.getAttribute(name) ?? '');
+      copyFlags = flags;
+    }
   };
 
+  let copyFlags = '';
   let zoomed = '';
   const applyZoom = () => {
-    const value = `scale(${zoom()})`;
+    const z = zoom();
+    const value = Array.isArray(z) ? `scale(${z[0]}, ${z[1]})` : `scale(${z})`;
     if (value !== zoomed) zoomer.style.transform = zoomed = value;
   };
 
@@ -224,6 +245,7 @@ export function mirrorBackdrop(
     const next = clone(source);
     copy.root.replaceWith(next.root);
     copy = next;
+    copyFlags = '';
     placed = '';
     buildUnder();
     align();
