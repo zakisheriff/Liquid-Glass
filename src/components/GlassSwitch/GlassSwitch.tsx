@@ -54,9 +54,10 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
     };
     const sync = useRef<((value: boolean) => void) | null>(null);
 
-    // 1×: the track shows at its real height with clear glass above and below,
-    // as on iOS. Zooming either way smears the backdrop edge across the lens.
-    useRefraction(thumbRef, { kind: 'lens', zoom: 1, dispersion: 0.5, strength: Math.max(1, Math.min(10, intensity)) / 5 }, true, ref, () =>
+    // iOS: the lifted knob is a lens that shrinks what's under it, so the
+    // whole track shows inside as a thinner pill ringed by the background.
+    // It's drawn from a live copy of the switch so it can show past its edge.
+    useRefraction(thumbRef, { kind: 'lens', zoom: 0.72, dispersion: 0.5, copy: true, strength: Math.max(1, Math.min(10, intensity)) / 5 }, true, ref, () =>
       parseFloat(ref.current?.style.getPropertyValue('--lg-lift') || '0') > 0.01,
     );
 
@@ -72,6 +73,10 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
         const sy = s * (1 - v.stretch * 0.5);
         thumb.style.transform = `translate(${v.x * TRAVEL}px, -50%) scale(${sx}, ${sy})`;
         const l = clamp(v.lift, 0, 1);
+        // Open a gap in the real track under the lifted lens; the lens shows
+        // the track shrunk inside it, so drawing it here too would double it.
+        el.style.setProperty('--lg-knob-x', `${(21 + v.x * TRAVEL).toFixed(2)}px`);
+        el.style.setProperty('--lg-hole', `${(l > 0.01 ? 23 * sx : 0).toFixed(2)}px`);
         el.style.setProperty('--lg-lift', String(l));
         el.toggleAttribute('data-lifted', l > 0.01);
       };
@@ -208,6 +213,7 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
           rest.onKeyDown?.(event);
         }}
       >
+        <span className="lg-switch__track" aria-hidden="true" />
         <span ref={fillRef} className="lg-switch__fill" aria-hidden="true" />
         <span ref={thumbRef} className="lg-glass lg-switch__thumb" aria-hidden="true">
           <span ref={faceRef} className="lg-switch__face" />

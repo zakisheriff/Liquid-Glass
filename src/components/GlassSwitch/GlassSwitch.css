@@ -8,7 +8,7 @@
   margin: 0;
   border: 0;
   border-radius: 999px;
-  background: var(--lg-track);
+  background: none;
   cursor: pointer;
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
@@ -27,6 +27,21 @@
 
 .lg-switch[data-lifted] {
   z-index: 10;
+}
+
+.lg-switch__track {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--lg-track);
+  pointer-events: none;
+}
+
+/* The gap under the lifted lens (see --lg-hole). */
+.lg-switch[data-lifted] > .lg-switch__track,
+.lg-switch[data-lifted] > .lg-switch__fill {
+  -webkit-mask-image: linear-gradient(90deg, #000 clamp(0px, var(--lg-knob-x) - var(--lg-hole), 100%), transparent clamp(0px, var(--lg-knob-x) - var(--lg-hole), 100%), transparent clamp(0px, var(--lg-knob-x) + var(--lg-hole), 100%), #000 clamp(0px, var(--lg-knob-x) + var(--lg-hole), 100%));
+  mask-image: linear-gradient(90deg, #000 clamp(0px, var(--lg-knob-x) - var(--lg-hole), 100%), transparent clamp(0px, var(--lg-knob-x) - var(--lg-hole), 100%), transparent clamp(0px, var(--lg-knob-x) + var(--lg-hole), 100%), #000 clamp(0px, var(--lg-knob-x) + var(--lg-hole), 100%));
 }
 
 .lg-switch__fill {

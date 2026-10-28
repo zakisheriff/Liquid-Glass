@@ -33,6 +33,12 @@ export interface GlassShape {
   dispersion?: number;
   /** Overall displacement multiplier. */
   strength?: number;
+  /**
+   * Draw the lens from a live copy of `mirror` in every browser, not only
+   * where backdrop refraction is missing. Needed for a minifying lens: a
+   * backdrop filter can't see past the element's own edge.
+   */
+  copy?: boolean;
 }
 
 interface Baked {
@@ -342,6 +348,7 @@ function resolve(shape: GlassShape, width: number, height: number): Required<Gla
     zoom: shape.zoom ?? (lens ? 1.16 : 1),
     dispersion: shape.dispersion ?? (lens ? 1 : 0),
     strength: shape.strength ?? 1,
+    copy: shape.copy ?? false,
   };
 }
 
@@ -395,7 +402,7 @@ export function useRefraction(
   useEffect(() => {
     const element = ref.current;
     if (!element || !enabled) return;
-    const live = canRefractBackdrop();
+    const live = canRefractBackdrop() && !(shape.copy && mirror);
     let cancel: (() => void) | undefined;
     let filter = '';
     let pad = 0;
