@@ -378,6 +378,8 @@ export function useRefraction(
   shape: GlassShape = {},
   enabled = true,
   mirror?: React.RefObject<HTMLElement | null>,
+  /** While false the mirror sleeps (Safari/Firefox only). */
+  mirrorActive?: () => boolean,
 ) {
   const signature = JSON.stringify(shape);
   useEffect(() => {
@@ -408,7 +410,7 @@ export function useRefraction(
     fit();
 
     const source = mirror?.current;
-    const unmirror = !live && source ? mirrorBackdrop(element, source, () => filter, () => pad) : undefined;
+    const unmirror = !live && source ? mirrorBackdrop(element, source, () => filter, () => pad, mirrorActive) : undefined;
 
     return () => {
       cancel?.();

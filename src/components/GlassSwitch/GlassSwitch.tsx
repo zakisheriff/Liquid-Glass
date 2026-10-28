@@ -50,7 +50,9 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
     };
     const sync = useRef<((value: boolean) => void) | null>(null);
 
-    useRefraction(thumbRef, { kind: 'lens', zoom: 1.45, strength: Math.max(1, Math.min(10, intensity)) / 5 }, true, ref);
+    useRefraction(thumbRef, { kind: 'lens', zoom: 1.45, strength: Math.max(1, Math.min(10, intensity)) / 5 }, true, ref, () =>
+      parseFloat(ref.current?.style.getPropertyValue('--lg-lift') || '0') > 0.01,
+    );
 
     useEffect(() => {
       const el = ref.current!;

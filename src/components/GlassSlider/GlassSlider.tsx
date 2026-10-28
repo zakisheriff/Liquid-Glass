@@ -62,7 +62,9 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
     const progress = max > min ? clamp((Number(value) - min) / (max - min), 0, 1) : 0;
 
     // iOS magnifies the rail ~2× inside the lifted thumb.
-    useRefraction(thumbRef, { kind: 'lens', zoom: 1.95, strength, dispersion: 0.6 }, showThumb, rootRef);
+    useRefraction(thumbRef, { kind: 'lens', zoom: 1.95, strength, dispersion: 0.6 }, showThumb, rootRef, () =>
+      parseFloat(rootRef.current?.style.getPropertyValue('--lg-lift') || '0') > 0.01,
+    );
     useRefraction(blockRef, { kind: 'surface', strength }, !showThumb);
 
     // Thumb lift (thin slider)

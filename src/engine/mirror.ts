@@ -65,7 +65,14 @@ function backdropChain(glass: HTMLElement, source: HTMLElement): HTMLElement[] {
 
 const BACKGROUND = ['background-color', 'background-image', 'background-size', 'background-position', 'background-repeat', 'border-radius'];
 
-export function mirrorBackdrop(glass: HTMLElement, source: HTMLElement, filter: () => string, padding: () => number) {
+export function mirrorBackdrop(
+  glass: HTMLElement,
+  source: HTMLElement,
+  filter: () => string,
+  padding: () => number,
+  /** Work only while this is true (e.g. a lens is lifted); idle otherwise. */
+  active: () => boolean = () => true,
+) {
   const layer = document.createElement('div');
   layer.className = 'lg-mirror';
   layer.setAttribute('aria-hidden', 'true');
@@ -100,6 +107,7 @@ export function mirrorBackdrop(glass: HTMLElement, source: HTMLElement, filter: 
   let frame = 0;
   let visible = true;
   let placed = '';
+  let shown = true;
 
   /** Maps `from`'s rendered box into glass-local coordinates. */
   let pad = 0;
@@ -186,7 +194,12 @@ export function mirrorBackdrop(glass: HTMLElement, source: HTMLElement, filter: 
   const tick = () => {
     frame = 0;
     if (stopped) return;
-    if (visible && !document.hidden) {
+    const on = visible && !document.hidden && active();
+    if (on !== shown) {
+      shown = on;
+      layer.style.visibility = on ? '' : 'hidden';
+    }
+    if (on) {
       applyFilter();
       sync();
       align();
