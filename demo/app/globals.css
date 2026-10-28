@@ -1494,7 +1494,8 @@ html[data-morph] .hero__title-text[data-docked] {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  overflow: hidden;
+  /* Visible, so a pressed full-width action can swell past its edges. */
+  overflow: visible;
 }
 
 .sheet-frame__body {
@@ -1634,7 +1635,63 @@ html[data-morph] .hero__title-text[data-docked] {
 
 .playground__panel--menu {
   /* Reserve the menu's full open height inside the rounded scene. */
-  padding-bottom: 126px !important;
+  padding-bottom: 40px !important;
+}
+
+/* Actions on the left, the list they sort on the right. */
+.playground__menu-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 20px;
+}
+
+.playground__menu-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+  min-height: 170px;
+}
+
+.playground__list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.playground__list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px 8px 8px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--lg-fg) 6%, transparent);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.playground__list small {
+  margin-left: auto;
+  color: var(--lg-fg-muted);
+  font-size: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.playground__swatch {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+}
+
+@media (max-width: 480px) {
+  .playground__menu-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .playground__sheet-trigger, .playground__menu {

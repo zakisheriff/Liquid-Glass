@@ -15,6 +15,18 @@ const TABS = [
 const SEARCH_TAB = { label: 'Search', icon: <Search /> };
 const TAB_COUNTS = [2, 3, 4, 5];
 
+/** What the menu sorts: `rank` is the recommended order, `age` days since added. */
+const WALLPAPERS = [
+  { name: 'Aurora', rank: 1, age: 3, color: 'linear-gradient(135deg, #5e5ce6, #64d2ff)' },
+  { name: 'Basalt', rank: 2, age: 1, color: 'linear-gradient(135deg, #3a3a3c, #8e8e93)' },
+  { name: 'Coral', rank: 0, age: 6, color: 'linear-gradient(135deg, #ff6482, #ffb340)' },
+];
+const SORTS: Record<string, (a: (typeof WALLPAPERS)[number], b: (typeof WALLPAPERS)[number]) => number> = {
+  Recommended: (a, b) => a.rank - b.rank,
+  'Newest first': (a, b) => a.age - b.age,
+  'Name A–Z': (a, b) => a.name.localeCompare(b.name),
+};
+
 /** Every material is live in the same scene, so they can be compared together. */
 export function RefractionPlayground() {
   const [segment, setSegment] = useState(0);
@@ -79,8 +91,22 @@ export function RefractionPlayground() {
       </GlassCard>
       <GlassCard className="playground__panel playground__panel--menu" padding="20px" radius="26px">
         <h3>Menu &amp; sheet</h3>
-        <GlassButton className="playground__sheet-trigger" variant="filled" aria-label="Open playground sheet" onClick={() => setSheet(true)}>Open sheet</GlassButton>
-        <GlassMenu className="playground__menu" align="start" icon={<span className="playground__menu-label"><Ellipsis size={20} /><span>{sort}</span></span>} aria-label="Playground menu" width={200} check={<Check size={16} />} items={['Recommended', 'Newest first', 'Name A–Z'].map((label) => ({ label, checked: sort === label, onSelect: () => setSort(label) }))} />
+        <div className="playground__menu-row">
+          <div className="playground__menu-actions">
+            <GlassButton className="playground__sheet-trigger" variant="filled" aria-label="Open playground sheet" onClick={() => setSheet(true)}>Open sheet</GlassButton>
+            <GlassMenu className="playground__menu" align="start" icon={<span className="playground__menu-label"><Ellipsis size={20} /><span>{sort}</span></span>} aria-label="Playground menu" width={200} check={<Check size={16} />} items={Object.keys(SORTS).map((label) => ({ label, checked: sort === label, onSelect: () => setSort(label) }))} />
+          </div>
+          {/* The menu really sorts this list. */}
+          <ul className="playground__list" aria-label="Wallpapers">
+            {[...WALLPAPERS].sort(SORTS[sort]).map((item) => (
+              <li key={item.name}>
+                <span className="playground__swatch" style={{ background: item.color }} />
+                <span>{item.name}</span>
+                <small>{item.age === 1 ? 'Yesterday' : `${item.age} days ago`}</small>
+              </li>
+            ))}
+          </ul>
+        </div>
       </GlassCard>
       <GlassSheet open={sheet} onClose={() => setSheet(false)} detents={['medium', 'large']} aria-label="Playground sheet">
         <SheetFrame footer={<GlassButton size="lg" variant="filled" onClick={() => setSheet(false)} style={{ width: '100%' }}>Done</GlassButton>}>
