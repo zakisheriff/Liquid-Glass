@@ -58,20 +58,23 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
     const thumbRef = useRef<HTMLSpanElement>(null);
     const faceRef = useRef<HTMLSpanElement>(null);
     const blockRef = useRef<HTMLDivElement>(null);
+    /** How far (px) the finger has dragged past either end; drives overscroll. */
+    const pastRef = useRef(0);
     useImperativeHandle(forwardedRef, () => inputRef.current!);
 
-    // Pointer motion is continuous by default. A numeric step remains an
-    // explicit opt-in, and the native range still owns keyboard/accessibility.
+    // Sliding is relative, like iOS: touching the track never jumps the value,
+    // only moving the finger changes it. A numeric step remains an explicit
+    // opt-in, and the native range still owns keyboard/accessibility.
     useEffect(() => {
       const input = inputRef.current!;
       const root = rootRef.current!;
       const setValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!;
-      let drag: { id: number; left: number; width: number; offset: number } | null = null;
+      let drag: { id: number; x: number; from: number; travel: number } | null = null;
       const update = (clientX: number) => {
         if (!drag || max <= min) return;
-        const inset = showThumb ? 19 * drag.width / root.offsetWidth : 0;
-        const travel = Math.max(1, drag.width - inset * 2);
-        const fraction = clamp((clientX - drag.left - inset - drag.offset) / travel, 0, 1);
+        const raw = drag.from + (clientX - drag.x) / drag.travel;
+        const fraction = clamp(raw, 0, 1);
+        pastRef.current = (raw - fraction) * drag.travel;
         let next = min + fraction * (max - min);
         const increment = Number(step);
         if (step !== 'any' && Number.isFinite(increment) && increment > 0) {
@@ -94,13 +97,11 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
         if (event.pointerType !== 'touch') input.focus({ preventScroll: true });
         const box = root.getBoundingClientRect();
         const inset = showThumb ? 19 * box.width / root.offsetWidth : 0;
-        const current = max > min ? clamp((input.valueAsNumber - min) / (max - min), 0, 1) : 0;
-        const center = box.left + inset + current * (box.width - inset * 2);
-        const offset = showThumb && Math.abs(event.clientX - center) <= inset ? event.clientX - center : 0;
-        drag = { id: event.pointerId, left: box.left, width: box.width, offset };
+        const from = max > min ? clamp((input.valueAsNumber - min) / (max - min), 0, 1) : 0;
+        drag = { id: event.pointerId, x: event.clientX, from, travel: Math.max(1, box.width - inset * 2) };
+        pastRef.current = 0;
         root.dataset.dragging = '';
         root.setPointerCapture(event.pointerId);
-        update(event.clientX);
       };
       const move = (event: PointerEvent) => {
         if (event.pointerId !== drag?.id) return;
@@ -111,6 +112,7 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
         if (!drag) return;
         const id = drag.id;
         drag = null;
+        pastRef.current = 0;
         delete root.dataset.dragging;
         if (root.hasPointerCapture(id)) root.releasePointerCapture(id);
       };
@@ -158,12 +160,16 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
       const thumb = thumbRef.current!;
       const face = faceRef.current!;
       const root = rootRef.current!;
-      const v = { lift: 0, stretch: 0 };
+      const v = { lift: 0, stretch: 0, over: 0 };
       const paint = () => {
         const s = 0.655 + 0.345 * v.lift;
-        thumb.style.scale = `${s * (1 + v.stretch)} ${s * (1 - v.stretch * 0.5)}`;
+        // Pulled past an end, the lens slides a little further and stretches
+        // toward the finger, then springs back on release.
+        const pull = (Math.abs(v.over) / 58) * 0.6;
+        thumb.style.scale = `${s * (1 + v.stretch + pull)} ${s * (1 - v.stretch * 0.5 - pull * 0.4)}`;
         face.style.opacity = String(1 - clamp(v.lift, 0, 1) * 0.92);
         root.style.setProperty('--lg-lift', String(clamp(v.lift, 0, 1)));
+        root.style.setProperty('--lg-over', `${v.over.toFixed(2)}px`);
         if (v.lift < 0.01 && lift.target === 0) delete root.dataset.lifted;
       };
       const lift = createSpring(0, SPRINGS.lift, (x) => {
@@ -172,6 +178,10 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
       });
       const stretch = createSpring(0, SPRINGS.release, (x) => {
         v.stretch = x;
+        paint();
+      });
+      const over = createSpring(0, SPRINGS.release, (x) => {
+        v.over = x;
         paint();
       });
       paint();
@@ -194,6 +204,8 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
         lastT = event.timeStamp;
         stretch.tune(SPRINGS.drag);
         stretch.set(clamp(speed * 0.015, 0, 0.035));
+        over.tune(SPRINGS.drag);
+        over.set(rubberband(pastRef.current, 12, 0.5));
       };
       const up = () => {
         if (lift.target === 0) return;
@@ -201,6 +213,8 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
         lift.set(0);
         stretch.tune(SPRINGS.release);
         stretch.set(0);
+        over.tune(SPRINGS.release);
+        over.set(0);
       };
       root.addEventListener('pointerdown', down);
       window.addEventListener('pointermove', move);
@@ -211,6 +225,7 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
       return () => {
         lift.stop();
         stretch.stop();
+        over.stop();
         root.removeEventListener('pointerdown', down);
         window.removeEventListener('pointermove', move);
         window.removeEventListener('pointerup', up);
@@ -243,21 +258,19 @@ export const GlassSlider = React.forwardRef<HTMLInputElement, GlassSliderProps>(
         v.over = x;
         paint();
       });
-      let active: { id: number; box: DOMRect } | null = null;
+      let active: { id: number } | null = null;
       const down = (event: PointerEvent) => {
         if (input.disabled || !event.isPrimary || event.button !== 0) return;
-        active = { id: event.pointerId, box: block.getBoundingClientRect() };
+        active = { id: event.pointerId };
         swell.tune(SPRINGS.press);
         swell.set(1);
         haptic();
       };
       const move = (event: PointerEvent) => {
         if (event.pointerId !== active?.id) return;
-        const { box } = active;
-        const past = event.clientX < box.left ? event.clientX - box.left : event.clientX > box.right ? event.clientX - box.right : 0;
         over.tune(SPRINGS.drag);
         // A short, firm overscroll: the block only gives a few px past its end.
-        over.set(rubberband(past, 26, 0.6));
+        over.set(rubberband(pastRef.current, 26, 0.6));
       };
       const reset = () => {
         if (!active) return;

@@ -6,9 +6,9 @@ import { Bookmark, Check, Drop, Sun } from './icons';
 
 export type StudioPalette = { brightness: number; hue: number; vivid: boolean; name: string };
 
-export const studioArtwork = ({ brightness, hue, vivid }: StudioPalette): CSSProperties => ({
-  backgroundColor: `hsl(${hue} ${vivid ? 24 : 4}% ${20 + brightness * 0.35}%)`,
-});
+const studioColor = ({ brightness, hue, vivid }: StudioPalette) => `hsl(${hue} ${vivid ? 24 : 4}% ${20 + brightness * 0.35}%)`;
+
+export const studioArtwork = (palette: StudioPalette): CSSProperties => ({ backgroundColor: studioColor(palette) });
 
 /** The real controls, composed into a small creative app. */
 export function PhoneStudio({ container, palette, onChange, saved, onSave }: {
@@ -27,7 +27,7 @@ export function PhoneStudio({ container, palette, onChange, saved, onSave }: {
       <header className="phone-studio__heading">
         <h2>Try it now.</h2>
       </header>
-      <section className="phone-studio__canvas" aria-label="Palette editor">
+      <section className="phone-studio__canvas" style={{ '--studio-art': studioColor(palette) } as CSSProperties} aria-label="Palette editor">
         <div className="phone-studio__art" style={artwork} aria-hidden="true" />
         <div className="phone-studio__preview">
           <GlassButton size="sm" className="phone-studio__save" icon={saved ? <Check size={16} /> : <Bookmark size={16} />} aria-label={saved ? 'Unsave studio palette' : 'Save studio palette'} aria-pressed={saved} onClick={onSave} />

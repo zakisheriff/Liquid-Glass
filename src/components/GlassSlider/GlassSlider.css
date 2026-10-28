@@ -1,5 +1,6 @@
 .lg-slider {
   --lg-lift: 0;
+  --lg-over: 0px;
   position: relative;
   width: 100%;
   height: 38px;
@@ -30,7 +31,12 @@
 .lg-slider__fill {
   display: block;
   height: 100%;
-  width: calc(19px + (100% - 38px) * var(--lg-progress));
+  /* Follows the thumb centre, then sweeps out to the very ends near min and
+     max: empty at 0, the whole rail at 100. */
+  width: calc(
+    19px + (100% - 38px) * var(--lg-progress) +
+      19px * (min(0, var(--lg-progress) / 0.12 - 1) + max(0, (var(--lg-progress) - 0.88) / 0.12))
+  );
   border-radius: inherit;
   background: var(--lg-slider-fill, var(--lg-accent));
 }
@@ -40,6 +46,7 @@
   position: absolute;
   top: 50%;
   left: calc(19px + (100% - 38px) * var(--lg-progress));
+  translate: var(--lg-over) 0;
   width: 0;
   height: 0;
   pointer-events: none;
@@ -73,7 +80,7 @@
 /* With a mirrored lens, the real rail opens a gap under it so the rail
    isn't drawn twice (once magnified in the lens, once behind it). */
 .lg-slider[data-mirror] > .lg-slider__rail {
-  --x: calc(19px + (100% - 38px) * var(--lg-progress));
+  --x: calc(19px + (100% - 38px) * var(--lg-progress) + var(--lg-over));
   --r: calc(26px * var(--lg-lift));
   -webkit-mask-image: linear-gradient(90deg, #000 calc(var(--x) - var(--r)), transparent calc(var(--x) - var(--r)), transparent calc(var(--x) + var(--r)), #000 calc(var(--x) + var(--r)));
   mask-image: linear-gradient(90deg, #000 calc(var(--x) - var(--r)), transparent calc(var(--x) - var(--r)), transparent calc(var(--x) + var(--r)), #000 calc(var(--x) + var(--r)));

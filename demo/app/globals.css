@@ -759,7 +759,14 @@ html[data-morph] .hero__title-text[data-docked] {
   --lg-fg: #fff;
   --lg-glass-fill: rgb(255 255 255 / 0.16);
   --lg-glass-blur: 12px;
-  --lg-block-well: rgb(255 255 255 / 0.22);
+  /* Paint the art colour into the glass itself so it follows the sliders
+     live; Safari can be slow to refresh a backdrop that changes under it. */
+  --lg-host-tint: color-mix(in srgb, var(--studio-art) 72%, transparent);
+  --lg-block-well: color-mix(in srgb, var(--studio-art) 62%, rgb(255 255 255 / 0.32));
+}
+
+.phone-studio__controls .lg-glass {
+  transition: none;
 }
 
 .phone-studio__control-label,
