@@ -1,6 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createSpring, clamp, springFrom } from '../../engine/spring';
 import { haptic } from '../../engine/haptics';
+import { usePress } from '../../engine/press';
 import { GlassButton } from '../GlassButton';
 import './GlassMenu.css';
 
@@ -35,6 +36,8 @@ export interface GlassMenuProps {
 
 const OPEN = springFrom(0.4, 0.78);
 const CLOSE = springFrom(0.32, 0.92);
+const FADE = springFrom(0.3, 1);
+const FADE_OUT = springFrom(0.16, 1);
 
 const Tick = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -64,6 +67,12 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
   const panelRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const spring = useRef<ReturnType<typeof createSpring> | null>(null);
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
+
+  // Held, the open menu behaves like any glass button: it swells and is drawn
+  // out toward the finger, then wobbles back.
+  usePress(panelRef, { grow: 0.035, lean: 6, stretch: 0.1, disabled: !mounted });
 
   useEffect(() => {
     if (open) setMounted(true);
@@ -83,34 +92,114 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
     const W = Math.max(w, Math.min(width, window.innerWidth - 24));
     content.style.width = `${W}px`;
     const H = Math.max(h, content.offsetHeight);
-    const paint = (p: number) => {
+    const shape = (p: number) => {
       // Grow from the trigger's own box: same corner, same size at p = 0.
+      // The shape may overshoot a little; that's the liquid feel.
       panel.style.width = `${w + (W - w) * p}px`;
       panel.style.height = `${h + (H - h) * p}px`;
       panel.style.borderRadius = `${h / 2 + (24 - h / 2) * clamp(p, 0, 1)}px`;
-      const q = clamp((p - 0.3) / 0.7, 0, 1);
-      content.style.opacity = String(q);
-      content.style.filter = q < 1 ? `blur(${(1 - q) * 10}px)` : '';
-      content.style.scale = String(0.86 + 0.14 * clamp(p, 0, 1));
       trigger.style.opacity = p > 0.02 ? '0' : '';
     };
-    paint(0);
+    // The items reveal on their own critically damped curve so they sharpen
+    // once and stay sharp: no bounce back into blur, no scaling (which makes
+    // browsers re-raster the text the moment motion stops).
+    const reveal = (q: number) => {
+      const t = clamp(q, 0, 1);
+      content.style.opacity = String(t * t);
+      content.style.filter = t < 0.995 ? `blur(${((1 - t) * 8).toFixed(2)}px)` : 'none';
+    };
+    shape(0);
+    reveal(0);
     const s = createSpring(0, OPEN, (p) => {
-      paint(p);
+      shape(p);
       if (p <= 0.001 && s.target === 0) {
         trigger.style.opacity = '';
         setMounted(false);
       }
     });
-    spring.current = s;
-    s.set(1);
+    const fade = createSpring(0, FADE, reveal);
+    spring.current = {
+      ...s,
+      tune: s.tune,
+      set(target: number, instant?: boolean) {
+        fade.tune(target ? FADE : FADE_OUT);
+        fade.set(target, instant);
+        s.set(target, instant);
+      },
+    } as typeof s;
+    spring.current.set(1);
     content.querySelector<HTMLElement>('[role="menuitem"]:not([disabled])')?.focus({ preventScroll: true });
     return () => {
       s.stop();
+      fade.stop();
       spring.current = null;
       trigger.style.opacity = '';
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mounted]);
+
+  // Slide a finger across the items: the one beneath it lights up, and
+  // letting go there picks it, as on iOS.
+  useEffect(() => {
+    if (!mounted) return;
+    const panel = panelRef.current!;
+    let held: number | null = null;
+    let hot: HTMLElement | null = null;
+    const itemAt = (x: number, y: number) =>
+      (document.elementFromPoint(x, y) as HTMLElement | null)?.closest<HTMLElement>('.lg-menu__item:not(:disabled)') ?? null;
+    const light = (next: HTMLElement | null) => {
+      if (next === hot) return;
+      hot?.removeAttribute('data-active');
+      hot = next;
+      if (hot) {
+        hot.setAttribute('data-active', '');
+        haptic();
+      }
+    };
+    const down = (event: PointerEvent) => {
+      if (!event.isPrimary || event.button !== 0) return;
+      held = event.pointerId;
+      hot = null;
+      light(itemAt(event.clientX, event.clientY));
+    };
+    const move = (event: PointerEvent) => {
+      if (event.pointerId === held) light(itemAt(event.clientX, event.clientY));
+    };
+    const up = (event: PointerEvent) => {
+      if (event.pointerId !== held) return;
+      held = null;
+      const target = hot;
+      light(null);
+      const index = target ? Number(target.dataset.index) : -1;
+      const item = itemsRef.current[index];
+      if (item && !item.disabled) {
+        event.preventDefault();
+        haptic();
+        item.onSelect?.();
+        setOpen(false);
+      }
+    };
+    const cancel = (event: PointerEvent) => {
+      if (event.pointerId !== held) return;
+      held = null;
+      light(null);
+    };
+    // Touch drags must not scroll the page while scrubbing the menu.
+    const hold = (event: TouchEvent) => {
+      if (held !== null && event.cancelable) event.preventDefault();
+    };
+    panel.addEventListener('pointerdown', down);
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+    window.addEventListener('pointercancel', cancel);
+    panel.addEventListener('touchmove', hold, { passive: false });
+    return () => {
+      panel.removeEventListener('pointerdown', down);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+      window.removeEventListener('pointercancel', cancel);
+      panel.removeEventListener('touchmove', hold);
+    };
   }, [mounted]);
 
   useEffect(() => {
@@ -159,8 +248,12 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
                 role="menuitem"
                 className="lg-menu__item"
                 data-destructive={item.destructive ? '' : undefined}
+                data-index={index}
                 disabled={item.disabled}
-                onClick={() => select(item)}
+                onClick={(event) => {
+                  // Pointer picks are handled on release; this is keyboard.
+                  if (event.detail === 0) select(item);
+                }}
               >
                 {item.icon != null && <span className="lg-menu__icon">{item.icon}</span>}
                 <span className="lg-menu__label">{item.label}</span>

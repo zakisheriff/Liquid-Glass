@@ -16,6 +16,7 @@
   color: var(--lg-fg);
   font-family: var(--lg-font);
   box-shadow: 0 12px 40px rgb(0 0 0 / 0.16), inset 0 0 0 0.5px var(--lg-edge);
+  touch-action: none;
   transition: none;
   will-change: width, height;
 }
@@ -35,13 +36,11 @@
   right: 0;
   box-sizing: border-box;
   padding: 6px;
-  transform-origin: top right;
 }
 
 .lg-menu-anchor[data-align='start'] .lg-menu__content {
   right: auto;
   left: 0;
-  transform-origin: top left;
 }
 
 .lg-menu__item {
@@ -59,10 +58,14 @@
   font-size: 15px;
   text-align: left;
   cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
 }
 
 .lg-menu__item:hover,
+.lg-menu__item[data-active],
 .lg-menu__item:focus-visible {
   background: color-mix(in srgb, var(--lg-fg) 8%, transparent);
   outline: none;
