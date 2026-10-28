@@ -111,8 +111,10 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       if (!gesture) return 0;
       const raw = gesture.anchor + clientX - gesture.startX;
       const max = slot * (latest.current.count - 1);
-      if (raw < 0) return rubberband(raw, slot, 0.5);
-      if (raw > max) return max + rubberband(raw - max, slot, 0.5);
+      // iOS gives only a few points of overscroll past the end segments.
+      const give = Math.min(14, slot * 0.12);
+      if (raw < 0) return rubberband(raw, give, 0.55);
+      if (raw > max) return max + rubberband(raw - max, give, 0.55);
       return raw;
     };
 

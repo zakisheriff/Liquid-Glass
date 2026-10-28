@@ -34,7 +34,9 @@ export function LensTrack({
   const strength = Math.max(1, Math.min(10, intensity)) / 5;
 
   useRefraction(glass, { kind: 'surface', strength });
-  useRefraction(lens, { kind: 'lens', strength, zoom: variant === 'tabbar' ? 1.14 : 1.1 }, true, bar);
+  useRefraction(lens, { kind: 'lens', strength, zoom: variant === 'tabbar' ? 1.14 : 1.1 }, true, bar, () =>
+    Boolean(bar.current?.hasAttribute('data-lifted')),
+  );
 
   const tabbar = variant === 'tabbar';
   useLensTrack(
@@ -43,9 +45,9 @@ export function LensTrack({
       count: items.length,
       index,
       onSelect: (next) => onChange?.(next),
-      overhang: tabbar ? 8 : 14,
-      spread: tabbar ? 0.22 : 0.3,
-      swell: tabbar ? 10 : 22,
+      overhang: tabbar ? 8 : 12,
+      spread: tabbar ? 0.18 : 0.16,
+      swell: tabbar ? 8 : 14,
     },
   );
 
