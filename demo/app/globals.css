@@ -1703,8 +1703,10 @@ html[data-morph] .hero__title-text[data-docked] {
 
 .lens-demo__lens.lg-glass {
   position: absolute;
-  top: 0;
-  left: 0;
+  /* Centred from the first paint, before script takes over the position;
+     otherwise a slow load shows it in the corner, then jumps. */
+  top: 18px;
+  left: calc(50% - clamp(110px, 20%, 210px));
   width: clamp(220px, 40%, 420px);
   height: 174px;
   border-radius: 999px;

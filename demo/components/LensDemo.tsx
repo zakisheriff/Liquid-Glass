@@ -34,6 +34,9 @@ export function LensDemo() {
       pos.y = v;
       paint();
     });
+    // CSS centres it until now; from here the springs own the position.
+    el.style.top = '0';
+    el.style.left = '0';
     const center = () => {
       x.set((area.clientWidth - el.offsetWidth) / 2, true);
       y.set(18, true);
