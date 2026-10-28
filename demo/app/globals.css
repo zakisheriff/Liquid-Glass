@@ -782,6 +782,8 @@ html[data-morph] .hero__title-text[data-docked] {
 
 .phone-studio__details {
   display: grid;
+  /* Never wider than the phone, whatever a child's minimum content is. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   margin: 20px 2px 0;
 }
@@ -789,6 +791,82 @@ html[data-morph] .hero__title-text[data-docked] {
 .phone-studio__actions {
   display: flex;
   gap: 8px;
+}
+
+.phone-studio__recent h4 {
+  margin: 4px 4px 10px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.phone-studio__swatches {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.phone-studio__swatch-chip {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  aspect-ratio: 1;
+  padding: 6px;
+  border: 0;
+  border-radius: 16px;
+  color: #fff;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 0.5px rgb(0 0 0 / 0.08);
+  transition: transform 220ms cubic-bezier(0.3, 1.4, 0.6, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.phone-studio__swatch-chip:active {
+  transform: scale(0.92);
+}
+
+.phone-studio__swatch-chip[aria-pressed='true'] {
+  outline: 2px solid var(--lg-accent);
+  outline-offset: 2px;
+}
+
+.phone-studio__code.lg-card {
+  display: grid;
+  gap: 10px;
+}
+
+.phone-studio__code .lg-track--segmented {
+  --lg-item-w: 0px;
+  width: 100%;
+}
+
+.phone-studio__code-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 2px 0 4px;
+}
+
+.phone-studio__code-dot {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 0.5px rgb(0 0 0 / 0.12);
+}
+
+.phone-studio__code-row code {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 14px;
 }
 
 .phone-studio__actions .lg-button:last-child {
