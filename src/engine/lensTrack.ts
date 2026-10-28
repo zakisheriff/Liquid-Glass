@@ -58,7 +58,9 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       moved: boolean;
       box: DOMRect;
       hovered: number;
+      startedAt: number;
     } | null = null;
+    let dropTimer = 0;
     let suppressClick = false;
     const buttons = Array.from(bar.querySelectorAll<HTMLElement>('[data-lg-item]'));
     let glyphs: Array<{ node: HTMLElement; x: number; y: number; width: number; label: boolean }> = [];
@@ -176,12 +178,14 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     };
 
     const onDown = (event: PointerEvent) => {
+      delete bar.dataset.keyboard;
       if (!event.isPrimary || event.button !== 0 || gesture) return;
       const index = itemAt(event);
       if (index < 0) return;
+      clearTimeout(dropTimer);
       measure();
       const box = bar.getBoundingClientRect();
-      gesture = { id: event.pointerId, startX: event.clientX, anchor: index * slot, moved: false, box, hovered: index };
+      gesture = { id: event.pointerId, startX: event.clientX, anchor: index * slot, moved: false, box, hovered: index, startedAt: performance.now() };
       suppressClick = false;
       bar.dataset.lifted = '';
       preview(index);
@@ -223,7 +227,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
 
     const finish = (event: PointerEvent, commit: boolean) => {
       if (event.pointerId !== gesture?.id) return;
-      const { moved, box } = gesture;
+      const { moved, box, startedAt } = gesture;
       const at = moved ? position(event.clientX) : gesture.anchor;
       const index = clamp(Math.round(at / slot), 0, latest.current.count - 1);
       gesture = null;
@@ -231,8 +235,15 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       delete lens.dataset.pressed;
       if (bar.hasPointerCapture?.(event.pointerId)) bar.releasePointerCapture(event.pointerId);
       const inside = event.clientY >= box.top - 30 && event.clientY <= box.bottom + 30;
-      lift.tune(SPRINGS.settle);
-      lift.set(0);
+      // A quick tap should show the full lift, just like holding the tab.
+      // Drags still settle immediately when the pointer is released.
+      const drop = () => {
+        lift.tune(SPRINGS.settle);
+        lift.set(0);
+      };
+      const hold = commit && !moved ? Math.max(0, 200 - (performance.now() - startedAt)) : 0;
+      if (hold) dropTimer = window.setTimeout(drop, hold);
+      else drop();
       swell.tune(SPRINGS.release);
       swell.set(0);
       x.tune(SPRINGS.snap);
@@ -249,7 +260,12 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     const onUp = (event: PointerEvent) => finish(event, true);
     const onCancel = (event: PointerEvent) => finish(event, false);
     const onBlur = () => {
-      if (!gesture) return;
+      clearTimeout(dropTimer);
+      if (!gesture) {
+        lift.tune(SPRINGS.settle);
+        lift.set(0);
+        return;
+      }
       const id = gesture.id;
       gesture = null;
       preview();
@@ -279,6 +295,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     const onKey = (event: KeyboardEvent) => {
       const keys = ['ArrowLeft', 'ArrowRight', 'Home', 'End'];
       if (!keys.includes(event.key)) return;
+      bar.dataset.keyboard = '';
       event.preventDefault();
       const { count, index } = latest.current;
       const next =
@@ -317,6 +334,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     api.current = { setIndex: place };
 
     return () => {
+      clearTimeout(dropTimer);
       api.current = null;
       [x, lift, swell].forEach((s) => s.stop());
       observer.disconnect();

@@ -274,6 +274,40 @@ html[data-morph='native'] .hero__title-text {
   color: var(--muted);
 }
 
+.install__docs {
+  padding: 12px;
+  font-weight: 500;
+}
+
+.docs {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 28px clamp(20px, 5vw, 60px) 64px;
+  line-height: 1.65;
+}
+
+.docs__nav,
+.docs__contents {
+  display: flex;
+  gap: 12px 24px;
+  flex-wrap: wrap;
+  padding-block: 12px;
+}
+
+.docs header { padding-block: 48px 20px; }
+.docs h1 { font-size: clamp(34px, 5vw, 58px); line-height: 1.08; letter-spacing: -0.04em; }
+.docs h2 { margin-top: 0; font-size: 28px; line-height: 1.2; }
+.docs section { padding-block: 36px; border-top: 1px solid var(--hairline); scroll-margin-top: 24px; }
+.docs pre { overflow-x: auto; padding: 24px; border-radius: 20px; background: var(--code-bg); font-size: 14px; letter-spacing: 0; }
+.docs :not(pre) > code { overflow-wrap: anywhere; font-size: 0.88em; }
+.docs__table { overflow-x: auto; }
+.docs table { width: 100%; border-collapse: collapse; font-size: 15px; }
+.docs th, .docs td { min-width: 150px; padding: 16px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--hairline); }
+.docs details { padding: 20px 0; border-bottom: 1px solid var(--hairline); }
+.docs summary { cursor: pointer; font-weight: 600; }
+.docs footer { color: var(--muted); font-size: 14px; }
+.docs a:focus-visible, .docs summary:focus-visible { outline: 2px solid var(--link); outline-offset: 4px; border-radius: 4px; }
+
 .hero__ctas {
   display: flex;
   justify-content: center;
@@ -510,7 +544,6 @@ html[data-morph='native'] .hero__title-text {
 }
 
 .app-tabs.lg-glass {
-  --lg-glass-fill: var(--lg-navigation-fill);
   border-radius: 999px;
 }
 
@@ -832,8 +865,10 @@ html[data-morph='native'] .hero__title-text {
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  background: #6e67dc url('/wallpapers/violet.svg') center / cover;
-  filter: hue-rotate(var(--gradient-hue, 0deg));
+  background:
+    linear-gradient(color-mix(in srgb, var(--tile) 72%, transparent), color-mix(in srgb, var(--tile) 72%, transparent)),
+    #6e67dc url('/wallpapers/violet.svg') center / cover;
+  filter: hue-rotate(var(--gradient-hue, 0deg)) saturate(0.65);
   transition: filter 800ms ease;
 }
 

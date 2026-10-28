@@ -1,9 +1,11 @@
 import type { MetadataRoute } from 'next';
+import { SITE_URL, UPDATED } from '@/lib/site';
 
 export const dynamic = 'force-static';
 
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://liquidglass.theatom.lk').replace(/\/$/, '');
-
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [{ url: `${SITE_URL}/`, changeFrequency: 'weekly', priority: 1 }];
+  return [
+    { url: `${SITE_URL}/`, lastModified: UPDATED },
+    { url: `${SITE_URL}/docs`, lastModified: UPDATED },
+  ];
 }

@@ -10,6 +10,7 @@
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
 **[liquidglass.theatom.lk](https://liquidglass.theatom.lk)** ·
+**[Documentation](https://liquidglass.theatom.lk/docs)** ·
 **[npm](https://www.npmjs.com/package/@zakisheriff/liquid-glass)** ·
 **[GitHub](https://github.com/zakisheriff/Liquid-Glass)**
 
@@ -26,6 +27,7 @@ npm i @zakisheriff/liquid-glass
 ```
 
 ```tsx
+import { useState } from 'react';
 import { GlassSwitch } from '@zakisheriff/liquid-glass';
 import '@zakisheriff/liquid-glass/styles.css';
 

@@ -8,6 +8,21 @@
   "trailingSlash": false,
   "headers": [
     {
+      "source": "/opengraph-image",
+      "headers": [{ "key": "Content-Type", "value": "image/png" }]
+    },
+    {
+      "source": "/docs.md",
+      "headers": [
+        { "key": "Content-Type", "value": "text/markdown; charset=utf-8" },
+        { "key": "Link", "value": "<https://liquidglass.theatom.lk/docs>; rel=\"canonical\", <https://liquidglass.theatom.lk/llms.txt>; rel=\"describedby\"" }
+      ]
+    },
+    {
+      "source": "/llms.txt",
+      "headers": [{ "key": "Content-Type", "value": "text/plain; charset=utf-8" }]
+    },
+    {
       "source": "/assets/(.*)",
       "headers": [
         {

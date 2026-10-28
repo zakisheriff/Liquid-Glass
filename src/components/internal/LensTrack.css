@@ -87,7 +87,7 @@
   -webkit-touch-callout: none;
 }
 
-.lg-track__item:focus-visible {
+.lg-track[data-keyboard] .lg-track__item:focus-visible {
   outline: 2px solid var(--lg-ring);
   outline-offset: -3px;
 }
@@ -148,6 +148,11 @@
 /* ------------------------------------------------------------------ */
 
 .lg-track--tabbar {
+  --lg-navigation-fill: var(--lg-fill);
+  --lg-selection-lens-fill: rgb(255 255 255 / 0.06);
+  --lg-selection-lens-edge: rgb(255 255 255 / 0.25);
+  --lg-selection-lens-bevel: inset 0 0 0 transparent;
+  --lg-selection-lens-brightness: 1.06;
   --lg-track-selection: var(--lg-tab-selection);
   font-size: 10px;
   font-weight: 600;

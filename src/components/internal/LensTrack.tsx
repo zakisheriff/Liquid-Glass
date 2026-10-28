@@ -33,10 +33,9 @@ export function LensTrack({
   const strength = Math.max(1, Math.min(10, intensity)) / 5;
 
   useRefraction(glass, { kind: 'surface', strength });
-  // No Safari mirror here: bars float over arbitrary content (photos,
-  // feeds) that a copy can't rebuild, so the lens there is clear frosted
-  // glass over the real backdrop instead of a grey stand-in.
-  useRefraction(lens, { kind: 'lens', strength, zoom: variant === 'tabbar' ? 1.14 : 1.1 });
+  // Keep the centre magnification, with a thin clean rim. Strong bevel
+  // displacement folds the bar's border into a second outline on each side.
+  useRefraction(lens, { kind: 'lens', strength: 0, zoom: variant === 'tabbar' ? 1.14 : 1.1, dispersion: 0, bezel: 2 });
 
   const tabbar = variant === 'tabbar';
   useLensTrack(
@@ -45,8 +44,8 @@ export function LensTrack({
       count: items.length,
       index,
       onSelect: (next) => onChange?.(next),
-      overhang: tabbar ? 8 : 12,
-      spread: tabbar ? 0.18 : 0.16,
+      overhang: tabbar ? 14 : 12,
+      spread: tabbar ? 0.3 : 0.16,
       swell: tabbar ? 8 : 14,
     },
   );

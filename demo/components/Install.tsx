@@ -70,6 +70,7 @@ export function Install() {
         <code>{SNIPPET}</code>
       </pre>
       <div className="install__links">
+        <a className="install__docs" href="/docs">Documentation →</a>
         <GlassButton onClick={() => window.open('https://www.npmjs.com/package/@zakisheriff/liquid-glass', '_blank')}>
           npm
         </GlassButton>

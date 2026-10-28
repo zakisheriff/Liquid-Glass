@@ -1,0 +1,17 @@
+# Liquid Glass for the Web
+
+> Apple-inspired liquid glass components for React and Next.js by Zaki Sheriff. The npm package is @zakisheriff/liquid-glass. It is open source under the MIT license.
+
+This is an independent web UI library, not an Apple product. Browser rendering differs: Chromium supports live SVG backdrop displacement; Safari and Firefox use translucent material and mirrored content for supported thumbs. React and React DOM 17 or later are required.
+
+## Documentation
+
+- [Complete documentation, quick start and API summary](https://liquidglass.theatom.lk/docs.md): Markdown reference, component names, props, theming, browser support and answers.
+- [Readable documentation](https://liquidglass.theatom.lk/docs): The same guide in HTML.
+- [Interactive component demo](https://liquidglass.theatom.lk/): Try buttons, switches, tabs, sliders, search inputs and sheets.
+
+## Source and package
+
+- [Repository README](https://raw.githubusercontent.com/zakisheriff/Liquid-Glass/main/README.md): Usage examples and full props reference.
+- [npm package](https://www.npmjs.com/package/@zakisheriff/liquid-glass): Published versions and installation.
+- [Source code](https://github.com/zakisheriff/Liquid-Glass): Implementation and third-party notices.

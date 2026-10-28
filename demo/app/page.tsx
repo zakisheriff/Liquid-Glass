@@ -22,6 +22,8 @@ export default function Page() {
             <a href="#components">Components</a>
             <a href="#refraction">Refraction</a>
             <a href="#install">Install</a>
+            <a href="/docs">Documentation</a>
+            <a href="/llms.txt">llms.txt</a>
             <a href="https://www.npmjs.com/package/@zakisheriff/liquid-glass" target="_blank" rel="noreferrer">
               npm
             </a>
