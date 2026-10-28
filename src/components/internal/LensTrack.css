@@ -1,0 +1,190 @@
+.lg-track {
+  --lg-pad: 4px;
+  --lg-item-h: 54px;
+  --lg-item-w: 68px;
+  --lg-lift: 0;
+  position: relative;
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(var(--lg-item-w), 1fr);
+  padding: var(--lg-pad);
+  border-radius: 999px;
+  font-family: var(--lg-font);
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transform-origin: center;
+}
+
+.lg-track__glass {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.lg-track[data-lifted] .lg-track__glass::after {
+  opacity: 0.7;
+  transition-duration: 120ms;
+}
+
+.lg-track__item,
+.lg-track__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: var(--lg-item-h);
+  min-width: 0;
+  padding: 0 10px;
+  font: inherit;
+  white-space: nowrap;
+}
+
+.lg-track__item {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--lg-fg);
+  cursor: pointer;
+  -webkit-touch-callout: none;
+}
+
+.lg-track__item:focus-visible {
+  outline: 2px solid var(--lg-ring);
+  outline-offset: -3px;
+}
+
+.lg-track__tint,
+.lg-track__lens {
+  position: absolute;
+  top: var(--lg-pad);
+  left: var(--lg-pad);
+  width: calc((100% - var(--lg-pad) * 2) / var(--lg-count));
+  height: calc(100% - var(--lg-pad) * 2);
+  border-radius: 999px;
+  pointer-events: none;
+  transform: translateX(calc(100% * var(--lg-index)));
+}
+
+/* Accent-coloured copy of the row, clipped to the selection. */
+.lg-track__tint {
+  z-index: 3;
+  overflow: hidden;
+  color: var(--lg-track-active, var(--lg-accent));
+}
+
+.lg-track__row {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  width: calc(100% * var(--lg-count));
+  height: 100%;
+  transform-origin: 0 0;
+}
+
+/* The selection: a flat pill at rest, a clear refracting lens when lifted. */
+.lg-track__lens.lg-glass {
+  z-index: 1;
+  background-color: rgb(255 255 255 / calc(var(--lg-lift) * 0.06));
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow:
+    0 calc(var(--lg-lift) * 8px) calc(var(--lg-lift) * 26px) rgb(0 0 0 / calc(var(--lg-lift) * 0.18)),
+    inset 0 0 0 0.5px rgb(255 255 255 / calc(var(--lg-lift) * 0.25));
+  transition: none;
+}
+
+.lg-track__lens.lg-glass::before {
+  opacity: calc(var(--lg-lift) * 1.2);
+}
+
+.lg-track__pill {
+  position: absolute !important;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--lg-track-selection);
+  opacity: calc(1 - var(--lg-lift) * 2.2);
+}
+
+.lg-track[data-lifted] .lg-track__lens.lg-glass {
+  z-index: 4;
+  -webkit-backdrop-filter: blur(0.6px) saturate(1.5) brightness(1.06);
+  backdrop-filter: var(--lg-filter, ) blur(0.3px) saturate(1.5) brightness(1.06);
+}
+
+.lg-track:not([data-ready]) .lg-track__lens,
+.lg-track:not([data-ready]) .lg-track__tint {
+  transition: none;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Tab bar                                                            */
+/* ------------------------------------------------------------------ */
+
+.lg-track--tabbar {
+  --lg-track-selection: var(--lg-tab-selection);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.lg-track--tabbar .lg-nav__icon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+}
+
+.lg-track--tabbar .lg-nav__icon > svg {
+  width: 100%;
+  height: 100%;
+}
+
+.lg-track--tabbar .lg-nav__label {
+  line-height: 1.1;
+}
+
+.lg-track--tabbar.lg-track--labels-only {
+  --lg-item-h: 44px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Segmented control                                                  */
+/* ------------------------------------------------------------------ */
+
+.lg-track--segmented {
+  --lg-pad: 4px;
+  --lg-item-h: 36px;
+  --lg-item-w: 64px;
+  --lg-track-selection: var(--lg-segment-selection);
+  --lg-track-active: var(--lg-fg);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.lg-track--segmented .lg-track__item,
+.lg-track--segmented .lg-track__copy {
+  flex-direction: row;
+  gap: 6px;
+  padding: 0 16px;
+}
+
+.lg-track--segmented .lg-track__item {
+  color: var(--lg-fg);
+}
+
+.lg-track--sm.lg-track--segmented {
+  --lg-item-h: 28px;
+  --lg-pad: 3px;
+  font-size: 13px;
+}

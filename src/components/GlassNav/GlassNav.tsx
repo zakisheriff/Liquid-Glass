@@ -1,8 +1,5 @@
-import React, { useMemo, useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react';
-import { useGlassFilterMounted } from '../../filters/LiquidGlassFilter';
-import './GlassNav.css';
-
-const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
+import React from 'react';
+import { LensTrack } from '../internal/LensTrack';
 
 export interface GlassNavItem {
   label: string;
@@ -10,164 +7,50 @@ export interface GlassNavItem {
 }
 
 export interface GlassNavProps {
-  /** Navigation items to render. */
+  /** Tabs to render. Icons sit above labels, like the iOS 26 tab bar. */
   items: GlassNavItem[];
-  /** Zero‑based index of the active item. Default 0. */
+  /** Zero-based index of the selected tab. Default 0. */
   activeIndex?: number;
-  /** Called when the user clicks a nav item. */
+  /** Called when a tab is tapped, or when the lens is dragged onto one. */
   onChange?: (index: number) => void;
-  /** Blur intensity from 1 (subtle) to 10 (heavy). Default 5. */
+  /** Refraction strength from 1 (subtle) to 10 (heavy). Default 5. */
   intensity?: number;
+  className?: string;
+  style?: React.CSSProperties;
+  'aria-label'?: string;
 }
 
 /**
- * A pill‑shaped glassmorphic navigation bar.
- *
- * A translucent active‑indicator slides between items via a spring‑like
- * cubic‑bezier transition. Each item has subtle hover and press effects.
+ * The iOS 26 floating tab bar. Press a tab and the selection inflates into a
+ * liquid lens you can drag across the bar; let go and it drops into place.
  */
 export const GlassNav: React.FC<GlassNavProps> = ({
   items,
   activeIndex = 0,
   onChange,
   intensity = 5,
+  className,
+  style,
+  'aria-label': ariaLabel = 'Tabs',
 }) => {
-  const navRef = useRef<HTMLDivElement>(null);
-  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
-
-  const isFilterMounted = useGlassFilterMounted();
-  const clampedIntensity = Math.max(1, Math.min(10, Math.round(intensity)));
-
-  /* ------------------------------------------------------------------ */
-  /*  Sliding indicator position                                         */
-  /* ------------------------------------------------------------------ */
-  const [indicatorStyle, setIndicatorStyle] = useState<React.CSSProperties>({});
-
-  const updateIndicator = useCallback(() => {
-    const el = itemRefs.current[activeIndex];
-    const parent = navRef.current;
-    const surface = parent?.parentElement;
-    if (!el || !parent || !surface) return;
-    const surfaceRect = surface.getBoundingClientRect();
-    const rect = el.getBoundingClientRect();
-    
-    // Skip if element sizes haven't initialized yet
-    if (rect.width === 0) return;
-
-    setIndicatorStyle({
-      width: `${rect.width}px`,
-      height: `${rect.height}px`,
-      transform: `translateX(${rect.left - surfaceRect.left}px)`,
-    });
-  }, [activeIndex]);
-
-  useIsomorphicLayoutEffect(() => {
-    updateIndicator();
-    
-    // Tick update to let CSS settle
-    const timer = setTimeout(updateIndicator, 0);
-
-    // Watch for size changes using ResizeObserver (catches stylesheet injection and container changes)
-    let resizeObserver: ResizeObserver | null = null;
-    const parent = navRef.current;
-    if (parent && typeof ResizeObserver !== 'undefined') {
-      resizeObserver = new ResizeObserver(() => {
-        updateIndicator();
-      });
-      resizeObserver.observe(parent);
-      itemRefs.current.forEach((el) => {
-        if (el) resizeObserver?.observe(el);
-      });
-    }
-
-    // Watch for custom fonts loading
-    if (typeof document !== 'undefined' && 'fonts' in document) {
-      document.fonts.ready.then(updateIndicator);
-    }
-
-    window.addEventListener('resize', updateIndicator);
-    return () => {
-      clearTimeout(timer);
-      resizeObserver?.disconnect();
-      window.removeEventListener('resize', updateIndicator);
-    };
-  }, [updateIndicator, items.length]);
-
-  const glassStyle = useMemo<React.CSSProperties>(() => {
-    const filterId = `liquid-glass-refract-${clampedIntensity}`;
-    return {
-      '--glass-blur': `${clampedIntensity * 2.4}px`,
-      '--glass-border-width': '1px',
-      '--glass-refraction-filter': `url(#${filterId})`,
-    } as React.CSSProperties;
-  }, [clampedIntensity]);
-
-  const freq1 = 0.012 + clampedIntensity * 0.001;
-  const freq2 = 0.01 + clampedIntensity * 0.0008;
-  const scale = clampedIntensity * 2;
-
+  const hasIcons = items.some((item) => item.icon != null);
   return (
-    <div className="lg-root lg-nav" data-liquid-glass style={glassStyle}>
-      {!isFilterMounted && (
-        <svg
-          width="0"
-          height="0"
-          style={{ position: 'absolute', pointerEvents: 'none' }}
-          aria-hidden="true"
-        >
-          <defs>
-            <filter
-              id={`liquid-glass-refract-${clampedIntensity}`}
-              x="-10%"
-              y="-10%"
-              width="120%"
-              height="120%"
-              colorInterpolationFilters="sRGB"
-            >
-              <feTurbulence
-                type="fractalNoise"
-                baseFrequency={`${freq1} ${freq2}`}
-                numOctaves={3}
-                seed={42}
-                result="noise"
-              />
-              <feDisplacementMap
-                in="SourceGraphic"
-                in2="noise"
-                scale={scale}
-                xChannelSelector="R"
-                yChannelSelector="G"
-              />
-            </filter>
-          </defs>
-        </svg>
-      )}
-      <div className="lg-surface lg-nav__surface">
-        {/* Sliding active indicator */}
-        <div className="lg-nav__indicator" style={indicatorStyle} aria-hidden="true" />
-
-        <nav ref={navRef} className="lg-content lg-nav__content" role="tablist">
-          {items.map((item, i) => (
-            <button
-              key={i}
-              ref={(el) => {
-                itemRefs.current[i] = el;
-              }}
-              role="tab"
-              aria-selected={i === activeIndex}
-              className={`lg-nav__item${i === activeIndex ? ' lg-nav__item--active' : ''}`}
-              onClick={() => onChange?.(i)}
-              type="button"
-            >
-              {item.icon && <span className="lg-nav__icon">{item.icon}</span>}
-              <span className="lg-nav__label">{item.label}</span>
-            </button>
-          ))}
-        </nav>
-      </div>
-      <div className="lg-backdrop-surface lg-nav__backdrop-surface" aria-hidden="true" />
-      <div className="lg-shadow" aria-hidden="true" />
-    </div>
+    <LensTrack
+      variant="tabbar"
+      className={['lg-nav', hasIcons ? '' : 'lg-track--labels-only', className].filter(Boolean).join(' ')}
+      style={style}
+      aria-label={ariaLabel}
+      intensity={intensity}
+      index={activeIndex}
+      onChange={onChange}
+      labels={items.map((item) => item.label)}
+      items={items.map((item, i) => (
+        <React.Fragment key={i}>
+          {item.icon != null && <span className="lg-nav__icon">{item.icon}</span>}
+          <span className="lg-nav__label">{item.label}</span>
+        </React.Fragment>
+      ))}
+    />
   );
 };
 
