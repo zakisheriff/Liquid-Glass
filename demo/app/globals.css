@@ -600,10 +600,13 @@ html[data-morph] .hero__title-text[data-docked] {
   inset: 0;
 }
 
+/* Sized like the three-tab bar in the Tab bar tile: 86px a tab, centred. */
 .mock-app .device__bottom {
-  left: 24px;
-  right: 24px;
+  width: min(258px, calc(100% - 28px));
+  left: 50%;
+  right: auto;
   bottom: 26px;
+  transform: translateX(-50%);
 }
 
 .mock-app .device__feed {
@@ -1242,9 +1245,9 @@ html[data-morph] .hero__title-text[data-docked] {
 }
 
 @media (max-width: 480px) {
-  .stage--gradient .device__bottom { --bar: 50px; }
-  .stage--gradient .lg-nav { --lg-item-h: 42px; }
-  .stage--gradient .lg-nav__icon { width: 22px; height: 22px; }
+  :is(.stage--gradient, .mock-app) .device__bottom { --bar: 50px; }
+  :is(.stage--gradient, .mock-app) .lg-nav { --lg-item-h: 42px; }
+  :is(.stage--gradient, .mock-app) .lg-nav__icon { width: 22px; height: 22px; }
 }
 
 .stage--type {
