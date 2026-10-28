@@ -1101,7 +1101,7 @@ html[data-morph='native'] .hero__title-text {
 
 @media (max-width: 480px) {
   .install__command {
-    width: 100%;
+    width: fit-content;
     padding-left: 16px;
     gap: 8px;
     font-size: 12px;
