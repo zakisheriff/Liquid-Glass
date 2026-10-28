@@ -44,13 +44,11 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#000000' },
-  ],
 };
 
-const themeScript = `try{var t=localStorage.getItem('lg-theme');if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='light'}`;
+// The site's own toggle wins over the OS: theme, colour-scheme and the
+// browser toolbar tint (theme-color) all follow data-theme, never the system.
+const themeScript = `(function(){var t='light';try{t=localStorage.getItem('lg-theme');if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}}catch(e){}var d=document.documentElement;d.dataset.theme=t;d.style.colorScheme=t;var m=document.getElementById('theme-color');if(m)m.setAttribute('content',t==='dark'?'#000000':'#f5f5f7')})()`;
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -68,6 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
+        <meta id="theme-color" name="theme-color" content="#f5f5f7" />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
