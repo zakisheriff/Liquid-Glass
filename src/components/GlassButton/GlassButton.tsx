@@ -7,7 +7,7 @@ import './GlassButton.css';
 export interface GlassButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** Refraction strength from 1 (subtle) to 10 (heavy). Default 5. */
   intensity?: number;
-  /** Any CSS colour. Tints the label, or the fill for `filled`. */
+  /** Any CSS colour. Colours the label (`tinted`) or the fill (`filled`). Default accent blue. */
   tint?: string;
   /** Light bloom under the finger while pressed. Default true. */
   shimmer?: boolean;
@@ -16,10 +16,13 @@ export interface GlassButtonProps extends React.ButtonHTMLAttributes<HTMLButtonE
   /** Height preset: 36 / 44 / 52 px. Default 'md'. */
   size?: 'sm' | 'md' | 'lg';
   /**
-   * `default` regular glass · `clear` (alias `ghost`) see-through glass ·
-   * `filled` accent-coloured · `destructive` red label.
+   * `glass` (alias `default`) regular glass · `clear` (alias `ghost`) see-through
+   * glass · `tinted` glass with a coloured label · `filled` solid colour.
+   * Combine with `tint` for any colour, or `destructive` for red.
    */
-  variant?: 'default' | 'ghost' | 'clear' | 'filled' | 'destructive';
+  variant?: 'glass' | 'default' | 'clear' | 'ghost' | 'tinted' | 'filled' | 'destructive';
+  /** Marks a delete / irreversible action: red label, or red fill with `filled`. */
+  destructive?: boolean;
   /** Leading icon. With no children the button becomes a circle. */
   icon?: React.ReactNode;
   children?: React.ReactNode;
@@ -33,7 +36,8 @@ export const GlassButton = React.forwardRef<HTMLButtonElement, GlassButtonProps>
       shimmer = true,
       thickness = 1,
       size = 'md',
-      variant = 'default',
+      variant = 'glass',
+      destructive = false,
       icon,
       className,
       style,
@@ -57,7 +61,9 @@ export const GlassButton = React.forwardRef<HTMLButtonElement, GlassButtonProps>
     });
 
     const iconOnly = icon != null && (children == null || children === false);
-    const kind = variant === 'ghost' ? 'clear' : variant;
+    // `destructive` as a variant predates the flag; both mean a red tint.
+    const red = destructive || variant === 'destructive';
+    const kind = variant === 'ghost' ? 'clear' : variant === 'default' || variant === 'destructive' ? 'glass' : variant;
 
     const classes = ['lg-glass', 'lg-button', `lg-button--${size}`, `lg-button--${kind}`, className]
       .filter(Boolean)
@@ -71,6 +77,7 @@ export const GlassButton = React.forwardRef<HTMLButtonElement, GlassButtonProps>
         data-liquid-glass=""
         data-icon-only={iconOnly ? '' : undefined}
         data-shimmer={shimmer ? '' : undefined}
+        data-destructive={red ? '' : undefined}
         style={tint ? ({ '--lg-tint': tint, ...style } as React.CSSProperties) : style}
         onPointerDown={(event) => {
           if (!rest.disabled) haptic();

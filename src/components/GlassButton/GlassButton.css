@@ -97,22 +97,34 @@
   --lg-glass-blur: 1.5px;
 }
 
-.lg-button--destructive {
+/* Tinted: regular glass, coloured label. */
+.lg-button--tinted {
+  color: var(--lg-tint, var(--lg-accent));
+}
+
+/* Destructive defaults the tint to red; an explicit `tint` still wins. */
+.lg-button[data-destructive] {
+  --lg-tint-default: var(--lg-red);
+}
+
+.lg-button--glass[data-destructive],
+.lg-button--clear[data-destructive],
+.lg-button--tinted[data-destructive] {
   color: var(--lg-tint, var(--lg-red));
 }
 
 .lg-button--filled {
-  --lg-glass-fill: var(--lg-tint, var(--lg-accent));
+  --lg-glass-fill: var(--lg-tint, var(--lg-tint-default, var(--lg-accent)));
   color: #fff;
 }
 
 .lg-button--filled[data-pressed] {
-  background-color: color-mix(in srgb, var(--lg-tint, var(--lg-accent)) 82%, #fff);
+  background-color: color-mix(in srgb, var(--lg-tint, var(--lg-tint-default, var(--lg-accent))) 82%, #fff);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .lg-button--filled:hover:not(:disabled) {
-    background-color: color-mix(in srgb, var(--lg-tint, var(--lg-accent)) 90%, #fff);
+    background-color: color-mix(in srgb, var(--lg-tint, var(--lg-tint-default, var(--lg-accent))) 90%, #fff);
   }
 }
 
