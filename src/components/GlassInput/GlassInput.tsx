@@ -49,7 +49,7 @@ export const GlassInput = React.forwardRef<HTMLInputElement, GlassInputProps>(
     const current = value ?? inner;
 
     useRefraction(fieldRef, { kind: 'surface', strength: Math.max(1, Math.min(10, intensity)) / 5 });
-    usePress(fieldRef, { grow: 6, lean: 3, stretch: 0.02, disabled });
+    usePress(fieldRef, { grow: 0.03, lean: 3, stretch: 0.03, disabled });
 
     const leading = icon ?? (type === 'search' ? Magnifier : null);
 

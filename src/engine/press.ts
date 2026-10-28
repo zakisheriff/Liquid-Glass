@@ -4,10 +4,14 @@
  * up where it's touched, then lets go with a soft jelly wobble.
  */
 import { useEffect } from 'react';
-import { SPRINGS, createSpring, rubberband } from './spring';
+import { SPRINGS, createSpring, rubberband, springFrom } from './spring';
+
+/** Finger-following feel: quick but never twitchy. */
+const FOLLOW = springFrom(0.2, 0.82);
 
 export interface PressOptions {
-  /** Extra px the larger side grows by on touch. Mouse uses ~45% of it. */
+  /** Swell on touch as a fraction (0.14 = 14%). Defaults to iOS sizing: small
+   *  circles swell ~20%, wide pills ~10%. Mouse presses swell a little less. */
   grow?: number;
   /** How far (px) the shape may lean toward a drag. */
   lean?: number;
@@ -17,7 +21,7 @@ export interface PressOptions {
 }
 
 export function usePress(ref: React.RefObject<HTMLElement | null>, options: PressOptions = {}) {
-  const { grow = 14, lean = 7, stretch = 0.08, disabled = false } = options;
+  const { grow, lean = 10, stretch = 0.2, disabled = false } = options;
 
   useEffect(() => {
     const el = ref.current;
@@ -53,16 +57,17 @@ export function usePress(ref: React.RefObject<HTMLElement | null>, options: Pres
       light(event, box);
       const dx = event.clientX - pointer.x;
       const dy = event.clientY - pointer.y;
-      const tx = rubberband(dx, box.width * 0.9, 0.35) * (lean / 12);
-      const ty = rubberband(dy, box.height * 0.9, 0.35) * (lean / 12);
+      const tx = rubberband(dx, lean * 2.2, 0.5);
+      const ty = rubberband(dy, lean * 2.2, 0.5);
       const dist = Math.hypot(dx, dy);
-      const pull = 1 - 1 / (1 + dist / 90);
-      const horizontal = Math.abs(dx) >= Math.abs(dy);
-      const s = 1 + stretch * pull;
-      to(
-        [base * (horizontal ? s : 1 / s), base * (horizontal ? 1 / s : s), tx, ty],
-        SPRINGS.drag,
-      );
+      // Surface tension: the drop elongates toward the finger, then saturates.
+      // The stretch blends continuously with direction (cos²/sin²), so moving
+      // from a sideways drag to a downward one morphs instead of flipping.
+      const pull = 1 - 1 / (1 + dist / 55);
+      const k = stretch * pull;
+      const cx = dist ? (dx / dist) ** 2 : 0;
+      const cy = dist ? (dy / dist) ** 2 : 0;
+      to([base * (1 + k * cx - k * 0.5 * cy), base * (1 + k * cy - k * 0.5 * cx), tx, ty], FOLLOW);
     };
 
     const move = (event: PointerEvent) => {
@@ -83,8 +88,11 @@ export function usePress(ref: React.RefObject<HTMLElement | null>, options: Pres
       if (!event.isPrimary || event.button !== 0 || pointer) return;
       if ((el as HTMLButtonElement).disabled || el.getAttribute('aria-disabled') === 'true') return;
       const box = el.getBoundingClientRect();
-      const amount = event.pointerType === 'mouse' ? grow * 0.45 : grow;
-      const base = 1 + amount / Math.max(el.offsetWidth, el.offsetHeight, 1);
+      const w = el.offsetWidth || 1;
+      const h = el.offsetHeight || 1;
+      const natural = Math.min(0.22, Math.max(0.07, 9 / Math.sqrt(w * h)));
+      const amount = (grow ?? natural) * (event.pointerType === 'mouse' ? 0.75 : 1);
+      const base = 1 + amount;
       pointer = { id: event.pointerId, x: event.clientX, y: event.clientY, box, base };
       el.dataset.pressed = '';
       light(event, box);

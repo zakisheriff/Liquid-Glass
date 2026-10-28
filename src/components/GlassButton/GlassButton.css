@@ -67,6 +67,10 @@
   transition-duration: 60ms;
 }
 
+.lg-button--filled {
+  --lg-glow: rgb(255 255 255 / 0.24);
+}
+
 .lg-button:not([data-shimmer])::after {
   display: none;
 }

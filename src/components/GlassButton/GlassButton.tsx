@@ -49,7 +49,7 @@ export const GlassButton = React.forwardRef<HTMLButtonElement, GlassButtonProps>
 
     const level = Math.max(1, Math.min(10, intensity));
     const height = size === 'sm' ? 36 : size === 'lg' ? 52 : 44;
-    usePress(ref, { grow: height * 0.32, disabled: rest.disabled });
+    usePress(ref, { disabled: rest.disabled });
     useRefraction(ref, {
       kind: 'surface',
       strength: level / 5,
