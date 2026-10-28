@@ -1,33 +1,30 @@
-import React, { useMemo } from 'react';
-import { useGlassFilterMounted } from '../../filters/LiquidGlassFilter';
+import React, { useImperativeHandle, useRef } from 'react';
+import { usePress } from '../../engine/press';
+import { useRefraction } from '../../engine/refraction';
+import { haptic } from '../../engine/haptics';
 import './GlassButton.css';
 
-export interface GlassButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  /** Blur intensity from 1 (subtle) to 10 (heavy). Default 5. */
+export interface GlassButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  /** Refraction strength from 1 (subtle) to 10 (heavy). Default 5. */
   intensity?: number;
-  /** CSS colour value used to tint the glass surface. */
+  /** Any CSS colour. Tints the label, or the fill for `filled`. */
   tint?: string;
-  /** Enable the animated shine overlay. Default true. */
+  /** Light bloom under the finger while pressed. Default true. */
   shimmer?: boolean;
-  /** Bevel border thickness in pixels. Default 1. */
+  /** Rim bevel scale (1–4). Wider bevels bend more of the backdrop. Default 1. */
   thickness?: number;
-  /** Predefined size preset. Default 'md'. */
+  /** Height preset: 36 / 44 / 52 px. Default 'md'. */
   size?: 'sm' | 'md' | 'lg';
-  /** Visual style variant. Default 'default'. */
-  variant?: 'default' | 'ghost' | 'destructive';
+  /**
+   * `default` regular glass · `clear` (alias `ghost`) see-through glass ·
+   * `filled` accent-coloured · `destructive` red label.
+   */
+  variant?: 'default' | 'ghost' | 'clear' | 'filled' | 'destructive';
+  /** Leading icon. With no children the button becomes a circle. */
+  icon?: React.ReactNode;
   children?: React.ReactNode;
 }
 
-/**
- * A glassmorphic button component inspired by the wabi.ai approach.
- *
- * Renders a 3‑layer structure:
- *  1. `.lg-root`    — outer wrapper for layout and stacking context
- *  2. `.lg-surface` — interactive `<button>` with backdrop‑filter, box‑shadow,
- *                     and a `::after` conic‑gradient border ring
- *  3. `.lg-shadow`  — decorative blurred gradient sitting behind the surface
- */
 export const GlassButton = React.forwardRef<HTMLButtonElement, GlassButtonProps>(
   (
     {
@@ -37,95 +34,55 @@ export const GlassButton = React.forwardRef<HTMLButtonElement, GlassButtonProps>
       thickness = 1,
       size = 'md',
       variant = 'default',
+      icon,
       className,
       style,
       children,
+      type = 'button',
+      onPointerDown,
       ...rest
     },
-    ref,
+    forwardedRef,
   ) => {
-    const isFilterMounted = useGlassFilterMounted();
-    const clampedIntensity = Math.max(1, Math.min(10, Math.round(intensity)));
+    const ref = useRef<HTMLButtonElement>(null);
+    useImperativeHandle(forwardedRef, () => ref.current!);
 
-    const glassStyle = useMemo<React.CSSProperties>(() => {
-      const filterId = `liquid-glass-refract-${clampedIntensity}`;
-      const vars: Record<string, string | number> = {
-        '--glass-blur': `${clampedIntensity * 2.4}px`,
-        '--glass-border-width': `${thickness}px`,
-        '--glass-refraction-filter': `url(#${filterId})`,
-      };
+    const level = Math.max(1, Math.min(10, intensity));
+    const height = size === 'sm' ? 36 : size === 'lg' ? 52 : 44;
+    usePress(ref, { grow: height * 0.32, disabled: rest.disabled });
+    useRefraction(ref, {
+      kind: 'surface',
+      strength: level / 5,
+      bezel: Math.min(height * 0.36, 22) * Math.max(0.5, thickness),
+    });
 
-      if (tint) {
-        vars['--glass-tint'] = tint;
-      }
+    const iconOnly = icon != null && (children == null || children === false);
+    const kind = variant === 'ghost' ? 'clear' : variant;
 
-      return vars as React.CSSProperties;
-    }, [clampedIntensity, tint, thickness]);
-
-    const rootClasses = [
-      'lg-root',
-      'lg-button',
-      `lg-button--${size}`,
-      `lg-button--${variant}`,
-      shimmer ? 'lg-button--shimmer' : '',
-      className ?? '',
-    ]
+    const classes = ['lg-glass', 'lg-button', `lg-button--${size}`, `lg-button--${kind}`, className]
       .filter(Boolean)
       .join(' ');
 
-    const freq1 = 0.012 + clampedIntensity * 0.001;
-    const freq2 = 0.01 + clampedIntensity * 0.0008;
-    const scale = clampedIntensity * 2;
-
     return (
-      <div className={rootClasses} data-liquid-glass style={{ ...glassStyle, ...style }}>
-        {!isFilterMounted && (
-          <svg
-            width="0"
-            height="0"
-            style={{ position: 'absolute', pointerEvents: 'none' }}
-            aria-hidden="true"
-          >
-            <defs>
-              <filter
-                id={`liquid-glass-refract-${clampedIntensity}`}
-                x="-10%"
-                y="-10%"
-                width="120%"
-                height="120%"
-                colorInterpolationFilters="sRGB"
-              >
-                <feTurbulence
-                  type="fractalNoise"
-                  baseFrequency={`${freq1} ${freq2}`}
-                  numOctaves={3}
-                  seed={42}
-                  result="noise"
-                />
-                <feDisplacementMap
-                  in="SourceGraphic"
-                  in2="noise"
-                  scale={scale}
-                  xChannelSelector="R"
-                  yChannelSelector="G"
-                />
-              </filter>
-            </defs>
-          </svg>
-        )}
-        <button
-          ref={ref}
-          className="lg-surface"
-          {...rest}
-        >
-          <span className="lg-content">{children}</span>
-        </button>
-        <div className="lg-backdrop-surface" aria-hidden="true" />
-        <div className="lg-shadow" aria-hidden="true" />
-      </div>
+      <button
+        ref={ref}
+        type={type}
+        className={classes}
+        data-liquid-glass=""
+        data-icon-only={iconOnly ? '' : undefined}
+        data-shimmer={shimmer ? '' : undefined}
+        style={tint ? ({ '--lg-tint': tint, ...style } as React.CSSProperties) : style}
+        onPointerDown={(event) => {
+          if (!rest.disabled) haptic();
+          onPointerDown?.(event);
+        }}
+        {...rest}
+      >
+        {icon != null && <span className="lg-button__icon">{icon}</span>}
+        {!iconOnly && children != null && <span className="lg-button__label">{children}</span>}
+      </button>
     );
   },
 );
 
 GlassButton.displayName = 'GlassButton';
-
