@@ -42,7 +42,7 @@ function SwitchTile() {
     <Tile title="Switch">
       <div className="stage stage--sunset">
         <GlassCard className="stage__list" padding="6px 18px" radius="26px">
-          {['Bringing Devices Together', 'Use Mobile Data', 'Live Activities'].map((label, i) => (
+          {['Wi-Fi', 'Use Mobile Data', 'Live Activities'].map((label, i) => (
             <div key={label} className="setting">
               <span className="setting__label">{label}</span>
               <GlassSwitch
