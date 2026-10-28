@@ -142,12 +142,21 @@ function ButtonTile() {
             <GlassButton size="lg" icon={<Share size={22} />} aria-label="Share" />
           </div>
           <div className="stage__row">
-            <GlassButton>Cancel</GlassButton>
-            <GlassButton variant="filled">Continue</GlassButton>
+            <GlassButton>Glass</GlassButton>
+            <GlassButton variant="filled">Filled</GlassButton>
+            <GlassButton variant="tinted">Tinted</GlassButton>
           </div>
           <div className="stage__row">
+            <GlassButton variant="filled" tint="#af52de">
+              Tinted filled
+            </GlassButton>
             <GlassButton variant="clear">Clear</GlassButton>
-            <GlassButton variant="destructive">Delete</GlassButton>
+          </div>
+          <div className="stage__row">
+            <GlassButton destructive>Destructive</GlassButton>
+            <GlassButton variant="filled" destructive>
+              Destructive filled
+            </GlassButton>
           </div>
         </div>
       </div>
