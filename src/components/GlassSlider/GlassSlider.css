@@ -114,6 +114,9 @@
 }
 
 .lg-slider__block.lg-glass {
+  /* Control Center: the empty part is a darker, see-through well. */
+  --lg-glass-fill: var(--lg-block-well);
+  --lg-glass-blur: 14px;
   position: absolute;
   inset: 0;
   border-radius: min(26px, 50%);
@@ -125,9 +128,9 @@
 .lg-slider__block-fill {
   position: absolute !important;
   inset: 0;
-  width: calc(100% * var(--lg-progress));
-  background: var(--lg-slider-fill, rgb(255 255 255 / 0.92));
-  z-index: 0 !important;
+  z-index: 1 !important;
+  background: var(--lg-slider-fill, var(--lg-block-lit));
+  clip-path: inset(0 calc(100% - 100% * var(--lg-progress)) 0 0);
 }
 
 .lg-slider__block-content {
@@ -141,7 +144,10 @@
   font-size: 14px;
   font-weight: 600;
   pointer-events: none;
-  mix-blend-mode: normal;
+}
+
+.lg-slider__block-content--lit {
+  color: var(--lg-block-lit-fg);
 }
 
 .lg-slider__icon {
