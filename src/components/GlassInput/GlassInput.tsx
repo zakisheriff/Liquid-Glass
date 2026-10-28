@@ -1,168 +1,112 @@
-import React, { useMemo, useId, useState, useCallback } from 'react';
-import { useGlassFilterMounted } from '../../filters/LiquidGlassFilter';
+import React, { useImperativeHandle, useRef, useState } from 'react';
+import { usePress } from '../../engine/press';
+import { useRefraction } from '../../engine/refraction';
 import './GlassInput.css';
 
-export interface GlassInputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
-  /** Blur intensity from 1 (subtle) to 10 (heavy). Default 5. */
+export interface GlassInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+  /** Refraction strength from 1 (subtle) to 10 (heavy). Default 5. */
   intensity?: number;
-  /** CSS colour value used to tint the glass surface. */
+  /** Colour for the caret and focus glow. */
   tint?: string;
-  /** Placeholder text for the input. */
   placeholder?: string;
-  /** Controlled value. */
   value?: string;
-  /** Change handler. */
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  /** Floating label text displayed above the input. */
+  /** Small label above the field. */
   label?: string;
+  /** Leading icon. `type="search"` gets a magnifier by default. */
+  icon?: React.ReactNode;
+  /** Trailing accessory, e.g. a microphone glyph. */
+  trailing?: React.ReactNode;
+  /** Called by the clear button. Without it, clearing emits an empty `onChange`. */
+  onClear?: () => void;
 }
 
-/**
- * A glassmorphic text input with floating label and edge‑diffraction focus glow.
- *
- * Uses the same 3‑layer wabi.ai structure as other Liquid Glass components.
- * On focus the conic‑gradient border animates and a pulsing box‑shadow with
- * hue‑rotate creates a prismatic edge‑diffraction effect.
- */
+const Magnifier = (
+  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
+    <circle cx="8.5" cy="8.5" r="5.75" />
+    <path d="m13 13 4 4" />
+  </svg>
+);
+
+const ClearGlyph = (
+  <svg viewBox="0 0 20 20" aria-hidden="true">
+    <circle cx="10" cy="10" r="9" fill="currentColor" />
+    <path d="m7 7 6 6m0-6-6 6" stroke="var(--lg-clear-x, #fff)" strokeWidth={1.7} strokeLinecap="round" />
+  </svg>
+);
+
+/** iOS 26 search / text field on regular glass. */
 export const GlassInput = React.forwardRef<HTMLInputElement, GlassInputProps>(
   (
-    {
-      intensity = 5,
-      tint,
-      placeholder,
-      value,
-      onChange,
-      label,
-      className,
-      style,
-      id: externalId,
-      ...rest
-    },
-    ref,
+    { intensity = 5, tint, label, icon, trailing, onClear, className, style, value, onChange, type = 'text', disabled, onFocus, onBlur, ...rest },
+    forwardedRef,
   ) => {
-    const autoId = useId();
-    const inputId = externalId ?? autoId;
-
+    const fieldRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+    useImperativeHandle(forwardedRef, () => inputRef.current!);
     const [focused, setFocused] = useState(false);
-    const [hasValue, setHasValue] = useState(() => Boolean(value));
+    const [inner, setInner] = useState('');
+    const current = value ?? inner;
 
-    const isFilterMounted = useGlassFilterMounted();
-    const clampedIntensity = Math.max(1, Math.min(10, Math.round(intensity)));
+    useRefraction(fieldRef, { kind: 'surface', strength: Math.max(1, Math.min(10, intensity)) / 5 });
+    usePress(fieldRef, { grow: 6, lean: 3, stretch: 0.02, disabled });
 
-    const handleFocus = useCallback(
-      (e: React.FocusEvent<HTMLInputElement>) => {
-        setFocused(true);
-        rest.onFocus?.(e);
-      },
-      [rest.onFocus],
-    );
+    const leading = icon ?? (type === 'search' ? Magnifier : null);
 
-    const handleBlur = useCallback(
-      (e: React.FocusEvent<HTMLInputElement>) => {
-        setFocused(false);
-        rest.onBlur?.(e);
-      },
-      [rest.onBlur],
-    );
-
-    const handleChange = useCallback(
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        setHasValue(e.target.value.length > 0);
-        onChange?.(e);
-      },
-      [onChange],
-    );
-
-    const glassStyle = useMemo<React.CSSProperties>(() => {
-      const filterId = `liquid-glass-refract-${clampedIntensity}`;
-      const vars: Record<string, string | number> = {
-        '--glass-blur': `${clampedIntensity * 2.4}px`,
-        '--glass-border-width': '1px',
-        '--glass-refraction-filter': `url(#${filterId})`,
-      };
-
-      if (tint) {
-        vars['--glass-tint'] = tint;
+    const clear = () => {
+      if (onClear) onClear();
+      else {
+        const input = inputRef.current!;
+        const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+        setter?.call(input, '');
+        input.dispatchEvent(new Event('input', { bubbles: true }));
       }
-
-      return vars as React.CSSProperties;
-    }, [clampedIntensity, tint]);
-
-    const rootClasses = [
-      'lg-root',
-      'lg-input',
-      focused ? 'lg-input--focused' : '',
-      hasValue || value ? 'lg-input--has-value' : '',
-      className ?? '',
-    ]
-      .filter(Boolean)
-      .join(' ');
-
-    const freq1 = 0.012 + clampedIntensity * 0.001;
-    const freq2 = 0.01 + clampedIntensity * 0.0008;
-    const scale = clampedIntensity * 2;
+      inputRef.current?.focus();
+    };
 
     return (
-      <div className={rootClasses} data-liquid-glass style={{ ...glassStyle, ...style }}>
-        {!isFilterMounted && (
-          <svg
-            width="0"
-            height="0"
-            style={{ position: 'absolute', pointerEvents: 'none' }}
-            aria-hidden="true"
-          >
-            <defs>
-              <filter
-                id={`liquid-glass-refract-${clampedIntensity}`}
-                x="-10%"
-                y="-10%"
-                width="120%"
-                height="120%"
-                colorInterpolationFilters="sRGB"
-              >
-                <feTurbulence
-                  type="fractalNoise"
-                  baseFrequency={`${freq1} ${freq2}`}
-                  numOctaves={3}
-                  seed={42}
-                  result="noise"
-                />
-                <feDisplacementMap
-                  in="SourceGraphic"
-                  in2="noise"
-                  scale={scale}
-                  xChannelSelector="R"
-                  yChannelSelector="G"
-                />
-              </filter>
-            </defs>
-          </svg>
-        )}
-        <div className="lg-surface lg-input__surface">
-          <div className="lg-content lg-input__content">
-            {label && (
-              <label className="lg-input__label" htmlFor={inputId}>
-                {label}
-              </label>
-            )}
-            <input
-              ref={ref}
-              id={inputId}
-              className="lg-input__field"
-              type="text"
-              placeholder={label ? undefined : placeholder}
-              value={value}
-              onChange={handleChange}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              {...rest}
-            />
-          </div>
+      <label
+        className={['lg-input', className].filter(Boolean).join(' ')}
+        data-liquid-glass=""
+        style={tint ? ({ '--lg-input-tint': tint, ...style } as React.CSSProperties) : style}
+      >
+        {label && <span className="lg-input__label">{label}</span>}
+        <div ref={fieldRef} className="lg-glass lg-input__field" data-focused={focused ? '' : undefined}>
+          {leading && <span className="lg-input__icon">{leading}</span>}
+          <input
+            ref={inputRef}
+            type={type}
+            value={current}
+            disabled={disabled}
+            onChange={(event) => {
+              if (value === undefined) setInner(event.target.value);
+              onChange?.(event);
+            }}
+            onFocus={(event) => {
+              setFocused(true);
+              onFocus?.(event);
+            }}
+            onBlur={(event) => {
+              setFocused(false);
+              onBlur?.(event);
+            }}
+            {...rest}
+          />
+          {current && !disabled ? (
+            <button
+              type="button"
+              className="lg-input__clear"
+              aria-label="Clear"
+              onPointerDown={(event) => event.preventDefault()}
+              onClick={clear}
+            >
+              {ClearGlyph}
+            </button>
+          ) : (
+            trailing && <span className="lg-input__icon lg-input__trailing">{trailing}</span>
+          )}
         </div>
-        <div className="lg-backdrop-surface lg-input__backdrop-surface" aria-hidden="true" />
-        <div className="lg-shadow" aria-hidden="true" />
-      </div>
+      </label>
     );
   },
 );
