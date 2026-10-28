@@ -24,7 +24,10 @@
     ],
     "paths": {
       "@zakisheriff/liquid-glass": [
-        "../src/index.ts"
+        "../node_modules/liquid-glass-release"
+      ],
+      "@zakisheriff/liquid-glass/styles.css": [
+        "../node_modules/liquid-glass-release/dist/index.css"
       ],
       "@/*": [
         "./*"

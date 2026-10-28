@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
   output: 'export',
   trailingSlash: false,
   images: { unoptimized: true },
-  // The site renders the library straight from ../src.
+  // tsconfig resolves library imports to the pinned npm release.
   turbopack: { root },
   outputFileTracingRoot: root,
 };
