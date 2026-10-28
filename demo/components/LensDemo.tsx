@@ -90,9 +90,10 @@ export function LensDemo() {
       <div ref={stage} className="lens-demo preview-scope" data-theme={mode}>
         <PreviewThemeToggle label="Refraction" mode={mode} onChange={setMode} />
         <div ref={poster} className="lens-demo__poster" aria-hidden="true">
+          <span className="lens-demo__title">Liquid Glass</span>
           <canvas ref={canvas} className="lens-demo__optics" />
         </div>
-        <div ref={lens} className="lg-glass lens-demo__lens" role="img" aria-label="Draggable Liquid Glass blob"><span>Liquid Glass</span></div>
+        <div ref={lens} className="lg-glass lens-demo__lens" role="img" aria-label="Draggable Liquid Glass blob" />
         <RefractionPlayground />
       </div>
     </section>

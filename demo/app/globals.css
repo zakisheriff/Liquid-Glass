@@ -1573,16 +1573,16 @@ html[data-morph] .hero__title-text[data-docked] {
   user-select: none;
 }
 
-.lens-demo__lens > span {
+.lens-demo__title {
   position: absolute;
-  inset: 0;
-  z-index: 2;
-  display: grid;
-  place-items: center;
+  top: 105px;
+  left: 50%;
+  transform: translate(-50%, -50%);
   pointer-events: none;
   color: #f1f3f6;
   font-family: var(--display);
-  font-size: clamp(28px, 3.2vw, 42px);
+  font-size: clamp(40px, 10vw, 112px);
+  line-height: 1;
   font-weight: 700;
   letter-spacing: -0.03em;
   text-shadow: 0 2px 30px rgb(0 0 0 / 0.08);
@@ -1688,7 +1688,7 @@ html[data-morph] .hero__title-text[data-docked] {
   position: absolute;
   top: 0;
   left: 0;
-  width: clamp(220px, 31%, 340px);
+  width: clamp(220px, 40%, 420px);
   height: 174px;
   border-radius: 999px;
   cursor: grab;
@@ -1719,6 +1719,10 @@ html[data-morph] .hero__title-text[data-docked] {
 
 .lens-demo[data-optics='ready'] .lens-demo__optics {
   visibility: visible;
+}
+
+.lens-demo[data-optics='ready'] .lens-demo__title {
+  visibility: hidden;
 }
 
 .lens-demo[data-optics='ready'] .lens-demo__lens.lg-glass {
