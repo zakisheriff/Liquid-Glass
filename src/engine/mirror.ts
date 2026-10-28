@@ -178,6 +178,12 @@ export function mirrorBackdrop(
     root.style.margin = '0px';
     root.style.width = `${sw}px`;
     root.style.height = `${sh}px`;
+    // The copy sits in a small viewport; size limits like max-width: 100%
+    // would squeeze it there instead of matching the original.
+    root.style.maxWidth = 'none';
+    root.style.maxHeight = 'none';
+    root.style.minWidth = '0px';
+    root.style.minHeight = '0px';
     root.style.scale = 'none';
     root.style.translate = 'none';
     root.style.transformOrigin = '0 0';
