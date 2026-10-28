@@ -1091,7 +1091,6 @@ html[data-morph] .hero__title-text[data-docked] {
   margin-top: 48px;
   overflow: hidden;
   border-radius: 28px;
-  touch-action: none;
 }
 
 /* Wallpaper with a glossy swoosh and big white type, as in Apple's art. */
@@ -1121,6 +1120,8 @@ html[data-morph] .hero__title-text[data-docked] {
   height: 174px;
   border-radius: 999px;
   cursor: grab;
+  /* Only lens drags own the gesture; swipes on the poster scroll the page. */
+  touch-action: none;
   --lg-glass-fill: rgb(255 255 255 / 0.025);
   --lg-glass-blur: 0px;
   --lg-saturate: 1;
