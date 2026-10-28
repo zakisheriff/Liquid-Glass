@@ -1050,8 +1050,47 @@ html[data-morph] .hero__title-text[data-docked] {
   display: flex;
   align-items: center;
   gap: 10px;
+  max-width: 100%;
+  min-width: 0;
   font-size: 13px;
   color: var(--muted);
+}
+
+/* Options shrink to the tile rather than spilling out of it. */
+.choice .lg-track {
+  --lg-item-w: 0px;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.choice .lg-track__item {
+  min-width: 0;
+  padding-inline: 12px;
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .tile__options {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  /* Label above its control, the control spanning the tile. */
+  .choice {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    text-align: center;
+  }
+
+  .choice .lg-track {
+    width: 100%;
+  }
+
+  .choice .lg-track__item {
+    padding-inline: 4px;
+  }
 }
 
 /* Menu tile: a little app toolbar for the pull-down menu to grow out of. */
