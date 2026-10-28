@@ -27,7 +27,7 @@ export interface GlassShape {
   thickness?: number;
   /** Index of refraction. Glass ≈ 1.5. */
   ior?: number;
-  /** Interior magnification (lens only). 1 = none. */
+  /** Interior magnification (lens only). 1 = none, below 1 minifies. */
   zoom?: number;
   /** Chromatic split strength, 0–1. */
   dispersion?: number;
@@ -111,7 +111,8 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
 
   const lens = shape.kind === 'lens';
   const shift = bevelProfile(shape.bezel, shape.thickness, shape.ior);
-  const magnify = lens ? 1 - 1 / Math.max(1, shape.zoom) : 0;
+  // Below 1 the lens minifies (iOS switch knobs show the track slightly smaller).
+  const magnify = lens ? 1 - 1 / Math.max(0.5, shape.zoom) : 0;
   const direction = lens ? 1 : -1;
 
   const dx = new Float32Array(cw * ch);

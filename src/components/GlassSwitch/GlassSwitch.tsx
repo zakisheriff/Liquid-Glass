@@ -50,7 +50,9 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
     };
     const sync = useRef<((value: boolean) => void) | null>(null);
 
-    useRefraction(thumbRef, { kind: 'lens', zoom: 1.45, strength: Math.max(1, Math.min(10, intensity)) / 5 }, true, ref, () =>
+    // iOS shows the track a little smaller inside the knob, leaving clear glass
+    // above and below it, rather than a magnified wall of colour.
+    useRefraction(thumbRef, { kind: 'lens', zoom: 0.82, strength: Math.max(1, Math.min(10, intensity)) / 5 }, true, ref, () =>
       parseFloat(ref.current?.style.getPropertyValue('--lg-lift') || '0') > 0.01,
     );
 
