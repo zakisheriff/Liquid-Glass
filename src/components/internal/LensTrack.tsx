@@ -40,7 +40,10 @@ export function LensTrack({
   // rainbow fringe.
   // Where the backdrop can't be filtered (Safari, Firefox) the lens refracts a
   // live copy of the bar instead, so the icons still magnify inside it.
-  useRefraction(lens, { kind: 'lens', strength: 0.85, zoom, dispersion: 0.35 }, true, bar, () =>
+  const overhang = tabbar ? 14 : 12;
+  // Only the part of the lens over the bar bends; where it rises past the bar
+  // it stays clear glass.
+  useRefraction(lens, { kind: 'lens', strength: 0.85, zoom, dispersion: 0.35, inset: overhang / 2 }, true, bar, () =>
     bar.current?.hasAttribute('data-lifted') ?? false,
   );
 
@@ -50,7 +53,7 @@ export function LensTrack({
       count: items.length,
       index,
       onSelect: (next) => onChange?.(next),
-      overhang: tabbar ? 14 : 12,
+      overhang,
       spread: tabbar ? 0.3 : 0.16,
       contentZoom: zoom,
       copied: typeof window !== 'undefined' && !canRefractBackdrop(),

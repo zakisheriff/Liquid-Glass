@@ -37,6 +37,12 @@ export interface GlassShape {
   /** Overall displacement multiplier. */
   strength?: number;
   /**
+   * Margin (px) along the top and bottom of a lens that stays clear and
+   * unbent, e.g. where a tab-bar lens rises past its bar: only the part over
+   * the bar refracts, so the bar's edge isn't pulled into a second outline.
+   */
+  inset?: number;
+  /**
    * Draw the lens from a live copy of `mirror` in every browser, not only
    * where backdrop refraction is missing. Needed for a minifying lens: a
    * backdrop filter can't see past the element's own edge.
@@ -134,6 +140,14 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   const hw = width / 2;
   const hh = height / 2;
   const px1 = 1 / density;
+  // How much of the bend applies at a given height: all of it inside the band,
+  // fading to none across ~3px into the clear top/bottom margins.
+  const edge = hh - shape.inset;
+  const band = (py: number) => {
+    if (!shape.inset) return 1;
+    const t = clamp((Math.abs(py) - (edge - 2)) / 3, 0, 1);
+    return 1 - t * t * (3 - 2 * t);
+  };
 
   for (let y = 0; y < ch; y++) {
     for (let x = 0; x < cw; x++) {
@@ -162,14 +176,14 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
       }
 
       const i = y * cw + x;
-      const s = shift(d) * shape.strength * direction;
+      const s = shift(d) * shape.strength * direction * band(py);
       // Edge bend only; magnification runs as its own pass so colour
       // splits only where the glass actually curves.
       let vx = nx * s;
       let vy = ny * s;
       if (simple && magnify) {
-        vx -= px * magnify;
-        vy -= py * magnify;
+        vx -= px * magnify * band(py);
+        vy -= py * magnify * band(py);
       }
       dx[i] = vx;
       dy[i] = vy;
@@ -217,8 +231,9 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
         const o = (y * cw + x) * 4;
         const px = ((x + 0.5) * W) / cw - W / 2;
         const py = ((y + 0.5) * H) / ch - H / 2;
-        ramp.data[o] = Math.round(127.5 - (px / reach) * 127.5);
-        ramp.data[o + 1] = Math.round(127.5 - (py / reach) * 127.5);
+        const k = band(py);
+        ramp.data[o] = Math.round(127.5 - (px / reach) * 127.5 * k);
+        ramp.data[o + 1] = Math.round(127.5 - (py / reach) * 127.5 * k);
         ramp.data[o + 2] = 128;
         ramp.data[o + 3] = 255;
       }
@@ -352,6 +367,7 @@ function resolve(shape: GlassShape, width: number, height: number): Required<Gla
     zoomX: shape.zoomX ?? shape.zoom ?? (lens ? 1.16 : 1),
     dispersion: shape.dispersion ?? (lens ? 1 : 0),
     strength: shape.strength ?? 1,
+    inset: shape.inset ?? 0,
     copy: shape.copy ?? false,
   };
 }
@@ -361,7 +377,7 @@ export function glassFor(width: number, height: number, radius: number, shape: G
   const h = Math.round(height);
   const r = Math.min(w / 2, h / 2, Math.max(0, radius));
   const full = resolve(shape, w, h);
-  const key = [w, h, Math.round(r * 2) / 2, full.kind, full.bezel.toFixed(1), full.thickness.toFixed(1), full.ior, full.zoom, full.dispersion, full.strength, pad, simple].join('|');
+  const key = [w, h, Math.round(r * 2) / 2, full.kind, full.bezel.toFixed(1), full.thickness.toFixed(1), full.ior, full.zoom, full.dispersion, full.strength, full.inset, pad, simple].join('|');
   let baked = cache.get(key);
   if (!baked) {
     baked = bake(w, h, r, full, pad, simple);
