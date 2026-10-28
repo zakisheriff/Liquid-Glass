@@ -13,6 +13,8 @@ const isIOS = () =>
 
 export function haptic(): void {
   if (typeof window === 'undefined') return;
+  // Only touch screens can buzz; skip the call (and Chrome's console warning) elsewhere.
+  if (!matchMedia('(pointer: coarse)').matches) return;
   try {
     if (typeof navigator.vibrate === 'function' && !isIOS()) {
       navigator.vibrate(8);
