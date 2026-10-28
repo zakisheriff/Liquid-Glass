@@ -1573,14 +1573,16 @@ html[data-morph] .hero__title-text[data-docked] {
   user-select: none;
 }
 
-.lens-demo__poster span {
+.lens-demo__lens > span {
   position: absolute;
-  top: 90px;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
   color: #f1f3f6;
   font-family: var(--display);
-  font-size: clamp(32px, 5vw, 64px);
+  font-size: clamp(28px, 3.2vw, 42px);
   font-weight: 700;
   letter-spacing: -0.03em;
   text-shadow: 0 2px 30px rgb(0 0 0 / 0.08);
@@ -1717,10 +1719,6 @@ html[data-morph] .hero__title-text[data-docked] {
 
 .lens-demo[data-optics='ready'] .lens-demo__optics {
   visibility: visible;
-}
-
-.lens-demo[data-optics='ready'] .lens-demo__poster > span {
-  visibility: hidden;
 }
 
 .lens-demo[data-optics='ready'] .lens-demo__lens.lg-glass {

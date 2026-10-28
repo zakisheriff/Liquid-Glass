@@ -17,7 +17,7 @@ export function LensDemo() {
     () => stage.current?.dataset.optics !== 'ready');
   usePress(lens, { grow: 0.12, lean: 0, stretch: 0.14 });
 
-  useEffect(() => mountLensOptics(stage.current!, poster.current!, lens.current!, canvas.current!), []);
+  useEffect(() => mountLensOptics(stage.current!, lens.current!, canvas.current!), []);
 
   useEffect(() => {
     const area = stage.current!;
@@ -67,7 +67,9 @@ export function LensDemo() {
     el.addEventListener('pointermove', move);
     el.addEventListener('pointerup', up);
     el.addEventListener('pointercancel', up);
-    window.addEventListener('resize', center);
+    const resize = new ResizeObserver(center);
+    resize.observe(area);
+    resize.observe(el);
     return () => {
       x.stop();
       y.stop();
@@ -75,7 +77,7 @@ export function LensDemo() {
       el.removeEventListener('pointermove', move);
       el.removeEventListener('pointerup', up);
       el.removeEventListener('pointercancel', up);
-      window.removeEventListener('resize', center);
+      resize.disconnect();
     };
   }, []);
 
@@ -83,15 +85,14 @@ export function LensDemo() {
     <PreviewThemeContext.Provider value={mode}>
     <section className="lens-section" id="refraction">
       <header className="section-head">
-        <h2>Light, bent for real.</h2>
+        <h2>Everything in one place.</h2>
       </header>
       <div ref={stage} className="lens-demo preview-scope" data-theme={mode}>
         <PreviewThemeToggle label="Refraction" mode={mode} onChange={setMode} />
         <div ref={poster} className="lens-demo__poster" aria-hidden="true">
-          <span>Liquid Glass</span>
           <canvas ref={canvas} className="lens-demo__optics" />
         </div>
-        <div ref={lens} className="lg-glass lens-demo__lens" role="img" aria-label="Draggable glass lens" />
+        <div ref={lens} className="lg-glass lens-demo__lens" role="img" aria-label="Draggable Liquid Glass blob"><span>Liquid Glass</span></div>
         <RefractionPlayground />
       </div>
     </section>

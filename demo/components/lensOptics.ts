@@ -1,7 +1,7 @@
-/** Render the poster through a convex lens, including on Safari where SVG
- * displacement cannot filter a live backdrop. Both views share one texture,
- * so the lettering and wallpaper stay aligned as the droplet moves. */
-export function mountLensOptics(stage: HTMLElement, poster: HTMLElement, lens: HTMLElement, canvas: HTMLCanvasElement) {
+/** Render the wallpaper through a convex lens, including on Safari where SVG
+ * displacement cannot filter a live backdrop. The title lives inside the
+ * draggable blob so it stays centered as the droplet moves. */
+export function mountLensOptics(stage: HTMLElement, lens: HTMLElement, canvas: HTMLCanvasElement) {
   const gl = canvas.getContext('webgl', { alpha: false, antialias: false, depth: false, preserveDrawingBuffer: false });
   if (!gl) return;
 
@@ -132,16 +132,6 @@ export function mountLensOptics(stage: HTMLElement, poster: HTMLElement, lens: H
     const iw = image.naturalWidth * cover;
     const ih = image.naturalHeight * cover;
     context.drawImage(image, (width - iw) / 2, (height - ih) / 2, iw, ih);
-    const title = poster.querySelector('span')!;
-    const style = getComputedStyle(title);
-    context.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
-    context.letterSpacing = style.letterSpacing;
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
-    context.fillStyle = getComputedStyle(title).color;
-    const area = stage.getBoundingClientRect();
-    const text = title.getBoundingClientRect();
-    context.fillText(title.textContent || '', (text.left - area.left + text.width / 2) * width / area.width, (text.top - area.top + text.height / 2) * height / area.height);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
     gl.viewport(0, 0, canvas.width, canvas.height);
