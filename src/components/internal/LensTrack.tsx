@@ -35,9 +35,10 @@ export function LensTrack({
   const zoom = tabbar ? 1.14 : 1.1;
 
   useRefraction(glass, { kind: 'surface', strength });
-  // Keep the centre magnification, with a thin clean rim. Strong bevel
-  // displacement folds the bar's border into a second outline on each side.
-  useRefraction(lens, { kind: 'lens', strength: 0, zoom, dispersion: 0, bezel: 2 });
+  // iOS: a magnified centre and a thick rounded rim that bends whatever sits
+  // under its edge (icons, labels, the bar's own border) with a faint
+  // rainbow fringe.
+  useRefraction(lens, { kind: 'lens', strength: 0.85, zoom, dispersion: 0.35 });
 
   useLensTrack(
     { bar, glass, lens, select },

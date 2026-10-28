@@ -39,7 +39,7 @@
 
   --lg-tab-selection: rgb(0 0 0 / 0.07);
   --lg-segment-selection: rgb(0 0 0 / 0.08);
-  --lg-track: rgb(120 120 128 / 0.16);
+  --lg-track: rgb(120 120 128 / 0.26);
   --lg-rail: rgb(120 120 128 / 0.2);
   --lg-block-well: rgb(120 120 128 / 0.24);
   --lg-block-lit: #ffffff;
@@ -81,7 +81,7 @@
   --lg-menu-fill: rgb(38 38 42 / 0.94);
   --lg-tab-selection: rgb(0 0 0 / 0.36);
   --lg-segment-selection: rgb(255 255 255 / 0.14);
-  --lg-track: rgb(120 120 128 / 0.36);
+  --lg-track: rgb(120 120 128 / 0.44);
   --lg-rail: rgb(120 120 128 / 0.4);
   --lg-block-well: rgb(120 120 128 / 0.3);
   --lg-block-lit: #ffffff;
@@ -123,7 +123,7 @@
     --lg-menu-fill: rgb(38 38 42 / 0.94);
     --lg-tab-selection: rgb(0 0 0 / 0.36);
     --lg-segment-selection: rgb(255 255 255 / 0.14);
-    --lg-track: rgb(120 120 128 / 0.36);
+    --lg-track: rgb(120 120 128 / 0.44);
     --lg-rail: rgb(120 120 128 / 0.4);
     --lg-thumb-shadow: 0 3px 8px rgb(0 0 0 / 0.3), 0 1px 1px rgb(0 0 0 / 0.16);
     --lg-block-well: rgb(120 120 128 / 0.3);
