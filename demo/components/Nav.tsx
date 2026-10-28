@@ -62,14 +62,17 @@ function useTitleMorph(bar: React.RefObject<HTMLDivElement | null>, brand: React
     let frame = 0;
     const paint = () => {
       frame = 0;
-      if (root.dataset.morph !== 'script') return;
       const e = still ? 1 : smooth(Math.min(1, Math.max(0, window.scrollY / distance)));
+      const done = e >= 0.995;
+      // Safari can defer its scroll timeline after an anchor/scrollIntoView
+      // jump. Synchronize the handoff even when the compositor owns motion.
+      nav.dataset.brand = done ? 'shown' : '';
+      title.toggleAttribute('data-docked', done);
+      if (root.dataset.morph !== 'script') return;
       const s = 1 - (1 - k) * e;
       nav.style.setProperty('--p', String(e));
       title.style.transform = `translate(${fx * e}px, ${fy * e}px) scale(${s})`;
-      const done = e >= 0.995;
       title.style.opacity = done ? '0' : '';
-      nav.dataset.brand = done ? 'shown' : '';
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(paint);
@@ -82,15 +85,21 @@ function useTitleMorph(bar: React.RefObject<HTMLDivElement | null>, brand: React
     measure();
     paint();
     window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('scrollend', schedule);
+    window.addEventListener('hashchange', schedule);
     window.addEventListener('resize', resize);
     document.fonts?.ready.then(resize);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener('scroll', schedule);
+      window.removeEventListener('scrollend', schedule);
+      window.removeEventListener('hashchange', schedule);
       window.removeEventListener('resize', resize);
       delete root.dataset.morph;
       title.style.transform = '';
       title.style.opacity = '';
+      title.removeAttribute('data-docked');
+      delete nav.dataset.brand;
     };
   }, [bar, brand]);
 }

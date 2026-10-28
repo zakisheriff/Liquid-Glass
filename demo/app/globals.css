@@ -157,6 +157,21 @@ html[data-morph='native'] .hero__title-text {
   animation-range: 0 var(--fly-distance);
 }
 
+/* Explicit endpoint handoff also covers programmatic anchor jumps. */
+html[data-morph] .nav[data-brand='shown'] {
+  --p: 1 !important;
+}
+
+html[data-morph] .nav[data-brand='shown'] .nav__brand span {
+  animation: none;
+  opacity: 1;
+}
+
+html[data-morph] .hero__title-text[data-docked] {
+  animation: none;
+  opacity: 0;
+}
+
 @keyframes lg-brand-slot {
   from {
     --p: 0;
