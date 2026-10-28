@@ -93,12 +93,16 @@ function bevelProfile(bezel: number, thickness: number, ior: number) {
   };
 }
 
-function bake(width: number, height: number, radius: number, shape: Required<GlassShape>): Baked {
+function bake(width: number, height: number, radius: number, shape: Required<GlassShape>, pad = 0): Baked {
+  // `pad` widens the baked canvas around the shape: mirrored backdrops need
+  // room for light the rim bends in from beyond the glass's own edge.
+  const W = width + pad * 2;
+  const H = height + pad * 2;
   // Keep the bake under ~400k samples; the field is smooth so this is lossless enough.
   let density = Math.min(typeof devicePixelRatio === 'number' ? devicePixelRatio : 1, 2);
-  while (width * height * density * density > 400_000 && density > 0.35) density *= 0.75;
-  const cw = Math.max(1, Math.ceil(width * density));
-  const ch = Math.max(1, Math.ceil(height * density));
+  while (W * H * density * density > 400_000 && density > 0.35) density *= 0.75;
+  const cw = Math.max(1, Math.ceil(W * density));
+  const ch = Math.max(1, Math.ceil(H * density));
 
   const lens = shape.kind === 'lens';
   const shift = bevelProfile(shape.bezel, shape.thickness, shape.ior);
@@ -109,6 +113,7 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   const dy = new Float32Array(cw * ch);
   const rimA = new Float32Array(cw * ch);
   const rimHue = new Float32Array(cw * ch);
+  const inside = new Float32Array(cw * ch);
   let max = 0.0001;
 
   const hw = width / 2;
@@ -117,8 +122,8 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
 
   for (let y = 0; y < ch; y++) {
     for (let x = 0; x < cw; x++) {
-      const px = ((x + 0.5) * width) / cw - hw;
-      const py = ((y + 0.5) * height) / ch - hh;
+      const px = ((x + 0.5) * W) / cw - W / 2;
+      const py = ((y + 0.5) * H) / ch - H / 2;
 
       // Signed distance to a rounded rect (positive inside, from the edge).
       const qx = Math.abs(px) - (hw - radius);
@@ -152,6 +157,8 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
       const m = Math.max(Math.abs(vx), Math.abs(vy));
       if (m > max) max = m;
 
+      inside[i] = clamp(d / px1 + 0.5, 0, 1);
+
       if (d >= -px1) {
         // Light falls from the upper left; Liquid Glass catches it on both
         // diagonal corners (direct + internally reflected).
@@ -182,15 +189,15 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   ctx.putImageData(field, 0, 0);
   const map = canvas.toDataURL();
 
-  const reach = Math.max(hw, hh);
+  const reach = Math.max(W, H) / 2;
   let zoomMap = '';
   if (magnify) {
     const ramp = ctx.createImageData(cw, ch);
     for (let y = 0; y < ch; y++) {
       for (let x = 0; x < cw; x++) {
         const o = (y * cw + x) * 4;
-        const px = ((x + 0.5) * width) / cw - hw;
-        const py = ((y + 0.5) * height) / ch - hh;
+        const px = ((x + 0.5) * W) / cw - W / 2;
+        const py = ((y + 0.5) * H) / ch - H / 2;
         ramp.data[o] = Math.round(127.5 - (px / reach) * 127.5);
         ramp.data[o + 1] = Math.round(127.5 - (py / reach) * 127.5);
         ramp.data[o + 2] = 128;
@@ -210,7 +217,7 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
     if (lens && shape.dispersion > 0) {
       // Iridescent rim on lenses: hue drifts around the edge.
       const h = rimHue[i];
-      const k = 0.28 * shape.dispersion;
+      const k = 0.14 * shape.dispersion;
       r = 255 * (1 - k + k * (0.5 + 0.5 * Math.cos(h)));
       g = 255 * (1 - k + k * (0.5 + 0.5 * Math.cos(h - 2.1)));
       b = 255 * (1 - k + k * (0.5 + 0.5 * Math.cos(h + 2.1)));
@@ -223,13 +230,31 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   ctx.putImageData(shine, 0, 0);
   const rim = canvas.toDataURL();
 
+  // Exact rounded-rect alpha: the filter's output is a rectangle, and bent
+  // light sampled past the rim must not leak into the corners.
+  const shapeMask = ctx.createImageData(cw, ch);
+  for (let i = 0; i < cw * ch; i++) {
+    const o = i * 4;
+    shapeMask.data[o] = shapeMask.data[o + 1] = shapeMask.data[o + 2] = 255;
+    shapeMask.data[o + 3] = Math.round(inside[i] * 255);
+  }
+  ctx.putImageData(shapeMask, 0, 0);
+  const mask = canvas.toDataURL();
+
   const id = `lg-refract-${++counter}`;
-  const box = { x: 0, y: 0, width, height };
+  // Region in the element's own box (objectBoundingBox): WebKit only renders
+  // feImage maps this way; Chromium accepts it for backdrop filters too.
+  // Primitive units stay in px so displacement scales are real pixels.
+  // Maps get explicit px sizes: WebKit otherwise draws them at their native
+  // (devicePixelRatio-scaled) size instead of stretching them over the box.
+  const box = { x: 0, y: 0, width: W, height: H };
   const filter = el('filter', {
     id,
-    ...box,
-    filterUnits: 'userSpaceOnUse',
-    primitiveUnits: 'userSpaceOnUse',
+    // Generous region: the rim samples content from beyond the glass edge.
+    x: -0.5,
+    y: -0.5,
+    width: 2,
+    height: 2,
     'color-interpolation-filters': 'sRGB',
   });
   filter.append(el('feImage', { href: map, ...box, preserveAspectRatio: 'none', result: 'field' }));
@@ -272,7 +297,7 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
     }
     filter.append(
       el('feComposite', { in: 'r', in2: 'g', operator: 'arithmetic', k2: 1, k3: 1, result: 'rg' }),
-      el('feComposite', { in: 'rg', in2: 'b', operator: 'arithmetic', k2: 1, k3: 1 }),
+      el('feComposite', { in: 'rg', in2: 'b', operator: 'arithmetic', k2: 1, k3: 1, result: 'bent' }),
     );
   } else {
     filter.append(
@@ -282,9 +307,14 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
         scale,
         xChannelSelector: 'R',
         yChannelSelector: 'G',
+        result: 'bent',
       }),
     );
   }
+  filter.append(
+    el('feImage', { href: mask, ...box, preserveAspectRatio: 'none', result: 'shape' }),
+    el('feComposite', { in: 'bent', in2: 'shape', operator: 'in' }),
+  );
 
   container().append(filter);
   return { filter: `url(#${id})`, rim: `url("${rim}")` };
@@ -305,15 +335,15 @@ function resolve(shape: GlassShape, width: number, height: number): Required<Gla
   };
 }
 
-export function glassFor(width: number, height: number, radius: number, shape: GlassShape = {}): Baked {
+export function glassFor(width: number, height: number, radius: number, shape: GlassShape = {}, pad = 0): Baked {
   const w = Math.round(width);
   const h = Math.round(height);
   const r = Math.min(w / 2, h / 2, Math.max(0, radius));
   const full = resolve(shape, w, h);
-  const key = [w, h, Math.round(r * 2) / 2, full.kind, full.bezel.toFixed(1), full.thickness.toFixed(1), full.ior, full.zoom, full.dispersion, full.strength].join('|');
+  const key = [w, h, Math.round(r * 2) / 2, full.kind, full.bezel.toFixed(1), full.thickness.toFixed(1), full.ior, full.zoom, full.dispersion, full.strength, pad].join('|');
   let baked = cache.get(key);
   if (!baked) {
-    baked = bake(w, h, r, full);
+    baked = bake(w, h, r, full, pad);
     cache.set(key, baked);
   }
   return baked;
@@ -356,13 +386,16 @@ export function useRefraction(
     const live = canRefractBackdrop();
     let cancel: (() => void) | undefined;
     let filter = '';
+    let pad = 0;
 
     const fit = () => {
       const width = element.offsetWidth;
       const height = element.offsetHeight;
       if (!width || !height) return;
-      const baked = glassFor(width, height, cornerRadius(element, width, height), shape);
+      const radius = cornerRadius(element, width, height);
+      const baked = glassFor(width, height, radius, shape);
       filter = baked.filter;
+      if (!live && mirror?.current) pad = Math.ceil(Math.min(width, height) * 0.45 + 6);
       if (live) element.style.setProperty('--lg-filter', baked.filter);
       element.style.setProperty('--lg-rim', baked.rim);
     };
@@ -375,7 +408,7 @@ export function useRefraction(
     fit();
 
     const source = mirror?.current;
-    const unmirror = !live && source ? mirrorBackdrop(element, source, () => filter) : undefined;
+    const unmirror = !live && source ? mirrorBackdrop(element, source, () => filter, () => pad) : undefined;
 
     return () => {
       cancel?.();
