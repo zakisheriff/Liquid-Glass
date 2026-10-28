@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { GlassButton, GlassCard, GlassInput, GlassMenu, GlassNav, GlassSegmented, GlassSheet, GlassSlider, GlassSwitch } from '@zakisheriff/liquid-glass';
-import { Bookmark, Check, Compass, Ellipsis, Grid, Heart, HeartFill, Note, Person, Search, Share, Speaker, Sun } from './icons';
+import { ArrowRight, Bookmark, Check, Compass, Ellipsis, Grid, Heart, HeartFill, Note, Person, Play, Plus, Search, Share, Speaker, Sun } from './icons';
 import { SheetFrame } from './SheetFrame';
 
 const TABS = [
@@ -48,6 +48,14 @@ export function RefractionPlayground() {
           <GlassButton icon={liked ? <HeartFill size={18} /> : <Heart size={18} />} aria-label="Like playground" aria-pressed={liked} tint={liked ? '#ff375f' : undefined} onClick={() => setLiked(!liked)} />
           <GlassButton icon={<Share size={18} />} aria-label="Share playground" />
         </div>
+        <div className="playground__buttons">
+          <GlassButton size="sm">Small</GlassButton>
+          <GlassButton>Medium</GlassButton>
+          <GlassButton size="lg">Large</GlassButton>
+          <GlassButton variant="filled" tint="#30d158" icon={<Play size={16} />}>Play</GlassButton>
+          <GlassButton variant="tinted" icon={<Plus size={16} />}>Add</GlassButton>
+        </div>
+        <GlassButton className="playground__wide" size="lg" variant="filled" icon={<ArrowRight size={18} />}>Continue</GlassButton>
       </GlassCard>
       <GlassCard className="playground__panel" padding="20px" radius="26px">
         <h3>Controls</h3>

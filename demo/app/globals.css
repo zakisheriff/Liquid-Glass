@@ -1657,6 +1657,11 @@ html[data-morph] .hero__title-text[data-docked] {
   gap: 10px;
 }
 
+.playground__wide.lg-button {
+  width: 100%;
+  margin-top: auto;
+}
+
 .playground__buttons {
   display: flex;
   flex-wrap: wrap;
