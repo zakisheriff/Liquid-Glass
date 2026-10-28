@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { GlassButton, GlassCard, GlassInput, GlassMenu, GlassNav, GlassSegmented, GlassSheet, GlassSlider, GlassSwitch } from '@zakisheriff/liquid-glass';
-import { ArrowRight, Bookmark, Check, Compass, Ellipsis, Grid, Heart, HeartFill, Note, Person, Play, Plus, Search, Share, Speaker, Sun } from './icons';
+import { Bookmark, Check, Compass, Ellipsis, Grid, Heart, HeartFill, Note, Person, Play, Plus, Search, Share, Speaker, Sun } from './icons';
 import { SheetFrame } from './SheetFrame';
 
 const TABS = [
@@ -55,7 +55,7 @@ export function RefractionPlayground() {
           <GlassButton variant="filled" tint="#30d158" icon={<Play size={16} />}>Play</GlassButton>
           <GlassButton variant="tinted" icon={<Plus size={16} />}>Add</GlassButton>
         </div>
-        <GlassButton className="playground__wide" size="lg" variant="filled" icon={<ArrowRight size={18} />}>Continue</GlassButton>
+        <GlassButton className="playground__wide" size="lg" variant="filled">Continue</GlassButton>
       </GlassCard>
       <GlassCard className="playground__panel" padding="20px" radius="26px">
         <h3>Controls</h3>
