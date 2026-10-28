@@ -4,26 +4,36 @@
   flex: none;
 }
 
-/* The menu lives in the trigger's box and grows out of its corner. */
-.lg-menu.lg-glass {
-  --lg-glass-fill: var(--lg-menu-fill);
-  --lg-glass-blur: var(--lg-panel-blur);
+/* The open menu: glass and items in the trigger's corner, at final size. */
+.lg-menu-surface {
   position: absolute;
   top: 0;
   right: 0;
   z-index: 50;
-  overflow: hidden;
   color: var(--lg-fg);
   font-family: var(--lg-font);
-  box-shadow: 0 12px 40px rgb(0 0 0 / 0.16), inset 0 0 0 0.5px var(--lg-edge);
   touch-action: none;
+}
+
+.lg-menu-anchor[data-align='start'] .lg-menu-surface {
+  right: auto;
+  left: 0;
+}
+
+/* The glass morphs out of the trigger's corner with a transform. */
+.lg-menu.lg-glass {
+  --lg-glass-fill: var(--lg-menu-fill);
+  --lg-glass-blur: var(--lg-panel-blur);
+  position: absolute;
+  inset: 0;
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.16), inset 0 0 0 0.5px var(--lg-edge);
+  transform-origin: top right;
   transition: none;
-  will-change: width, height;
+  pointer-events: none;
 }
 
 .lg-menu-anchor[data-align='start'] .lg-menu.lg-glass {
-  right: auto;
-  left: 0;
+  transform-origin: top left;
 }
 
 .lg-menu::after {
@@ -34,13 +44,16 @@
   position: absolute;
   top: 0;
   right: 0;
+  z-index: 1;
   box-sizing: border-box;
   padding: 6px;
+  transform-origin: top right;
 }
 
 .lg-menu-anchor[data-align='start'] .lg-menu__content {
   right: auto;
   left: 0;
+  transform-origin: top left;
 }
 
 .lg-menu__item {

@@ -187,6 +187,11 @@
   line-height: 1.1;
 }
 
+.lg-track--tabbar.lg-track--icons-only .lg-nav__icon {
+  width: 28px;
+  height: 28px;
+}
+
 .lg-track--tabbar.lg-track--labels-only {
   --lg-item-h: 44px;
   font-size: 15px;

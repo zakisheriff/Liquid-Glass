@@ -110,23 +110,26 @@ function TabTile() {
   const [tab, setTab] = useState(0);
   const [count, setCount] = useState(4);
   const [layout, setLayout] = useState<'bar' | 'split'>('bar');
+  const [labels, setLabels] = useState<'show' | 'hide'>('show');
   const split = layout === 'split';
   // A bar ends with its Search tab; a split dock moves Search into its own circle.
   const items = split ? TAB_POOL.slice(0, count) : [...TAB_POOL.slice(0, count - 1), SEARCH_TAB];
   const selected = Math.min(tab, items.length - 1);
-  const width = count * 86 + (split ? 72 : 0);
+  const width = count * (labels === 'show' ? 86 : 70) + (split ? 72 : 0);
   return (
     <Tile
       title="Tab bar"
       options={<>
         <Choice label="Tabs" options={[2, 3, 4, 5, 6]} value={count} onChange={setCount} />
         <Choice label="Layout" options={[{ value: 'bar', label: 'Bar' }, { value: 'split', label: 'Tabs + button' }]} value={layout} onChange={setLayout} />
+        <Choice label="Labels" options={[{ value: 'show', label: 'Icons + labels' }, { value: 'hide', label: 'Icons only' }]} value={labels} onChange={setLabels} />
       </>}
     >
       <div className="stage stage--gradient" style={{ '--gradient-hue': `${(selected * 64) % 360}deg` } as React.CSSProperties}>
         <div className="stage__gradient" aria-hidden="true" />
         <AppDock
-          key={`${layout}-${count}`}
+          key={`${layout}-${count}-${labels}`}
+          showLabels={labels === 'show'}
           tab={selected}
           onChange={setTab}
           items={items}

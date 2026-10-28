@@ -16,12 +16,13 @@ const TABS = [
  * `trailing` action it splits like iOS 26: the tabs on the left, a separate
  * glass circle (e.g. Search) on the right.
  */
-export function AppDock({ tab, onChange, onSearch, items = TABS, trailing, style }: {
+export function AppDock({ tab, onChange, onSearch, items = TABS, trailing, showLabels = true, style }: {
   tab: number;
   onChange: (index: number) => void;
   onSearch?: () => void;
   items?: GlassNavItem[];
   trailing?: { label: string; icon: React.ReactNode; onClick?: () => void };
+  showLabels?: boolean;
   style?: React.CSSProperties;
 }) {
   const shell = useRef<HTMLDivElement>(null);
@@ -33,7 +34,7 @@ export function AppDock({ tab, onChange, onSearch, items = TABS, trailing, style
         <GlassNav activeIndex={tab} onChange={(index) => {
           if (!trailing && index === search && onSearch) onSearch();
           else onChange(index);
-        }} items={items} aria-label="App navigation" />
+        }} items={items} showLabels={showLabels} aria-label="App navigation" />
       </div>
       {trailing && (
         <GlassButton className="device__action" icon={trailing.icon} aria-label={trailing.label} onClick={trailing.onClick} />

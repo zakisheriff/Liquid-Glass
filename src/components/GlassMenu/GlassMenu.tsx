@@ -34,10 +34,12 @@ export interface GlassMenuProps {
   className?: string;
 }
 
-const OPEN = springFrom(0.38, 0.72);
-const CLOSE = springFrom(0.32, 0.92);
-const FADE = springFrom(0.26, 1);
+const OPEN = springFrom(0.36, 0.74);
+const CLOSE = springFrom(0.34, 0.9);
+const FADE = springFrom(0.24, 1);
 const FADE_OUT = springFrom(0.14, 1);
+/** The squishy settle of the button as the menu lands back in it. */
+const JELLY = springFrom(0.42, 0.4);
 
 const Tick = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -64,6 +66,7 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
   const [mounted, setMounted] = useState(false);
   const anchorRef = useRef<HTMLSpanElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const surfaceRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const spring = useRef<ReturnType<typeof createSpring> | null>(null);
@@ -72,7 +75,7 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
 
   // Held, the open menu behaves like any glass button: it swells and is drawn
   // out toward the finger, then wobbles back.
-  usePress(panelRef, { grow: 0.035, lean: 6, stretch: 0.1, disabled: !mounted });
+  usePress(surfaceRef, { grow: 0.035, lean: 6, stretch: 0.1, disabled: !mounted });
 
   useEffect(() => {
     if (open) setMounted(true);
@@ -84,6 +87,7 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
 
   useLayoutEffect(() => {
     if (!mounted) return;
+    const surface = surfaceRef.current!;
     const panel = panelRef.current!;
     const content = contentRef.current!;
     const trigger = triggerRef.current!;
@@ -92,33 +96,57 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
     const W = Math.max(w, Math.min(width, window.innerWidth - 24));
     content.style.width = `${W}px`;
     const H = Math.max(h, content.offsetHeight);
+    // The glass keeps its final size and morphs with a transform from the
+    // trigger's corner. Resizing a backdrop-filtered layer every frame makes
+    // Safari paint stray colours along its edges.
+    surface.style.width = `${W}px`;
+    surface.style.height = `${H}px`;
+    const end = align === 'end';
+    // The live droplet outline, shared by the glass and the items above it.
+    const box = { cw: w, ch: h, r: h / 2 };
+    let scaleNow = 1;
+    const clipContent = () => {
+      // Items are scaled about the trigger's corner; clip in their own units.
+      const k = scaleNow;
+      const right = Math.max(0, W - box.cw / k);
+      const bottom = Math.max(0, H - box.ch / k);
+      content.style.clipPath = box.cw >= W - 0.5 && box.ch >= H - 0.5 && k === 1
+        ? ''
+        : `inset(0 ${end ? 0 : right}px ${bottom}px ${end ? right : 0}px round ${box.r / k}px)`;
+    };
     const shape = (p: number) => {
-      // Grow from the trigger's own box: same corner, same size at p = 0.
-      // The shape may overshoot a little; that's the liquid feel.
-      const cw = w + (W - w) * p;
-      const ch = h + (H - h) * p;
-      panel.style.width = `${cw}px`;
-      panel.style.height = `${ch}px`;
+      const cw = Math.max(1, w + (W - w) * p);
+      const ch = Math.max(1, h + (H - h) * p);
+      const sx = cw / W;
+      const sy = ch / H;
+      panel.style.transform = `scale(${sx}, ${sy})`;
       // In flight it's a round droplet (fully rounded on its short side) and
-      // only squares off into the menu's corners as it lands.
+      // only squares off into the menu's corners as it lands. The radius is
+      // given in the panel's own, unscaled units.
       const land = clamp((p - 0.5) / 0.5, 0, 1);
-      panel.style.borderRadius = `${(Math.min(cw, ch) / 2) * (1 - land) + 24 * land}px`;
+      const r = (Math.min(cw, ch) / 2) * (1 - land) + 24 * land;
+      panel.style.borderRadius = `${r / sx}px / ${r / sy}px`;
+      box.cw = cw;
+      box.ch = ch;
+      box.r = r;
+      clipContent();
       // Near the button's size the two shapes coincide, so the button and the
       // menu cross-fade there: the button melts into the menu on open and
-      // reappears smoothly as the menu folds back, instead of popping in.
+      // reappears inside the shrinking droplet on close.
       const k = clamp(p / 0.35, 0, 1);
       panel.style.opacity = String(k);
       trigger.style.opacity = String(1 - k);
     };
-    // The items reveal on their own critically damped curve so they sharpen
-    // once and stay sharp: no bounce back into blur, no scaling (which makes
-    // browsers re-raster the text the moment motion stops). The blur only
-    // lives in the first part of the reveal, so nothing looks soft once the
-    // shape has settled.
+    // The items ride above the glass on their own layer: they grow out of a
+    // blur as the droplet lands, on a critically damped curve so they sharpen
+    // once and stay sharp.
     const reveal = (q: number) => {
       const t = clamp(q, 0, 1);
       const blur = 9 * (1 - t) ** 2.5;
       content.style.opacity = String(t);
+      scaleNow = t < 0.999 ? 0.82 + 0.18 * t : 1;
+      content.style.scale = scaleNow === 1 ? '' : String(scaleNow);
+      clipContent();
       content.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : 'none';
     };
     shape(0);
@@ -127,6 +155,11 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
       shape(p);
       if (p <= 0.02 && s.target === 0) {
         trigger.style.opacity = '';
+        // The droplet lands in the button with a small squish.
+        const jelly = createSpring(0.07, JELLY, (v) => {
+          trigger.style.scale = Math.abs(v) < 0.0005 ? '' : `${1 - v} ${1 + v}`;
+        });
+        jelly.set(0);
         setMounted(false);
       }
     });
@@ -155,7 +188,7 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
   // letting go there picks it, as on iOS.
   useEffect(() => {
     if (!mounted) return;
-    const panel = panelRef.current!;
+    const panel = surfaceRef.current!;
     let held: number | null = null;
     let hot: HTMLElement | null = null;
     const itemAt = (x: number, y: number) =>
@@ -252,7 +285,8 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
         onClick={() => setOpen((value) => !value)}
       />
       {mounted && (
-        <div ref={panelRef} className="lg-glass lg-menu" data-liquid-glass="">
+        <div ref={surfaceRef} className="lg-menu-surface">
+          <div ref={panelRef} className="lg-glass lg-menu" data-liquid-glass="" aria-hidden="true" />
           <div ref={contentRef} className="lg-menu__content" role="menu" aria-label={ariaLabel}>
             {items.map((item, index) => (
               <button
