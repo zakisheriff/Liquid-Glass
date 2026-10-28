@@ -131,7 +131,7 @@ img {
   gap: 8px;
 }
 
-.nav__theme span:not(:has(svg)) {
+.nav__theme :is(.lg-track__item, .lg-track__copy) > span:last-child {
   display: none;
 }
 
