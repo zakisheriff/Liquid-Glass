@@ -291,14 +291,49 @@ img {
   flex: none;
   width: 402px;
   height: 840px;
-  padding: 11px;
-  border-radius: 64px;
-  background: var(--bezel);
+  padding: 12px;
+  border-radius: 66px;
+  /* Brushed titanium band with a black inner bezel */
+  background:
+    linear-gradient(#0b0b0c, #0b0b0c) padding-box,
+    linear-gradient(145deg, #8d8d92, #3a3a3d 22%, #c7c7cc 48%, #2f2f32 74%, #9a9aa0) border-box;
+  border: 3px solid transparent;
   box-shadow:
-    0 0 0 1px rgb(255 255 255 / 0.06) inset,
+    inset 0 0 0 1px rgb(255 255 255 / 0.06),
     0 50px 100px -30px rgb(0 0 0 / 0.35),
     0 30px 60px -40px rgb(0 0 0 / 0.4);
   text-align: left;
+}
+
+.device__button {
+  position: absolute;
+  width: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #6e6e73, #c7c7cc 50%, #6e6e73);
+}
+
+.device__button--action {
+  left: -6px;
+  top: 150px;
+  height: 34px;
+}
+
+.device__button--up {
+  left: -6px;
+  top: 210px;
+  height: 62px;
+}
+
+.device__button--down {
+  left: -6px;
+  top: 286px;
+  height: 62px;
+}
+
+.device__button--power {
+  right: -6px;
+  top: 236px;
+  height: 98px;
 }
 
 .device__screen {
@@ -306,16 +341,56 @@ img {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  border-radius: 53px;
+  border-radius: 52px;
   background: var(--screen);
   isolation: isolate;
+}
+
+.status {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 54px;
+  padding: 4px 30px 0 40px;
+  color: var(--text);
+  pointer-events: none;
+}
+
+.status__time {
+  font-family: var(--text-font);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.status__island {
+  position: absolute;
+  top: 11px;
+  left: 50%;
+  width: 124px;
+  height: 36px;
+  margin-left: -62px;
+  border-radius: 20px;
+  background: #000;
+}
+
+.status__icons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .device__feed {
   position: absolute;
   inset: 0;
   overflow-y: auto;
-  padding: 76px 16px 176px;
+  padding: 118px 16px 190px;
   scrollbar-width: none;
 }
 
@@ -365,7 +440,7 @@ img {
 
 .device__top {
   position: absolute;
-  top: 16px;
+  top: 58px;
   left: 14px;
   right: 14px;
   display: flex;
@@ -514,9 +589,9 @@ img {
 
 @media (max-width: 480px) {
   .device {
-    width: min(402px, calc(100vw - 24px));
-    height: 760px;
-    border-radius: 56px;
+    width: min(402px, calc(100vw - 28px));
+    height: 780px;
+    border-radius: 60px;
   }
 
   .device__screen {
