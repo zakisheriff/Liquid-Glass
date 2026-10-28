@@ -14,15 +14,35 @@ export default function Settings() {
 export const COMPONENTS = [
   { name: 'GlassButton', description: 'Glass, clear, tinted and filled buttons, including icon-only and destructive variants.', props: 'variant, size, icon, tint, destructive, onClick' },
   { name: 'GlassSwitch', description: 'A toggle with a glass thumb that lifts on press and supports dragging.', props: 'checked, defaultChecked, onChange, tint, disabled' },
-  { name: 'GlassNav', description: 'A tab bar with a draggable glass selection and keyboard navigation.', props: 'items: { label, icon? }[], activeIndex, onChange' },
+  { name: 'GlassNav', description: 'A tab bar with a draggable glass selection and keyboard navigation. Icons with labels, or icons only.', props: 'items: { label, icon? }[], activeIndex, onChange, showLabels' },
+  { name: 'GlassMenu', description: 'A pull-down menu that grows out of its glass button and folds back into it. Slide across the items to pick one.', props: 'icon, items: { label, icon?, checked?, destructive?, onSelect? }[], align, aria-label' },
   { name: 'GlassSegmented', description: 'Segmented choices with a glass lens that follows the pointer.', props: 'options, value, onChange, size' },
   { name: 'GlassSlider', description: 'A continuous slider with a lifted lens thumb, or a Control Center-style block.', props: 'value, min, max, step, onChange, showThumb, icon, label' },
   { name: 'GlassInput', description: 'Text and search inputs with an optional trailing accessory and clear button.', props: 'type, value, onChange, placeholder, trailing' },
   { name: 'GlassCard', description: 'A glass panel for grouping content and controls.', props: 'variant, padding, radius, children' },
-  { name: 'GlassSheet', description: 'A floating bottom sheet with a spring entrance and drag-to-dismiss interaction. Pass a container element to keep it inside an app preview.', props: 'open, onClose, container, children' },
+  { name: 'GlassSheet', description: 'A bottom sheet with a spring entrance and drag-to-dismiss. With detents it opens at half height and expands to full screen. Pass a container element to keep it inside an app preview.', props: "open, onClose, detents: ['medium', 'large'], container, children" },
 ];
 
+/** Measured on the full demo page (99 glass elements) in Chromium. */
+export const PERFORMANCE = {
+  js: '≈31 KB',
+  css: '≈5.5 KB',
+  points: [
+    'No runtime dependencies. React and React DOM are the only peers.',
+    'Refraction maps are computed once per glass size, cached and shared, then drawn by the browser. Nothing is recalculated while you scroll.',
+    'Springs run on one shared animation frame loop and stop when they settle.',
+    'Lens copies only copy and lay out content while a control is pressed, and stop entirely off screen.',
+    'The demo page, with 99 glass elements, holds about 11 MB of JavaScript memory and renders at 60 fps.',
+  ],
+  tips: [
+    'The GPU cost is in what moves under the glass. Keep large refracting panels over static or slow content.',
+    'Use a few large glass surfaces rather than many small overlapping ones.',
+    'Lower intensity, or use GlassCard variant="clear", on low-end devices.',
+  ],
+};
+
 export const FAQS = [
+  { question: 'Is liquid glass lightweight enough for a website?', answer: 'Yes. The whole library is about 31 KB of JavaScript and 5.5 KB of CSS gzipped, with no runtime dependencies. Refraction maps are computed once per size and cached, springs stop when they settle, and lens copies only do work while a control is pressed. The GPU does the drawing, so keep large refracting panels over content that is not constantly animating.' },
   { question: 'What is Liquid Glass for the Web?', answer: '@zakisheriff/liquid-glass is an open-source React component library by Zaki Sheriff. It brings an Apple-inspired liquid glass appearance to web apps, with refraction, translucent surfaces and spring-based touch interactions. It is an independent project, not an Apple product.' },
   { question: 'How do I add liquid glass to a React or Next.js app?', answer: "Run npm i @zakisheriff/liquid-glass, import @zakisheriff/liquid-glass/styles.css once, then import the components you need. In Next.js, import the stylesheet in app/layout.tsx or pages/_app.tsx and add 'use client' to components that manage state. React and React DOM 17 or later are required." },
   { question: 'Does liquid glass work in Safari, Firefox and Chrome?', answer: 'The optical effect varies by browser. Chromium can apply SVG displacement to the live backdrop. Safari and Firefox use translucent glass, highlights and mirrored content for supported thumbs. The demo also includes a WebGL refraction example. Place glass over gradients, images or content to make the effect visible.' },
@@ -58,8 +78,15 @@ ${COMPONENTS.map(c => `### ${c.name}\n${c.description}\nKey props: ${c.props}.`)
 Sliders use step="any" for continuous dragging by default. Set a numeric step for fixed increments. onChange receives the numeric value.
 Set data-theme="light" or data-theme="dark" on an ancestor, or follow the system theme. Give icon-only controls an aria-label and fields a label. Tab bars and segmented controls support arrow keys, Home and End. Test contrast over your actual background.
 
+## Performance
+${PERFORMANCE.js} JavaScript and ${PERFORMANCE.css} CSS gzipped.
+${PERFORMANCE.points.map(p => `- ${p}`).join('\n')}
+
+Tips:
+${PERFORMANCE.tips.map(p => `- ${p}`).join('\n')}
+
 ## Browser rendering
-Chromium uses SVG backdrop displacement. Safari and Firefox use translucent material, highlights and mirrored content on supported thumbs. Effects are not identical across browsers. The demo's large refraction lens uses WebGL.
+Chromium uses SVG backdrop displacement for bars, buttons and cards, and refracts a tinted live copy inside tab and segmented lenses. Safari and Firefox use translucent material, highlights and magnified live copies inside lenses (switch, slider, tab bar, segmented). Effects are not identical across browsers. The demo's large refraction lens uses WebGL.
 
 ## Questions
 ${FAQS.map(f => `### ${f.question}\n${f.answer}`).join('\n\n')}

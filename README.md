@@ -5,14 +5,22 @@
 <br />
 <br />
 
+[![npm version](https://img.shields.io/npm/v/@zakisheriff/liquid-glass?style=for-the-badge&logo=npm&color=cb3837)](https://www.npmjs.com/package/@zakisheriff/liquid-glass)
+[![npm downloads](https://img.shields.io/npm/dm/@zakisheriff/liquid-glass?style=for-the-badge&color=0a84ff)](https://www.npmjs.com/package/@zakisheriff/liquid-glass)
+[![Bundle size](https://img.shields.io/bundlephobia/minzip/@zakisheriff/liquid-glass?style=for-the-badge&label=gzip&color=30d158)](https://bundlephobia.com/package/@zakisheriff/liquid-glass)
+[![Zero dependencies](https://img.shields.io/badge/dependencies-0-30d158?style=for-the-badge)](https://www.npmjs.com/package/@zakisheriff/liquid-glass?activeTab=dependencies)
+<br />
 ![React](https://img.shields.io/badge/React-%3E%3D17-61dafb?style=for-the-badge&logo=react&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-ready-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](./LICENSE)
 
-**[liquidglass.theatom.lk](https://liquidglass.theatom.lk)** ·
-**[Documentation](https://liquidglass.theatom.lk/docs)** ·
-**[npm](https://www.npmjs.com/package/@zakisheriff/liquid-glass)** ·
-**[GitHub](https://github.com/zakisheriff/Liquid-Glass)**
+<br />
+
+[![Live demo](https://img.shields.io/badge/Live_demo-liquidglass.theatom.lk-0a84ff?style=for-the-badge&logo=safari&logoColor=white)](https://liquidglass.theatom.lk)
+[![Docs](https://img.shields.io/badge/Docs-read-1d1d1f?style=for-the-badge&logo=readthedocs&logoColor=white)](https://liquidglass.theatom.lk/docs)
+[![npm](https://img.shields.io/badge/npm-install-cb3837?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/@zakisheriff/liquid-glass)
+[![GitHub](https://img.shields.io/badge/GitHub-star-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/zakisheriff/Liquid-Glass)
 
 </div>
 
@@ -129,6 +137,17 @@ Pass a positioned element as a sheet's `container` to keep the sheet inside that
 
 `intensity` (1–10) scales refraction strength everywhere.
 
+## Lightweight
+
+About **31 KB of JavaScript and 5.5 KB of CSS gzipped**, with **no runtime dependencies** (React and React DOM are peers).
+
+- Refraction maps are computed once per glass size, cached and shared, then drawn by the browser. Nothing is recalculated while you scroll.
+- Springs run on one shared animation frame loop and stop when they settle.
+- Lens copies only copy and lay out content while a control is pressed, and stop entirely off screen.
+- The demo page, with 99 glass elements, holds about 11 MB of JavaScript memory and renders at 60 fps in Chrome.
+
+The GPU cost is in what moves *under* the glass. Keep large refracting panels over static or slow content, prefer a few large glass surfaces over many small overlapping ones, and lower `intensity` (or use `GlassCard variant="clear"`) for low-end devices.
+
 ## Light and dark
 
 Tokens follow `prefers-color-scheme`. To force a theme, set `data-theme="light"` or `data-theme="dark"` on any ancestor. Override any `--lg-*` variable to restyle, e.g. `--lg-accent`, `--lg-fill` or `--lg-blur`.
@@ -150,8 +169,8 @@ function Droplet() {
 
 ## Browser support
 
-- **Chrome / Edge / Arc:** live refraction of anything behind the glass through `backdrop-filter: url(#svg)`.
-- **Safari:** lenses (switch, slider, tab bar, segmented) refract a live copy of the content beneath them, including magnification and the colour split. Bars, buttons and cards over arbitrary page content get frosting, rims and motion.
+- **Chrome / Edge / Arc:** live refraction of anything behind the glass through `backdrop-filter: url(#svg)`. Tab and segmented lenses refract a tinted live copy of the bar, so everything inside the lens takes the active colour.
+- **Safari:** lenses (switch, slider, tab bar, segmented) show a magnified live copy of the content beneath them. Bars, buttons and cards over arbitrary page content get frosting, rims and motion.
 - **Firefox:** uses the same path as Safari; not yet tested.
 - Respects `prefers-reduced-motion` and `prefers-reduced-transparency`.
 
