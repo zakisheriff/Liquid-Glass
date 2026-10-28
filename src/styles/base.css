@@ -58,7 +58,7 @@
   --lg-shadow: 0 8px 28px rgb(0 0 0 / 0.38), 0 1px 3px rgb(0 0 0 / 0.3);
   --lg-rim-opacity: 0.62;
   --lg-glow: rgb(255 255 255 / 0.16);
-  --lg-lens-fill: rgb(255 255 255 / 0.04);
+  --lg-lens-fill: rgb(28 28 30 / 0.3);
   --lg-lens-shadow: 0 10px 30px rgb(0 0 0 / 0.45), 0 2px 6px rgb(0 0 0 / 0.3);
   --lg-lens-edge: rgb(255 255 255 / 0.12);
   --lg-panel-fill: rgb(30 30 33 / 0.62);
@@ -92,7 +92,7 @@
     --lg-shadow: 0 8px 28px rgb(0 0 0 / 0.38), 0 1px 3px rgb(0 0 0 / 0.3);
     --lg-rim-opacity: 0.62;
     --lg-glow: rgb(255 255 255 / 0.16);
-    --lg-lens-fill: rgb(255 255 255 / 0.04);
+    --lg-lens-fill: rgb(28 28 30 / 0.3);
     --lg-lens-shadow: 0 10px 30px rgb(0 0 0 / 0.45), 0 2px 6px rgb(0 0 0 / 0.3);
     --lg-lens-edge: rgb(255 255 255 / 0.12);
     --lg-panel-fill: rgb(30 30 33 / 0.62);

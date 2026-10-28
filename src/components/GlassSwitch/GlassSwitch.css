@@ -42,7 +42,7 @@
   pointer-events: none;
   transform: translate(0, -50%) scale(0.655);
   transform-origin: center;
-  background-color: rgb(255 255 255 / calc(var(--lg-lift) * 0.08));
+  background-color: color-mix(in srgb, var(--lg-lens-fill) calc(var(--lg-lift) * 100%), transparent);
   -webkit-backdrop-filter: blur(0.5px) saturate(1.6) brightness(1.08);
   backdrop-filter: var(--lg-filter, ) blur(0.3px) saturate(1.6) brightness(1.08);
   box-shadow:
