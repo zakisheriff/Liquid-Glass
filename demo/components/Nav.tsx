@@ -49,7 +49,7 @@ export function Nav() {
           <GlassButton
             size="sm"
             variant="filled"
-            onClick={() => document.getElementById('install')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => document.getElementById('install')?.scrollIntoView()}
           >
             Get
           </GlassButton>

@@ -192,7 +192,7 @@ export function Hero() {
         <div className="hero__ctas">
           <GlassButton
             variant="filled"
-            onClick={() => document.getElementById('install')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => document.getElementById('install')?.scrollIntoView()}
           >
             Get started
           </GlassButton>

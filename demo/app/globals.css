@@ -34,7 +34,6 @@
 }
 
 html {
-  scroll-behavior: smooth;
   scroll-padding-top: 80px;
 }
 
@@ -977,49 +976,46 @@ img {
   margin-top: 48px;
   overflow: hidden;
   border-radius: 28px;
-  background: var(--tile);
   touch-action: none;
 }
 
+/* Wallpaper with a glossy swoosh and big white type, as in Apple's art. */
 .lens-demo__poster {
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 0 4vw;
-  font-family: var(--display);
-  font-size: clamp(56px, 10vw, 150px);
-  font-weight: 700;
-  line-height: 0.98;
-  letter-spacing: -0.045em;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(160% 70% at 18% 118%, transparent 58.6%, rgb(255 255 255 / 0.9) 59.2%, transparent 60.4%),
+    radial-gradient(70% 60% at 85% 100%, #0631b5 0%, transparent 70%),
+    radial-gradient(60% 55% at 100% 15%, #4fc3f7 0%, transparent 65%),
+    radial-gradient(50% 45% at 10% 55%, #1aa3e8 0%, transparent 70%),
+    linear-gradient(160deg, #9dbbe6 0%, #e6dcae 32%, #3f86ea 52%, #0b46d0 74%, #6ea8ea 100%);
   user-select: none;
 }
 
-.lens-demo__poster span:nth-child(odd) {
-  background: linear-gradient(90deg, #ff375f, #ff9f0a, #30d158, #0a84ff, #bf5af2);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.lens-demo__poster span:nth-child(even) {
-  color: var(--text);
-  text-align: right;
+.lens-demo__poster span {
+  color: #fff;
+  font-family: var(--display);
+  font-size: clamp(64px, 11vw, 150px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-shadow: 0 2px 30px rgb(0 0 0 / 0.08);
 }
 
 .lens-demo__lens.lg-glass {
   position: absolute;
   top: 0;
   left: 0;
-  width: 280px;
-  height: 180px;
+  width: 300px;
+  height: 170px;
   border-radius: 999px;
   cursor: grab;
-  --lg-glass-fill: rgb(255 255 255 / 0.04);
+  --lg-glass-fill: rgb(255 255 255 / 0.06);
   --lg-glass-blur: 0px;
-  --lg-saturate: 1.4;
-  --lg-glass-shadow: 0 24px 60px rgb(0 0 0 / 0.18), 0 6px 14px rgb(0 0 0 / 0.1);
+  --lg-saturate: 1.25;
+  --lg-rim-opacity: 1;
+  --lg-glass-shadow: 0 20px 50px rgb(0 20 80 / 0.18), 0 4px 12px rgb(0 20 80 / 0.1);
   will-change: transform, scale;
 }
 

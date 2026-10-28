@@ -8,7 +8,7 @@ export function LensDemo() {
   const stage = useRef<HTMLDivElement>(null);
   const lens = useRef<HTMLDivElement>(null);
   const poster = useRef<HTMLDivElement>(null);
-  useRefraction(lens, { kind: 'lens', zoom: 1.35, thickness: 70, bezel: 46, dispersion: 1 }, true, poster);
+  useRefraction(lens, { kind: 'lens', zoom: 1.12, thickness: 64, bezel: 40, dispersion: 0.7 }, true, poster);
   usePress(lens, { grow: 0.12, lean: 0, stretch: 0.14 });
 
   useEffect(() => {
@@ -79,10 +79,7 @@ export function LensDemo() {
       </header>
       <div ref={stage} className="lens-demo">
         <div ref={poster} className="lens-demo__poster" aria-hidden="true">
-          <span>Refraction</span>
-          <span>Dispersion</span>
-          <span>Magnification</span>
-          <span>Specular rim</span>
+          <span>Liquid Glass</span>
         </div>
         <div ref={lens} className="lg-glass lens-demo__lens" role="img" aria-label="Draggable glass lens" />
       </div>
