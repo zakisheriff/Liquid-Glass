@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
-import { GlassNav, useRefraction } from '@zakisheriff/liquid-glass';
+import { GlassButton, GlassNav, useRefraction, type GlassNavItem } from '@zakisheriff/liquid-glass';
 import { Bookmark, Compass, Grid, Search } from './icons';
 
 const TABS = [
@@ -11,22 +11,33 @@ const TABS = [
   { label: 'Search', icon: <Search /> },
 ];
 
-/** A stable glass dock; scrolling the app never changes its size. */
-export function AppDock({ tab, onChange, onSearch }: {
+/**
+ * A stable glass dock; scrolling the app never changes its size. With a
+ * `trailing` action it splits like iOS 26: the tabs on the left, a separate
+ * glass circle (e.g. Search) on the right.
+ */
+export function AppDock({ tab, onChange, onSearch, items = TABS, trailing, style }: {
   tab: number;
   onChange: (index: number) => void;
   onSearch?: () => void;
+  items?: GlassNavItem[];
+  trailing?: { label: string; icon: React.ReactNode; onClick?: () => void };
+  style?: React.CSSProperties;
 }) {
   const shell = useRef<HTMLDivElement>(null);
   useRefraction(shell, { kind: 'surface' });
+  const search = items.length - 1;
   return (
-    <div className="device__bottom">
+    <div className={`device__bottom${trailing ? ' device__bottom--split' : ''}`} style={style}>
       <div ref={shell} className="lg-glass lg-glass--host device__tabs app-tabs">
         <GlassNav activeIndex={tab} onChange={(index) => {
-          if (index === 3 && onSearch) onSearch();
+          if (!trailing && index === search && onSearch) onSearch();
           else onChange(index);
-        }} items={TABS} aria-label="App navigation" />
+        }} items={items} aria-label="App navigation" />
       </div>
+      {trailing && (
+        <GlassButton className="device__action" icon={trailing.icon} aria-label={trailing.label} onClick={trailing.onClick} />
+      )}
     </div>
   );
 }

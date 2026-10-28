@@ -226,6 +226,12 @@
 
 /* Copied lens (Safari, Firefox): the real glyphs fade out under the clear
    lens (lensTrack writes --lg-content-hide), leaving only the magnified copy. */
+/* The copy only carries the content. Its own bar glass and resting pill would
+   show up magnified inside the lens as a second outline. */
+[data-lg-copy] > :is(.lg-track__glass, .lg-track__select) {
+  visibility: hidden;
+}
+
 .lg-track[data-lifted]:not([data-lg-copy]) > .lg-track__item :is(.lg-nav__label, .lg-nav__icon) {
   -webkit-mask: var(--lg-content-hide, none);
   mask: var(--lg-content-hide, none);

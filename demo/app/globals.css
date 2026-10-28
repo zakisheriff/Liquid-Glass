@@ -562,6 +562,25 @@ html[data-morph] .hero__title-text[data-docked] {
   border-radius: 999px;
 }
 
+/* iOS 26 split dock: tabs, then a separate circle the height of the bar. */
+.device__bottom--split {
+  --full: calc(100% - var(--bar) - var(--gap));
+}
+
+.device__action.lg-button {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: var(--bar);
+  height: var(--bar);
+  padding: 0;
+}
+
+.device__action .lg-button__icon {
+  width: 26px;
+  height: 26px;
+}
+
 .app-tabs::after {
   display: none;
 }
@@ -937,6 +956,100 @@ html[data-morph] .hero__title-text[data-docked] {
   font-weight: 600;
   line-height: 1.08;
   letter-spacing: -0.003em;
+}
+
+/* Live options under each tile title. */
+.tile__options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 20px;
+  margin-top: 20px;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.choice__set {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+}
+
+.choice__set button {
+  min-width: 34px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 200ms ease, color 200ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.choice__set button[aria-pressed='true'] {
+  background: var(--text);
+  color: var(--tile);
+}
+
+.choice__set button:focus-visible {
+  outline: 2px solid var(--accent, #0071e3);
+  outline-offset: 1px;
+}
+
+/* Menu tile: a little app toolbar for the pull-down menu to grow out of. */
+.stage.stage--menu {
+  background: #3b4fb8 url('/wallpapers/indigo.svg') center / cover;
+  place-items: start stretch;
+}
+
+.stage--menu > div {
+  width: 100%;
+}
+
+.stage__toolbar {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 22px 22px 0;
+}
+
+.stage__toolbar h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 28px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+}
+
+.stage__toolbar[data-side='start'] {
+  flex-direction: row-reverse;
+}
+
+.stage__notes {
+  display: grid;
+  gap: 10px;
+  padding: 18px 22px 22px;
+}
+
+.stage__notes span {
+  display: block;
+  height: 54px;
+  border-radius: 16px;
+  background: rgb(255 255 255 / 0.14);
 }
 
 .tile__subtitle {
