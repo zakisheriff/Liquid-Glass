@@ -1,87 +1,170 @@
-/* @zakisheriff/liquid-glass — base styles */
+/* @zakisheriff/liquid-glass — tokens and the core glass material */
 
-@property --glass-angle-1 {
-  syntax: '<angle>';
-  inherits: false;
-  initial-value: -75deg;
+:where(:root, [data-theme='light']) {
+  --lg-fg: rgb(0 0 0 / 0.88);
+  --lg-fg-muted: rgb(60 60 67 / 0.62);
+  --lg-fg-faint: rgb(60 60 67 / 0.3);
+  --lg-accent: #0088ff;
+  --lg-green: #34c759;
+  --lg-red: #ff383c;
+
+  /* Regular glass: bars, buttons, fields */
+  --lg-fill: rgb(255 255 255 / 0.52);
+  --lg-fill-pressed: rgb(255 255 255 / 0.78);
+  --lg-blur: 6px;
+  --lg-saturate: 1.9;
+  --lg-brightness: 1.04;
+  --lg-edge: rgb(0 0 0 / 0.06);
+  --lg-shadow: 0 8px 28px rgb(0 0 0 / 0.08), 0 1px 3px rgb(0 0 0 / 0.07);
+  --lg-rim-opacity: 1;
+  --lg-glow: rgb(255 255 255 / 0.55);
+
+  /* Clear glass: the lens that lifts out of selections and thumbs */
+  --lg-lens-fill: rgb(255 255 255 / 0.1);
+  --lg-lens-shadow: 0 10px 30px rgb(0 0 0 / 0.14), 0 2px 6px rgb(0 0 0 / 0.08);
+  --lg-lens-edge: rgb(0 0 0 / 0.07);
+
+  /* Thick material: sheets, menus, cards */
+  --lg-panel-fill: rgb(255 255 255 / 0.62);
+  --lg-panel-blur: 28px;
+
+  --lg-tab-selection: rgb(0 0 0 / 0.07);
+  --lg-segment-selection: rgb(0 0 0 / 0.08);
+  --lg-track: rgb(120 120 128 / 0.16);
+  --lg-rail: rgb(120 120 128 / 0.2);
+  --lg-thumb: #ffffff;
+  --lg-thumb-shadow: 0 3px 8px rgb(0 0 0 / 0.15), 0 1px 1px rgb(0 0 0 / 0.06), 0 0 0 0.5px rgb(0 0 0 / 0.04);
+  --lg-scrim: rgb(0 0 0 / 0.18);
+  --lg-ring: rgb(0 136 255 / 0.55);
+  --lg-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro', 'Inter', system-ui, sans-serif;
 }
 
-@property --glass-angle-2 {
-  syntax: '<angle>';
-  inherits: false;
-  initial-value: -45deg;
+:where([data-theme='dark']) {
+  --lg-fg: rgb(255 255 255 / 0.96);
+  --lg-fg-muted: rgb(235 235 245 / 0.6);
+  --lg-fg-faint: rgb(235 235 245 / 0.3);
+  --lg-accent: #0091ff;
+  --lg-green: #30d158;
+  --lg-red: #ff4245;
+  --lg-fill: rgb(44 44 48 / 0.5);
+  --lg-fill-pressed: rgb(90 90 96 / 0.55);
+  --lg-blur: 8px;
+  --lg-saturate: 1.6;
+  --lg-brightness: 0.96;
+  --lg-edge: rgb(255 255 255 / 0.09);
+  --lg-shadow: 0 8px 28px rgb(0 0 0 / 0.38), 0 1px 3px rgb(0 0 0 / 0.3);
+  --lg-rim-opacity: 0.62;
+  --lg-glow: rgb(255 255 255 / 0.16);
+  --lg-lens-fill: rgb(255 255 255 / 0.04);
+  --lg-lens-shadow: 0 10px 30px rgb(0 0 0 / 0.45), 0 2px 6px rgb(0 0 0 / 0.3);
+  --lg-lens-edge: rgb(255 255 255 / 0.12);
+  --lg-panel-fill: rgb(30 30 33 / 0.62);
+  --lg-tab-selection: rgb(0 0 0 / 0.36);
+  --lg-segment-selection: rgb(255 255 255 / 0.14);
+  --lg-track: rgb(120 120 128 / 0.36);
+  --lg-rail: rgb(120 120 128 / 0.4);
+  --lg-thumb: #ffffff;
+  --lg-thumb-shadow: 0 3px 8px rgb(0 0 0 / 0.3), 0 1px 1px rgb(0 0 0 / 0.16);
+  --lg-scrim: rgb(0 0 0 / 0.4);
+  --lg-ring: rgb(0 145 255 / 0.7);
 }
 
-/* Core glass design tokens — Default to Zaki's perfect light-glass appearance */
-:where([data-liquid-glass]) {
-  --glass-intensity: 5;
-  --glass-tint-h: 0;
-  --glass-tint-s: 0%;
-  --glass-tint-l: 100%;
-  --glass-tint-a: 0.1;
-  --glass-blur: 2px;
-  --glass-border-width: clamp(1px, 0.0625em, 4px);
-  --glass-radius: 999vw;
-  --glass-shimmer: 1;
-  --glass-thickness: 1.5px;
-  --glass-text-color: #191919;
-  --glass-font-size: 16px;
-  --glass-font-weight: 500;
-  --glass-letter-spacing: -0.01em;
-
-  /* Computed shadow values */
-  --glass-shadow-cutoff-fix: 2em;
-  --glass-shadow-offset-top: calc(var(--glass-shadow-cutoff-fix) - 0.5em);
-  --glass-shadow-offset-left: calc(var(--glass-shadow-cutoff-fix) - 0.875em);
-
-  /* Surface gradients and shadows — directly from wabi.ai's refined light glass */
-  --glass-surface-background: linear-gradient(
-    -75deg,
-    rgba(255, 255, 255, 0.08),
-    rgba(255, 255, 255, 0.25),
-    rgba(255, 255, 255, 0.08)
-  );
-
-  --glass-surface-shadow:
-    inset 0 0.125em 0.125em rgba(0, 0, 0, 0.05),
-    inset 0 -0.125em 0.125em rgba(255, 255, 255, 0.5),
-    0 0.25em 0.125em -0.125em rgba(0, 0, 0, 0.12),
-    0 0 0.1em 0.25em inset rgba(255, 255, 255, 0.2),
-    0 0 0 0 #fff;
-
-  --glass-surface-shadow-hover:
-    inset 0 0.125em 0.125em rgba(0, 0, 0, 0.05),
-    inset 0 -0.125em 0.125em rgba(255, 255, 255, 0.5),
-    0 0.15em 0.05em -0.1em rgba(0, 0, 0, 0.15),
-    0 0 0.05em 0.1em inset rgba(255, 255, 255, 0.5),
-    0 0 0 0 #fff;
-
-  /* Physical sinking press shadow: deep inset top shadow, minimized outer shadow */
-  --glass-surface-shadow-active:
-    inset 0 0.25em 0.25em rgba(0, 0, 0, 0.16),
-    inset 0 -0.0625em 0.0625em rgba(255, 255, 255, 0.25),
-    0 0.0625em 0.0625em -0.0625em rgba(0, 0, 0, 0.1),
-    inset 0 0 0.0625em 0.125em rgba(0, 0, 0, 0.03);
-
-  --glass-shadow-background: linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.04));
-
-  /* Content shine */
-  --glass-content-text-shadow: 0 0.05em 0.05em rgba(0, 0, 0, 0.05);
-  --glass-content-blend-mode: normal;
-  --glass-content-shine-display: block;
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  :where([data-liquid-glass]) {
-    --glass-shimmer: 0;
+@media (prefers-color-scheme: dark) {
+  :where(:root:not([data-theme='light'])) {
+    --lg-fg: rgb(255 255 255 / 0.96);
+    --lg-fg-muted: rgb(235 235 245 / 0.6);
+    --lg-fg-faint: rgb(235 235 245 / 0.3);
+    --lg-accent: #0091ff;
+    --lg-green: #30d158;
+    --lg-red: #ff4245;
+    --lg-fill: rgb(44 44 48 / 0.5);
+    --lg-fill-pressed: rgb(90 90 96 / 0.55);
+    --lg-blur: 8px;
+    --lg-saturate: 1.6;
+    --lg-brightness: 0.96;
+    --lg-edge: rgb(255 255 255 / 0.09);
+    --lg-shadow: 0 8px 28px rgb(0 0 0 / 0.38), 0 1px 3px rgb(0 0 0 / 0.3);
+    --lg-rim-opacity: 0.62;
+    --lg-glow: rgb(255 255 255 / 0.16);
+    --lg-lens-fill: rgb(255 255 255 / 0.04);
+    --lg-lens-shadow: 0 10px 30px rgb(0 0 0 / 0.45), 0 2px 6px rgb(0 0 0 / 0.3);
+    --lg-lens-edge: rgb(255 255 255 / 0.12);
+    --lg-panel-fill: rgb(30 30 33 / 0.62);
+    --lg-tab-selection: rgb(0 0 0 / 0.36);
+    --lg-segment-selection: rgb(255 255 255 / 0.14);
+    --lg-track: rgb(120 120 128 / 0.36);
+    --lg-rail: rgb(120 120 128 / 0.4);
+    --lg-thumb-shadow: 0 3px 8px rgb(0 0 0 / 0.3), 0 1px 1px rgb(0 0 0 / 0.16);
+    --lg-scrim: rgb(0 0 0 / 0.4);
+    --lg-ring: rgb(0 145 255 / 0.7);
   }
+}
 
-  :where([data-liquid-glass]),
-  :where([data-liquid-glass]) *,
-  :where([data-liquid-glass]) *::before,
-  :where([data-liquid-glass]) *::after {
+/* ------------------------------------------------------------------ */
+/*  The material                                                       */
+/* ------------------------------------------------------------------ */
+
+.lg-glass {
+  position: relative;
+  box-sizing: border-box;
+  background-color: var(--lg-glass-fill, var(--lg-fill));
+  -webkit-backdrop-filter: blur(var(--lg-glass-blur, var(--lg-blur))) saturate(var(--lg-saturate));
+  backdrop-filter: var(--lg-filter, ) blur(var(--lg-glass-blur, var(--lg-blur))) saturate(var(--lg-saturate))
+    brightness(var(--lg-brightness));
+  box-shadow: var(--lg-glass-shadow, var(--lg-shadow)), inset 0 0 0 0.5px var(--lg-edge);
+  transition: background-color 260ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Baked specular rim: thin bright line, hottest on the diagonal corners. */
+.lg-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: var(--lg-rim, none);
+  background-size: 100% 100%;
+  opacity: var(--lg-rim-opacity);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Light bloom under the finger. */
+.lg-glass::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 85% 85% at var(--lg-x, 50%) var(--lg-y, 50%),
+    var(--lg-glow),
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 360ms ease;
+  z-index: 0;
+}
+
+.lg-glass[data-pressed]::after {
+  opacity: 1;
+  transition-duration: 80ms;
+}
+
+.lg-glass > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .lg-glass {
+    --lg-fill: color-mix(in srgb, Canvas 92%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-glass,
+  .lg-glass::after {
     transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
   }
 }
