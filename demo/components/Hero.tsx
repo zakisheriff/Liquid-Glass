@@ -188,7 +188,6 @@ export function Hero() {
       </div>
       <div className="hero__copy">
         <h1 className="hero__title">Liquid Glass.</h1>
-        <p className="hero__subtitle">Now on the web.</p>
         <div className="hero__ctas">
           <GlassButton
             variant="filled"
@@ -199,6 +198,9 @@ export function Hero() {
           <GlassButton onClick={() => window.open('https://github.com/zakisheriff/Liquid-Glass', '_blank')}>
             GitHub <ArrowUpRight size={16} />
           </GlassButton>
+          <GlassButton onClick={() => window.open('https://www.npmjs.com/package/@zakisheriff/liquid-glass', '_blank')}>
+            npm <ArrowUpRight size={16} />
+          </GlassButton>
         </div>
       </div>
       <div className="hero__stage">
@@ -206,7 +208,6 @@ export function Hero() {
         <Device />
         <MixerCard />
       </div>
-      <p className="hero__hint">Press, hold and drag everything.</p>
     </section>
   );
 }

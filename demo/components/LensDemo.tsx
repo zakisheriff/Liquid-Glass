@@ -75,7 +75,6 @@ export function LensDemo() {
     <section className="lens-section" id="refraction">
       <header className="section-head">
         <h2>Light, bent for real.</h2>
-        <p>Drag the drop.</p>
       </header>
       <div ref={stage} className="lens-demo">
         <div ref={poster} className="lens-demo__poster" aria-hidden="true">

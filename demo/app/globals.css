@@ -240,8 +240,9 @@ img {
 .hero__ctas {
   display: flex;
   justify-content: center;
-  gap: 14px;
-  margin-top: 26px;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 30px;
 }
 
 .hero__stage {

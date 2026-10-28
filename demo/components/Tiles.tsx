@@ -16,13 +16,11 @@ import { Grid, Heart, Home, Mic, Note, Person, Plus, Share, Speaker, Sun } from 
 
 function Tile({
   title,
-  subtitle,
   wide,
   dark,
   children,
 }: {
   title: string;
-  subtitle: string;
   wide?: boolean;
   dark?: boolean;
   children: React.ReactNode;
@@ -31,7 +29,6 @@ function Tile({
     <article className={['tile', wide ? 'tile--wide' : '', dark ? 'tile--dark' : ''].join(' ')}>
       <header className="tile__copy">
         <h2 className="tile__title">{title}</h2>
-        <p className="tile__subtitle">{subtitle}</p>
       </header>
       <div className="tile__stage">{children}</div>
     </article>
@@ -41,7 +38,7 @@ function Tile({
 function SwitchTile() {
   const [rows, setRows] = useState([true, false, true]);
   return (
-    <Tile title="Switch" subtitle="Hold it. It turns to glass.">
+    <Tile title="Switch">
       <div className="stage stage--sunset">
         <GlassCard className="stage__list" padding="6px 18px" radius="26px">
           {['Bringing Devices Together', 'Use Mobile Data', 'Live Activities'].map((label, i) => (
@@ -63,7 +60,7 @@ function SwitchTile() {
 function TabTile() {
   const [tab, setTab] = useState(1);
   return (
-    <Tile title="Tab bar" subtitle="A lens you can drag.">
+    <Tile title="Tab bar">
       <div className="stage stage--scroll">
         <div className="stage__covers">
           {COVERS.concat(COVERS).map((_, i) => (
@@ -91,7 +88,7 @@ function SegmentTile() {
   const [value, setValue] = useState(0);
   const [size, setSize] = useState(1);
   return (
-    <Tile title="Segmented" subtitle="Swells under your finger.">
+    <Tile title="Segmented">
       <div className="stage stage--type">
         <div className="stage__poster" aria-hidden="true">
           {'LIQUID GLASS LIQUID GLASS LIQUID GLASS'.split(' ').map((w, i) => (
@@ -112,7 +109,7 @@ function SliderTile() {
   const [b, setB] = useState(38);
   const [c, setC] = useState(52);
   return (
-    <Tile title="Slider" subtitle="Thumbs that lift. Blocks that stretch.">
+    <Tile title="Slider">
       <div className="stage stage--aurora">
         <GlassCard className="stage__mixer" padding="20px" radius="28px">
           <GlassSlider showThumb={false} value={a} onChange={setA} icon={<Sun size={18} />} label="Display" />
@@ -127,7 +124,7 @@ function SliderTile() {
 function ButtonTile() {
   const [liked, setLiked] = useState(false);
   return (
-    <Tile title="Buttons" subtitle="Press. Stretch. Let go.">
+    <Tile title="Buttons">
       <div className="stage stage--stripes">
         <div className="stage__buttons">
           <div className="stage__row">
@@ -168,7 +165,7 @@ function SearchTile() {
   const [query, setQuery] = useState('');
   const results = COVERS.filter((c) => c.title.toLowerCase().includes(query.toLowerCase())).slice(0, 5);
   return (
-    <Tile title="Search" subtitle="Type through glass.">
+    <Tile title="Search">
       <div className="stage stage--ocean">
         <div className="stage__search">
           <GlassInput
@@ -205,7 +202,7 @@ function SheetTile() {
   const [notify, setNotify] = useState(true);
   const [rate, setRate] = useState(60);
   return (
-    <Tile title="Sheet" subtitle="Flick it away.">
+    <Tile title="Sheet">
       <div className="stage stage--candy">
         <GlassButton size="lg" variant="filled" onClick={() => setOpen(true)}>
           Open sheet
