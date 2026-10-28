@@ -19,7 +19,7 @@ export const COMPONENTS = [
   { name: 'GlassSlider', description: 'A continuous slider with a lifted lens thumb, or a Control Center-style block.', props: 'value, min, max, step, onChange, showThumb, icon, label' },
   { name: 'GlassInput', description: 'Text and search inputs with an optional trailing accessory and clear button.', props: 'type, value, onChange, placeholder, trailing' },
   { name: 'GlassCard', description: 'A glass panel for grouping content and controls.', props: 'variant, padding, radius, children' },
-  { name: 'GlassSheet', description: 'A floating bottom sheet with a spring entrance and drag-to-dismiss interaction.', props: 'open, onClose, children' },
+  { name: 'GlassSheet', description: 'A floating bottom sheet with a spring entrance and drag-to-dismiss interaction. Pass a container element to keep it inside an app preview.', props: 'open, onClose, container, children' },
 ];
 
 export const FAQS = [

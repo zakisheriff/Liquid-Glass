@@ -13,6 +13,8 @@ export interface GlassSheetProps {
   intensity?: number;
   /** CSS colour washed over the glass. */
   tint?: string;
+  /** Optional portal host for a sheet contained within an app preview. */
+  container?: HTMLElement | null;
   /** Accessible name for the dialog. */
   'aria-label'?: string;
   children?: React.ReactNode;
@@ -25,7 +27,7 @@ const CLOSE = springFrom(0.34, 1);
  * iOS 26 floating sheet. Rises on a spring, can be flicked or dragged down to
  * dismiss, and rubber-bands when pulled up.
  */
-export const GlassSheet: React.FC<GlassSheetProps> = ({ open, onClose, intensity = 5, tint, children, 'aria-label': ariaLabel }) => {
+export const GlassSheet: React.FC<GlassSheetProps> = ({ open, onClose, intensity = 5, tint, container, children, 'aria-label': ariaLabel }) => {
   const [mounted, setMounted] = useState(open);
   const sheetRef = useRef<HTMLDivElement>(null);
   const scrimRef = useRef<HTMLDivElement>(null);
@@ -115,7 +117,7 @@ export const GlassSheet: React.FC<GlassSheetProps> = ({ open, onClose, intensity
     sheet.addEventListener('pointercancel', up);
     window.addEventListener('keydown', key);
     const overflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    if (!container) document.body.style.overflow = 'hidden';
     sheet.focus({ preventScroll: true });
     return () => {
       spring.stop();
@@ -125,15 +127,15 @@ export const GlassSheet: React.FC<GlassSheetProps> = ({ open, onClose, intensity
       sheet.removeEventListener('pointerup', up);
       sheet.removeEventListener('pointercancel', up);
       window.removeEventListener('keydown', key);
-      document.body.style.overflow = overflow;
+      if (!container) document.body.style.overflow = overflow;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mounted]);
+  }, [mounted, container]);
 
   if (!mounted || typeof document === 'undefined') return null;
 
   return createPortal(
-    <div className="lg-sheet-layer" data-liquid-glass="">
+    <div className="lg-sheet-layer" data-liquid-glass="" style={container ? { position: 'absolute' } : undefined}>
       <div ref={scrimRef} className="lg-sheet__scrim" onClick={() => onClose?.()} aria-hidden="true" />
       <div
         ref={sheetRef}
@@ -150,7 +152,7 @@ export const GlassSheet: React.FC<GlassSheetProps> = ({ open, onClose, intensity
         <div className="lg-sheet__content">{children}</div>
       </div>
     </div>,
-    document.body,
+    container ?? document.body,
   );
 };
 

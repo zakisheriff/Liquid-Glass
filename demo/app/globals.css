@@ -698,6 +698,178 @@ html[data-morph] .hero__title-text[data-docked] {
   cursor: pointer;
 }
 
+.phone-studio__heading {
+  margin: 0 4px 18px;
+}
+
+.phone-studio__heading p,
+.phone-studio__sheet > p {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.13em;
+}
+
+.phone-studio__heading h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 650;
+  line-height: 1.15;
+  letter-spacing: -0.045em;
+}
+
+.phone-studio__canvas {
+  position: relative;
+  overflow: hidden;
+  padding: 18px 12px 12px;
+  border-radius: 28px;
+  color: white;
+  isolation: isolate;
+}
+
+.phone-studio__art {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+.phone-studio__preview {
+  position: relative;
+  padding: 4px 6px 22px;
+}
+
+.phone-studio__live {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.phone-studio__live > span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px rgb(255 255 255 / 0.6);
+}
+
+.phone-studio__save.lg-button {
+  position: absolute;
+  top: -2px;
+  right: 0;
+  color: white;
+  --lg-glass-fill: rgb(255 255 255 / 0.2);
+}
+
+.phone-studio__preview h3 {
+  margin: 28px 0 4px;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.05em;
+  overflow-wrap: anywhere;
+}
+
+.phone-studio__preview p {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.phone-studio__controls.lg-card {
+  --lg-fg: #fff;
+  --lg-glass-fill: rgb(255 255 255 / 0.16);
+  --lg-glass-blur: 12px;
+  --lg-block-well: rgb(255 255 255 / 0.22);
+}
+
+.phone-studio__control-label,
+.phone-studio__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.phone-studio__control-label {
+  margin: 14px 0 0;
+}
+
+.phone-studio__control-label > span:last-child {
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
+.phone-studio__toggle {
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 0.5px solid rgb(255 255 255 / 0.22);
+}
+
+.phone-studio__toggle > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.phone-studio__details {
+  display: grid;
+  gap: 16px;
+  margin: 20px 2px 0;
+}
+
+.phone-studio__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.phone-studio__actions .lg-button:last-child {
+  flex: 1;
+}
+
+.phone-studio__hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+}
+
+.phone-studio__sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+}
+
+.phone-studio__swatch {
+  position: relative;
+  height: 170px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  border-radius: 22px;
+  isolation: isolate;
+}
+
+.phone-studio__sheet > p {
+  margin: 0;
+}
+
+.phone-studio__sheet h3 {
+  margin: -6px 0 0;
+  font-size: 28px;
+  letter-spacing: -0.04em;
+  overflow-wrap: anywhere;
+}
+
+.phone-studio__sheet > span {
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
 @media (max-width: 480px) {
   .device {
     width: min(402px, calc(100vw - 28px));
@@ -1216,7 +1388,6 @@ html[data-morph] .hero__title-text[data-docked] {
 
 @media (max-width: 600px), (hover: none) and (pointer: coarse) {
   .mock-app .device__feed {
-    overflow: clip;
     overscroll-behavior: auto;
     touch-action: pan-y;
   }

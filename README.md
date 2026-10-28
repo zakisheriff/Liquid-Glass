@@ -98,6 +98,8 @@ Works with Next.js (the bundle is marked `"use client"`), Vite and CRA.
 
 Sliders drag continuously by default (`step="any"`). Pass a numeric `step`, such as `step={5}`, when values should snap to fixed increments. `onChange` receives the full-precision value while block labels show a rounded number.
 
+Pass a positioned element as a sheet's `container` to keep the sheet inside that element without locking page scrolling. Sheets use the full viewport by default.
+
 ### Props reference
 
 | Component | Props |
@@ -109,7 +111,7 @@ Sliders drag continuously by default (`step="any"`). Pass a numeric `step`, such
 | `GlassSlider` | `value`, `min`, `max`, `step`, `onChange(value)`, `showThumb`, `icon`, `label`, `tint`, `intensity` |
 | `GlassInput` | `type`, `value`, `onChange(event)`, `placeholder`, `label`, `icon`, `trailing`, `onClear`, `tint`, `intensity` |
 | `GlassCard` | `variant` (`regular` · `clear`), `padding`, `radius`, `tint`, `thickness`, `intensity` |
-| `GlassSheet` | `open`, `onClose()`, `tint`, `aria-label`, `intensity` |
+| `GlassSheet` | `open`, `onClose()`, `container`, `tint`, `aria-label`, `intensity` |
 
 `intensity` (1–10) scales refraction strength everywhere.
 
