@@ -25,7 +25,7 @@ export function PhoneStudio({ container, palette, onChange, saved, onSave }: {
   return (
     <div className="phone-studio">
       <header className="phone-studio__heading">
-        <h2>A little more liquid.</h2>
+        <h2>Try it now.</h2>
       </header>
       <section className="phone-studio__canvas" aria-label="Palette editor">
         <div className="phone-studio__art" style={artwork} aria-hidden="true" />
