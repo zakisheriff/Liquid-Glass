@@ -600,9 +600,9 @@ html[data-morph] .hero__title-text[data-docked] {
   inset: 0;
 }
 
-/* Sized like the three-tab bar in the Tab bar tile: 86px a tab, centred. */
+/* Keep the three-tab tile's proportions when the mobile bar gets shorter. */
 .mock-app .device__bottom {
-  width: min(258px, calc(100% - 28px));
+  width: min(calc(var(--bar) * 258 / 62), calc(100% - 28px));
   left: 50%;
   right: auto;
   bottom: 26px;
