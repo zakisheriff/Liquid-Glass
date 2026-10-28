@@ -103,12 +103,18 @@ export function usePress(ref: React.RefObject<HTMLElement | null>, options: Pres
     };
 
     const blur = () => up();
+    // Older iOS ignores touch-action on some elements; a held press owns the gesture.
+    const hold = (event: TouchEvent) => {
+      if (pointer && event.cancelable) event.preventDefault();
+    };
+    el.addEventListener('touchmove', hold, { passive: false });
     el.addEventListener('pointerdown', down);
     window.addEventListener('blur', blur);
     return () => {
       up();
       springs.forEach((s) => s.stop());
       el.removeEventListener('pointerdown', down);
+      el.removeEventListener('touchmove', hold);
       window.removeEventListener('blur', blur);
       el.style.removeProperty('scale');
       el.style.removeProperty('translate');

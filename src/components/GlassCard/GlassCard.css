@@ -3,7 +3,6 @@
   --lg-glass-blur: var(--lg-panel-blur);
   color: var(--lg-fg);
   font-family: var(--lg-font);
-  background-image: linear-gradient(var(--lg-card-tint, transparent), var(--lg-card-tint, transparent));
 }
 
 .lg-card--clear.lg-glass {

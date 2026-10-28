@@ -140,8 +140,8 @@ export const GlassSheet: React.FC<GlassSheetProps> = ({ open, onClose, intensity
         aria-modal="true"
         aria-label={ariaLabel}
         tabIndex={-1}
-        className="lg-glass lg-sheet"
-        style={tint ? ({ '--lg-card-tint': tint } as React.CSSProperties) : undefined}
+        className="lg-glass lg-glass--host lg-sheet"
+        style={tint ? ({ '--lg-host-tint': tint } as React.CSSProperties) : undefined}
       >
         <div className="lg-sheet__grabber-zone" aria-hidden="true">
           <span className="lg-sheet__grabber" />

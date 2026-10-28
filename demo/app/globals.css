@@ -81,9 +81,10 @@ img {
   --lg-glass-fill: rgb(255 255 255 / 0.34);
   --lg-glass-blur: 3px;
   --lg-saturate: 2.1;
+  --nav-gap: 26px;
   display: flex;
   align-items: center;
-  gap: 26px;
+  gap: var(--nav-gap);
   height: 50px;
   padding: 0 7px 0 16px;
   border-radius: 25px;
@@ -101,13 +102,24 @@ img {
 .nav__brand {
   display: flex;
   align-items: center;
-  gap: 8px;
+  /* A slot that opens as the hero title flies in (driven by --p). */
+  width: calc(var(--brand-w, 0px) * var(--p, 0));
+  margin-right: calc((var(--p, 0) - 1) * var(--nav-gap));
+  overflow: visible;
   color: var(--text);
   font-family: var(--display);
   font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
+}
+
+.nav__brand span {
+  opacity: 0;
+}
+
+.nav[data-brand='shown'] .nav__brand span {
+  opacity: 1;
 }
 
 .nav__links {
@@ -220,12 +232,20 @@ img {
 }
 
 .hero__title {
+  position: relative;
+  z-index: 60;
   margin: 0;
   font-family: var(--display);
   font-size: clamp(48px, 8vw, 96px);
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.015em;
+}
+
+.hero__title-text {
+  display: inline-block;
+  transform-origin: 0 0;
+  will-change: transform;
 }
 
 .hero__subtitle {
@@ -1192,7 +1212,7 @@ img {
   }
 
   .nav.lg-glass {
-    gap: 14px;
+    --nav-gap: 14px;
   }
 
   .hero {

@@ -78,7 +78,7 @@
   margin: 0;
   opacity: 0;
   cursor: pointer;
-  touch-action: pan-y;
+  touch-action: none;
   -webkit-appearance: none;
   appearance: none;
 }

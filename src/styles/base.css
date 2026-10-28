@@ -213,3 +213,32 @@
   inset: 0;
   overflow: hidden;
 }
+
+/* ------------------------------------------------------------------ */
+/*  Glass that holds glass                                             */
+/* ------------------------------------------------------------------ */
+
+/*
+ * An element with backdrop-filter becomes a "backdrop root": glass nested
+ * inside it can only see the container's own paint, never the page behind.
+ * Hosts (cards, sheets, bars) therefore frost on their ::before layer, so a
+ * lens lifted inside them still refracts the real backdrop, as on iOS.
+ */
+.lg-glass.lg-glass--host {
+  background-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.lg-glass.lg-glass--host::before {
+  background-image:
+    var(--lg-rim, linear-gradient(transparent, transparent)),
+    linear-gradient(var(--lg-host-tint, transparent), var(--lg-host-tint, transparent)),
+    linear-gradient(var(--lg-glass-fill, var(--lg-fill)), var(--lg-glass-fill, var(--lg-fill)));
+  background-size: 100% 100%;
+  -webkit-backdrop-filter: blur(var(--lg-glass-blur, var(--lg-blur))) saturate(var(--lg-saturate));
+  backdrop-filter: var(--lg-filter, ) blur(var(--lg-glass-blur, var(--lg-blur))) saturate(var(--lg-saturate))
+    brightness(var(--lg-brightness));
+  opacity: 1;
+  transition: background-color 260ms ease;
+}

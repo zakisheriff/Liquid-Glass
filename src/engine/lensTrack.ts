@@ -227,7 +227,8 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     };
 
     const onTouchMove = (event: TouchEvent) => {
-      if (gesture?.moved && event.cancelable) event.preventDefault();
+      // Holding the lens owns the gesture: the page must not scroll under it.
+      if (gesture && event.cancelable) event.preventDefault();
     };
 
     const observer = new ResizeObserver(() => {

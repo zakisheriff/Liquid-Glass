@@ -1,5 +1,8 @@
 import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { SPRINGS, clamp, createSpring, rubberband } from '../../engine/spring';
+import { SPRINGS, clamp, createSpring, rubberband, springFrom } from '../../engine/spring';
+
+/** The knob drops back with a short, gentle settle rather than a jelly bounce. */
+const SETTLE = springFrom(0.36, 0.68);
 import { useRefraction } from '../../engine/refraction';
 import { haptic } from '../../engine/haptics';
 import './GlassSwitch.css';
@@ -50,9 +53,9 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
     };
     const sync = useRef<((value: boolean) => void) | null>(null);
 
-    // iOS shows the track a little smaller inside the knob, leaving clear glass
-    // above and below it, rather than a magnified wall of colour.
-    useRefraction(thumbRef, { kind: 'lens', zoom: 0.82, strength: Math.max(1, Math.min(10, intensity)) / 5 }, true, ref, () =>
+    // 1×: the track shows at its real height with clear glass above and below,
+    // as on iOS. Zooming either way smears the backdrop edge across the lens.
+    useRefraction(thumbRef, { kind: 'lens', zoom: 1, dispersion: 0.5, strength: Math.max(1, Math.min(10, intensity)) / 5 }, true, ref, () =>
       parseFloat(ref.current?.style.getPropertyValue('--lg-lift') || '0') > 0.01,
     );
 
@@ -74,7 +77,7 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
       };
       const position = createSpring(v.x, SPRINGS.snap, (value, velocity) => {
         v.x = value;
-        v.stretch = clamp(Math.abs(velocity) / 40, 0, 0.14);
+        v.stretch = clamp(Math.abs(velocity) / 140, 0, 0.05);
         paint();
       });
       const lift = createSpring(0, SPRINGS.lift, (value) => {
@@ -100,12 +103,13 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
       const drop = (delay: number) => {
         clearTimeout(dropTimer);
         dropTimer = window.setTimeout(() => {
-          lift.tune(SPRINGS.settle);
+          lift.tune(SETTLE);
           lift.set(0);
         }, delay);
       };
 
       const down = (event: PointerEvent) => {
+        el.removeAttribute('data-keyboard');
         if (!event.isPrimary || event.button !== 0 || latest.current.disabled) return;
         clearTimeout(dropTimer);
         gesture = { id: event.pointerId, x: event.clientX, from: latest.current.checked ? 1 : 0, moved: false, at: performance.now() };
@@ -197,6 +201,10 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
         data-liquid-glass=""
         style={tint ? ({ '--lg-switch-on': tint, ...style } as React.CSSProperties) : style}
         {...rest}
+        onKeyDown={(event) => {
+          event.currentTarget.setAttribute('data-keyboard', '');
+          rest.onKeyDown?.(event);
+        }}
       >
         <span ref={fillRef} className="lg-switch__fill" aria-hidden="true" />
         <span ref={thumbRef} className="lg-glass lg-switch__thumb" aria-hidden="true">

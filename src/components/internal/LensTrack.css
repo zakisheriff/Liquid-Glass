@@ -10,7 +10,7 @@
   padding: var(--lg-pad);
   border-radius: 999px;
   font-family: var(--lg-font);
-  touch-action: pan-y;
+  touch-action: none;
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;

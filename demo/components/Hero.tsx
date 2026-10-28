@@ -115,7 +115,7 @@ function Device() {
           {/* One glass shell: it shrinks around the selected tab instead of swapping elements. */}
           <div
             ref={shell}
-            className="lg-glass device__tabs"
+            className="lg-glass lg-glass--host device__tabs"
             onClickCapture={(event) => {
               if (!minimised) return;
               event.preventDefault();
@@ -187,7 +187,11 @@ export function Hero() {
         <span className="blob blob--c" />
       </div>
       <div className="hero__copy">
-        <h1 className="hero__title">Liquid Glass.</h1>
+        <h1 className="hero__title">
+          <span id="hero-title" className="hero__title-text">
+            Liquid Glass
+          </span>
+        </h1>
         <div className="hero__ctas">
           <GlassButton
             variant="filled"

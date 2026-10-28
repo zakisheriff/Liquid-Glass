@@ -38,9 +38,9 @@ export const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
     return (
       <div
         ref={ref}
-        className={['lg-glass', 'lg-card', `lg-card--${variant}`, className].filter(Boolean).join(' ')}
+        className={['lg-glass', 'lg-glass--host', 'lg-card', `lg-card--${variant}`, className].filter(Boolean).join(' ')}
         data-liquid-glass=""
-        style={{ padding, borderRadius: radius, ...(tint ? { '--lg-card-tint': tint } : {}), ...style } as React.CSSProperties}
+        style={{ padding, borderRadius: radius, ...(tint ? { '--lg-host-tint': tint } : {}), ...style } as React.CSSProperties}
         {...rest}
       >
         {children}

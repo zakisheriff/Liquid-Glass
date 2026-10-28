@@ -10,7 +10,7 @@
   border-radius: 999px;
   background: var(--lg-track);
   cursor: pointer;
-  touch-action: pan-y;
+  touch-action: none;
   -webkit-tap-highlight-color: transparent;
   vertical-align: middle;
 }
@@ -64,7 +64,12 @@
   background: var(--lg-thumb);
 }
 
-.lg-switch:focus-visible {
+.lg-switch:focus {
+  outline: none;
+}
+
+/* Ring only for keyboard focus; clicks can still flag :focus-visible. */
+.lg-switch[data-keyboard]:focus-visible {
   outline: 2px solid var(--lg-ring);
   outline-offset: 3px;
 }

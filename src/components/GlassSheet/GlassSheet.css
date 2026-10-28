@@ -29,7 +29,6 @@
   border-radius: 38px;
   color: var(--lg-fg);
   font-family: var(--lg-font);
-  background-image: linear-gradient(var(--lg-card-tint, transparent), var(--lg-card-tint, transparent));
   pointer-events: auto;
   touch-action: pan-y;
   outline: none;
