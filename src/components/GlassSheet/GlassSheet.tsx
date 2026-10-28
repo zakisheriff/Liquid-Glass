@@ -67,9 +67,12 @@ export const GlassSheet: React.FC<GlassSheetProps> = ({ open, onClose, intensity
     let medium = 0;
     const measure = () => {
       height = sheet.offsetHeight || 400;
-      hidden = height + 24;
+      // Measured from the sheet's top edge: a detent sheet runs on past the
+      // bottom of the screen, so its own height isn't what's on show.
+      const top = sheet.offsetTop;
+      hidden = layer.clientHeight - top + 24;
       // Medium shows the sheet's top half of the screen's height.
-      medium = Math.max(0, height - layer.clientHeight * 0.5);
+      medium = Math.max(0, layer.clientHeight * 0.5 - top);
       stops = wanted.length ? wanted.map((d) => (d === 'large' ? 0 : medium)).sort((x, y) => x - y) : [0];
       rest = wanted.includes('medium') ? medium : stops[0];
     };

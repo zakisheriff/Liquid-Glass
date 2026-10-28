@@ -47,7 +47,7 @@ export function PhoneStudio({ container, palette, onChange, saved, onSave }: {
           <GlassButton variant="filled" onClick={() => setSheet(true)}>Preview palette</GlassButton>
         </div>
       </div>
-      {container && <GlassSheet open={sheet} onClose={() => setSheet(false)} container={container} aria-label="Palette preview">
+      {container && <GlassSheet open={sheet} onClose={() => setSheet(false)} container={container} detents={['medium', 'large']} aria-label="Palette preview">
         <div className="phone-studio__sheet">
           <div className="phone-studio__swatch"><div className="phone-studio__art" style={artwork} /></div>
           <p>YOUR PALETTE</p>

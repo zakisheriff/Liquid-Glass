@@ -44,8 +44,15 @@
    its content only scrolls once it's fully raised, otherwise a drag
    anywhere moves the sheet. */
 .lg-sheet--detents.lg-glass {
-  height: calc(100% - 10px - max(8px, env(safe-area-inset-bottom)));
+  /* Edge to edge and running on past the bottom of the screen, so its lower
+     edge and corners never show, even when pulled up past full height. */
+  --lg-sheet-run: 160px;
+  width: min(640px, 100%);
+  height: calc(100% - 10px + var(--lg-sheet-run));
   max-height: none;
+  margin-bottom: calc(-1 * var(--lg-sheet-run));
+  padding-bottom: var(--lg-sheet-run);
+  border-radius: 38px 38px 0 0;
 }
 
 .lg-sheet--detents:not([data-raised]) {
