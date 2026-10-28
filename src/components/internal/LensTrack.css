@@ -25,6 +25,10 @@
   z-index: 0;
 }
 
+.lg-track[data-lifted] {
+  z-index: 10;
+}
+
 .lg-track[data-lifted] .lg-track__glass::after {
   opacity: 0.7;
   transition-duration: 120ms;
@@ -45,6 +49,28 @@
 
 .lg-track__item[aria-selected='true'] {
   color: var(--lg-track-active, var(--lg-accent));
+}
+
+/* Preview the tab beneath the dragged droplet using the original icon row. */
+.lg-track[data-previewing] .lg-track__item {
+  color: var(--lg-fg);
+}
+
+.lg-track[data-previewing] .lg-track__item[data-lg-preview] {
+  color: var(--lg-track-active, var(--lg-accent));
+}
+
+.lg-track[data-lifted] .lg-nav__label {
+  background-image: var(--lg-content-tint);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.lg-track[data-lifted] .lg-nav__icon > .lg-symbol {
+  background-color: transparent;
+  background-image: var(--lg-content-tint);
 }
 
 .lg-track__item {

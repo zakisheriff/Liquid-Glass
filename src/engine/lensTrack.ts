@@ -60,6 +60,13 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       hovered: number;
     } | null = null;
     let suppressClick = false;
+    const buttons = Array.from(bar.querySelectorAll<HTMLElement>('[data-lg-item]'));
+    let glyphs: Array<{ node: HTMLElement; x: number; y: number; width: number; label: boolean }> = [];
+    const preview = (index?: number) => {
+      if (index === undefined) delete bar.dataset.previewing;
+      else bar.dataset.previewing = '';
+      buttons.forEach((button, i) => button.toggleAttribute('data-lg-preview', i === index));
+    };
 
     const measure = () => {
       const style = getComputedStyle(bar);
@@ -74,6 +81,15 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       lens.style.left = `${pad + (slot - W) / 2}px`;
       lens.style.top = `${pad + (height - H) / 2}px`;
       select.style.width = `${slot}px`;
+      glyphs = buttons.flatMap((button) =>
+        Array.from(button.querySelectorAll<HTMLElement>('.lg-nav__label, .lg-nav__icon > .lg-symbol')).map((node) => ({
+          node,
+          x: button.offsetLeft + node.offsetLeft - pad,
+          y: node.offsetTop + node.offsetHeight / 2,
+          width: node.offsetWidth,
+          label: node.classList.contains('lg-nav__label'),
+        })),
+      );
     };
 
     const paint = () => {
@@ -90,6 +106,26 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       bar.style.scale = `${grow}`;
       lens.style.setProperty('--lg-lift', String(clamp(lift, 0, 1)));
       bar.style.setProperty('--lg-lift', String(clamp(lift, 0, 1)));
+      // Tint the original glyphs precisely where the curved lens overlaps.
+      // A moving gradient gives the native partial-blue transition without
+      // drawing a second, ghosted row of icons or labels.
+      for (const glyph of glyphs) {
+        if (lift <= 0.02 && !gesture) {
+          glyph.node.style.removeProperty('--lg-content-tint');
+          glyph.node.style.removeProperty('transform');
+          continue;
+        }
+        const ry = H * ky / 2;
+        const dy = clamp(Math.abs(glyph.y - height / 2) / ry, 0, 1);
+        const half = Math.max(0, (W - H) * kx / 2) + H * kx / 2 * Math.sqrt(1 - dy * dy);
+        const from = x + slot / 2 - half - glyph.x;
+        const to = x + slot / 2 + half - glyph.x;
+        const normal = 'var(--lg-fg)';
+        const active = 'var(--lg-track-active, var(--lg-accent))';
+        glyph.node.style.setProperty('--lg-content-tint', `linear-gradient(90deg, ${normal} ${from}px, ${active} ${from}px, ${active} ${to}px, ${normal} ${to}px)`);
+        const coverage = clamp((Math.min(glyph.width, to) - Math.max(0, from)) / Math.max(1, glyph.width), 0, 1);
+        glyph.node.style.transform = `scale(${1 + clamp(lift, 0, 1) * coverage * (glyph.label ? 0.035 : 0.08)})`;
+      }
       if (!gesture && lift < 0.02) delete bar.dataset.lifted;
     };
 
@@ -118,7 +154,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
 
     const position = (clientX: number) => {
       if (!gesture) return 0;
-      const raw = gesture.anchor + clientX - gesture.startX;
+      const raw = gesture.anchor + (clientX - gesture.startX) * bar.offsetWidth / Math.max(1, gesture.box.width);
       const max = slot * (latest.current.count - 1);
       // iOS gives only a few points of overscroll past the end segments.
       const give = Math.min(14, slot * 0.12);
@@ -146,6 +182,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       gesture = { id: event.pointerId, startX: event.clientX, anchor: index * slot, moved: false, box, hovered: index };
       suppressClick = false;
       bar.dataset.lifted = '';
+      preview(index);
       lens.dataset.pressed = '';
       light(event.clientX, box);
       haptic();
@@ -156,6 +193,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       // The lens slides out of the old selection toward the finger.
       x.tune(SPRINGS.snap);
       x.set(index * slot);
+      paint();
     };
 
     const onMove = (event: PointerEvent) => {
@@ -176,6 +214,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       const hovered = clamp(Math.round(at / slot), 0, latest.current.count - 1);
       if (hovered !== gesture.hovered) {
         gesture.hovered = hovered;
+        preview(hovered);
         haptic();
       }
     };
@@ -186,6 +225,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       const at = moved ? position(event.clientX) : gesture.anchor;
       const index = clamp(Math.round(at / slot), 0, latest.current.count - 1);
       gesture = null;
+      preview();
       delete lens.dataset.pressed;
       if (bar.hasPointerCapture?.(event.pointerId)) bar.releasePointerCapture(event.pointerId);
       const inside = event.clientY >= box.top - 30 && event.clientY <= box.bottom + 30;
@@ -206,6 +246,20 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
 
     const onUp = (event: PointerEvent) => finish(event, true);
     const onCancel = (event: PointerEvent) => finish(event, false);
+    const onBlur = () => {
+      if (!gesture) return;
+      const id = gesture.id;
+      gesture = null;
+      preview();
+      delete lens.dataset.pressed;
+      if (bar.hasPointerCapture(id)) bar.releasePointerCapture(id);
+      lift.tune(SPRINGS.settle);
+      lift.set(0);
+      swell.tune(SPRINGS.release);
+      swell.set(0);
+      x.tune(SPRINGS.snap);
+      x.set(current * slot);
+    };
 
     const onClick = (event: MouseEvent) => {
       if (suppressClick && event.detail !== 0) {
@@ -253,6 +307,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
     window.addEventListener('pointercancel', onCancel);
+    window.addEventListener('blur', onBlur);
     bar.addEventListener('click', onClick, true);
     bar.addEventListener('keydown', onKey);
     bar.addEventListener('touchmove', onTouchMove, { passive: false });
@@ -267,11 +322,17 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
       window.removeEventListener('pointercancel', onCancel);
+      window.removeEventListener('blur', onBlur);
       bar.removeEventListener('click', onClick, true);
       bar.removeEventListener('keydown', onKey);
       bar.removeEventListener('touchmove', onTouchMove);
       delete bar.dataset.ready;
       delete bar.dataset.lifted;
+      preview();
+      glyphs.forEach(({ node }) => {
+        node.style.removeProperty('--lg-content-tint');
+        node.style.removeProperty('transform');
+      });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [options.count]);

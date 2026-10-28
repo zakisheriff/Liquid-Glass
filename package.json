@@ -1,6 +1,6 @@
 {
   "name": "@zakisheriff/liquid-glass",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Real refracting liquid glass UI components for React — iOS 26's Liquid Glass, on the web.",
   "author": "Zaki Sheriff",
   "license": "MIT",
@@ -21,7 +21,8 @@
     "./styles.css": "./dist/index.css"
   },
   "files": [
-    "dist"
+    "dist",
+    "THIRD_PARTY_NOTICES.md"
   ],
   "sideEffects": [
     "**/*.css"

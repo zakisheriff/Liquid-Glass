@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="sky" x2="0.3" y2="1">
+      <stop stop-color="#dc798b"/>
+      <stop offset=".42" stop-color="#b8dbe7"/>
+      <stop offset="1" stop-color="#dc90a7"/>
+    </linearGradient>
+    <linearGradient id="blue" x1=".2" y1="0" x2=".65" y2="1">
+      <stop stop-color="#d26c8b"/>
+      <stop offset=".28" stop-color="#cb003e"/>
+      <stop offset=".48" stop-color="#d5000a"/>
+      <stop offset=".78" stop-color="#b91100"/>
+      <stop offset="1" stop-color="#961d08"/>
+    </linearGradient>
+    <linearGradient id="silk" x1="0" y1="1" x2="1" y2="0">
+      <stop stop-color="#d5002c"/>
+      <stop offset=".5" stop-color="#e3779a"/>
+      <stop offset="1" stop-color="#c9cce4"/>
+    </linearGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="24"/></filter>
+    <filter id="haze"><feGaussianBlur stdDeviation="52"/></filter>
+  </defs>
+  <path fill="url(#sky)" d="M0 0h1600v900H0z"/>
+  <path fill="#c60048" filter="url(#soft)" d="M-80 468Q80 330 200 430T510 520L340 710H-80Z"/>
+  <path fill="url(#blue)" d="M-100 835C230 778 417 596 630 363S1060-24 1340-120L1700-100V1000H-100Z"/>
+  <g fill="none" filter="url(#soft)">
+    <path stroke="url(#silk)" stroke-width="100" d="M-90 611C315 688 544 418 817 197S1333-3 1670 5"/>
+    <path stroke="#d9b5d2" stroke-width="42" d="M-90 630C341 665 527 418 838 220S1360 39 1670 44"/>
+    <path stroke="#d10059" stroke-width="42" d="M-90 660C320 736 603 448 894 299S1404 145 1690 174"/>
+    <path stroke="#ab1800" stroke-width="110" d="M-90 714C280 811 613 528 940 396S1400 263 1690 298"/>
+  </g>
+  <path fill="#e17690" filter="url(#haze)" d="M1740 355C1410 441 1230 639 1115 980H1740Z"/>
+  <path fill="#d49fb5" filter="url(#soft)" d="M1680 421C1460 547 1313 747 1250 940H1680Z"/>
+  <path fill="none" stroke="#e6e6f4" stroke-opacity=".85" stroke-width="3" d="M-100 835C230 778 417 596 630 363S1060-24 1340-120"/>
+</svg>

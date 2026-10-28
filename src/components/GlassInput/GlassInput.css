@@ -25,10 +25,6 @@
   will-change: scale, translate;
 }
 
-.lg-input__field::after {
-  display: none;
-}
-
 .lg-input__field input {
   flex: 1;
   min-width: 0;

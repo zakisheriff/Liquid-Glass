@@ -59,21 +59,11 @@ function SwitchTile() {
 
 function TabTile() {
   const [tab, setTab] = useState(0);
-  const [searching, setSearching] = useState(false);
-  const [query, setQuery] = useState('');
-  const covers = COVERS.concat(COVERS)
-    .map((_, i) => (i + tab * 3) % COVERS.length)
-    .filter((index) => COVERS[index].title.toLowerCase().includes(query.toLowerCase()));
   return (
     <Tile title="Tab bar">
-      <div className="stage stage--scroll">
-        <div className="stage__covers" data-searching={searching ? '' : undefined}>
-          {covers.map((index, i) => <Cover key={`${index}-${i}`} index={index} />)}
-        </div>
-        {searching && <div className="stage__cover-search">
-          <GlassInput type="search" placeholder="Search covers" aria-label="Search tab bar covers" autoFocus value={query} onChange={(event) => setQuery(event.target.value)} />
-        </div>}
-        <AppDock tab={tab} onChange={setTab} onSearch={() => {setSearching((value) => !value);setQuery('');}} />
+      <div className="stage stage--gradient" style={{ '--gradient-hue': `${[0, 155, 275, 325][tab]}deg` } as React.CSSProperties}>
+        <div className="stage__gradient" aria-hidden="true" />
+        <AppDock tab={tab} onChange={setTab} />
       </div>
     </Tile>
   );
@@ -85,11 +75,6 @@ function SegmentTile() {
   return (
     <Tile title="Segmented">
       <div className="stage stage--type">
-        <div className="stage__poster" aria-hidden="true">
-          {'LIQUID GLASS LIQUID GLASS LIQUID GLASS'.split(' ').map((w, i) => (
-            <span key={i}>{w}</span>
-          ))}
-        </div>
         <div className="stage__column">
           <GlassSegmented options={['Chat', 'Work']} value={value} onChange={setValue} aria-label="Mode" />
           <GlassSegmented options={['Day', 'Week', 'Month', 'Year']} value={size} onChange={setSize} aria-label="Range" />

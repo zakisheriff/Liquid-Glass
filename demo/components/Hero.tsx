@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { GlassButton, GlassCard, GlassSlider, GlassSwitch } from '@zakisheriff/liquid-glass';
-import { TravelApp } from './TravelApp';
+import { MockApp } from './MockApp';
 import { Battery, Bolt, Cellular, Plane, Speaker, Sun, Wifi } from './icons';
 
 function useClock() {
@@ -36,14 +36,14 @@ function StatusBar() {
 
 function Device() {
   return (
-    <div className="device" aria-label="Interactive travel app">
+    <div className="device" aria-label="Interactive glass app">
       <span className="device__button device__button--action" aria-hidden="true" />
       <span className="device__button device__button--up" aria-hidden="true" />
       <span className="device__button device__button--down" aria-hidden="true" />
       <span className="device__button device__button--power" aria-hidden="true" />
       <div className="device__screen">
         <StatusBar />
-        <TravelApp />
+        <MockApp />
       </div>
     </div>
   );
@@ -90,11 +90,6 @@ function MixerCard() {
 export function Hero() {
   return (
     <section className="hero" id="top">
-      <div className="hero__backdrop" aria-hidden="true">
-        <span className="blob blob--a" />
-        <span className="blob blob--b" />
-        <span className="blob blob--c" />
-      </div>
       <div className="hero__copy">
         <h1 className="hero__title">
           <span id="hero-title" className="hero__title-text">
