@@ -34,9 +34,10 @@ export function LensTrack({
   const strength = Math.max(1, Math.min(10, intensity)) / 5;
 
   useRefraction(glass, { kind: 'surface', strength });
-  useRefraction(lens, { kind: 'lens', strength, zoom: variant === 'tabbar' ? 1.14 : 1.1 }, true, bar, () =>
-    Boolean(bar.current?.hasAttribute('data-lifted')),
-  );
+  // No Safari mirror here: bars float over arbitrary content (photos,
+  // feeds) that a copy can't rebuild, so the lens there is clear frosted
+  // glass over the real backdrop instead of a grey stand-in.
+  useRefraction(lens, { kind: 'lens', strength, zoom: variant === 'tabbar' ? 1.14 : 1.1 });
 
   const tabbar = variant === 'tabbar';
   useLensTrack(
