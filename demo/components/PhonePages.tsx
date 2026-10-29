@@ -6,14 +6,14 @@ import { Avatar, ROWS, type Thumb } from './HomeFeed';
 import { Close } from './icons';
 
 const ARCHIVED: Array<{ group: string; thumb: Thumb; title: string; meta: string }> = [
-  { group: 'This week', thumb: { src: '/phone/city.webp', photo: true }, title: 'Galle fort photos', meta: '18 photos · Sat' },
+  { group: 'This week', thumb: { src: '/phone/city.webp', photo: true }, title: 'Downtown LA photos', meta: '18 photos · Sat' },
   { group: 'This week', thumb: { src: '/phone/night.webp' }, title: 'Road trip mix', meta: '24 songs · Thu' },
   { group: 'September', thumb: { src: '/phone/shape.webp' }, title: 'Mood board', meta: 'Collection · 14 Sep' },
   { group: 'September', thumb: { src: '/phone/sync.webp', round: true }, title: 'August budget', meta: 'Spreadsheet · 2 Sep' },
   { group: 'September', thumb: { src: '/phone/popcorn.webp' }, title: 'Movie list', meta: 'Watchlist · 21 Sep' },
 ];
 
-const RECENT = ['Galle', 'Sunset mix', 'Budget', 'Slate'];
+const RECENT = ['LA', 'Sunset mix', 'Budget', 'Slate'];
 
 const BROWSE: Array<{ label: string; thumb: Thumb; query: string; background: string }> = [
   { label: 'Photos', thumb: { src: '/phone/city.webp', photo: true }, query: 'photos', background: 'linear-gradient(140deg, #ffb35c, #ff7a45)' },

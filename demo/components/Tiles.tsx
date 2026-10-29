@@ -319,7 +319,7 @@ const MENU_ITEMS = [
 ];
 
 const NOTES = [
-  { title: 'Trip to Galle', text: 'Fort walk at 5, dinner by the lighthouse', day: 'Sat' },
+  { title: 'Trip to Big Sur', text: 'Bixby Bridge at 5, dinner in Carmel', day: 'Sat' },
   { title: 'Groceries', text: 'Oat milk, limes, coffee beans', day: 'Fri' },
   { title: 'Design review', text: 'Soften the menu blur, check dark mode', day: 'Thu' },
   { title: 'Ideas', text: 'Glass widgets for the home screen', day: 'Mon' },

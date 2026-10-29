@@ -34,10 +34,10 @@ const Rings = () => (
 
 // A photo album widget: the cover fills the tile, captioned over a scrim.
 const Album = () => (
-  <div className="home__widget home__widget--album" role="img" aria-label="Galle album, 18 photos">
+  <div className="home__widget home__widget--album" role="img" aria-label="Los Angeles album, 18 photos">
     {/* eslint-disable-next-line @next/next/no-img-element */}
     <img src="/phone/city.webp" alt="" decoding="async" aria-hidden="true" />
-    <strong className="home__value">Galle</strong>
+    <strong className="home__value">Los Angeles</strong>
     <span className="home__label">18 photos</span>
   </div>
 );
@@ -50,7 +50,7 @@ export const ROWS: Array<{ thumb: Thumb; title: string; text: string; time: stri
   { thumb: { src: '/phone/mia.webp', photo: true }, title: 'Lena', text: 'Whassup? Free tonight?', time: '2m', unread: true },
   { thumb: { src: '/phone/night.webp' }, title: 'Weekends', text: 'Ava voted for karaoke. Again.', time: '20m', unread: true },
   { thumb: { src: '/phone/popcorn.webp' }, title: 'Movie night', text: 'Ava: Past Lives. Your place?', time: '1h', unread: false },
-  { thumb: { src: '/phone/city.webp', photo: true }, title: 'Weekend in Galle', text: '3 spots saved for Saturday', time: '3h', unread: false },
+  { thumb: { src: '/phone/city.webp', photo: true }, title: 'Weekend in LA', text: '3 spots saved for Saturday', time: '3h', unread: false },
   { thumb: { src: '/phone/sync.webp', round: true }, title: 'Bills & Subscriptions', text: 'Your phone bill is sorted.', time: '5h', unread: false },
 ];
 

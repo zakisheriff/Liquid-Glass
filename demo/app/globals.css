@@ -1732,6 +1732,7 @@ html[data-morph] .hero__title-text[data-docked] {
 
 .stage--menu > div {
   width: 100%;
+  min-width: 0;
 }
 
 .stage__toolbar {
@@ -1758,6 +1759,8 @@ html[data-morph] .hero__title-text[data-docked] {
 
 .stage__notes {
   display: grid;
+  /* Never wider than the card: long notes truncate instead of pushing out. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
   margin: 0;
   padding: 18px 22px 22px;
