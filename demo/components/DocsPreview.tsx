@@ -14,7 +14,6 @@ import {
 } from '@zakisheriff/liquid-glass';
 import { PreviewThemeToggle, usePreviewMode } from './PreviewTheme';
 import { Bookmark, Check, Close, Compass, Copy, Ellipsis, Grid, Heart, Menu, Mic, Moon, Note, Plus, Search, Share, Star, Sun } from './icons';
-import { TINTED_FILLED } from './tintedFilled';
 
 const TABS = [
   { label: 'Home', icon: <Compass size={22} /> },
@@ -29,7 +28,7 @@ function Buttons() {
     <GlassButton variant="clear">Clear</GlassButton>
     <GlassButton variant="tinted">Tinted</GlassButton>
     <GlassButton variant="filled">Filled</GlassButton>
-    <GlassButton variant={TINTED_FILLED} tint="#af52de">Tinted filled</GlassButton>
+    <GlassButton variant="tinted-filled" tint="#af52de">Tinted filled</GlassButton>
   </>;
 }
 
@@ -63,14 +62,10 @@ function Slider(props: { block?: boolean; ranged?: boolean }) {
   return <GlassSlider value={value} onChange={setValue} aria-label="Volume" />;
 }
 
-// 0.3.5 wraps segmented icons itself so they hide under the lens; the site
-// still runs 0.3.4, so it wraps them here. Drop once the site upgrades.
-const SegmentIcon = ({ children }: { children: ReactNode }) => <span className="lg-nav__icon" style={{ display: 'inline-flex' }}>{children}</span>;
-
 function Segmented({ kind }: { kind: 'text' | 'icons' | 'compact' }) {
   const [value, setValue] = useState(0);
   if (kind === 'icons') {
-    return <GlassSegmented options={[{ label: 'Light', icon: <SegmentIcon><Sun size={16} /></SegmentIcon> }, { label: 'Dark', icon: <SegmentIcon><Moon size={16} /></SegmentIcon> }]} value={value} onChange={setValue} aria-label="Appearance" />;
+    return <GlassSegmented options={[{ label: 'Light', icon: <Sun size={16} /> }, { label: 'Dark', icon: <Moon size={16} /> }]} value={value} onChange={setValue} aria-label="Appearance" />;
   }
   if (kind === 'compact') return <GlassSegmented size="sm" options={['Day', 'Week', 'Month']} value={value} onChange={setValue} aria-label="Range" />;
   return <GlassSegmented options={['Chat', 'Work', 'Study']} value={value} onChange={setValue} aria-label="Mode" />;

@@ -536,17 +536,6 @@ html[data-morph] .hero__title-text[data-docked] {
 .docs__preview + .docs__code pre { margin-top: 0; border-radius: 0 0 20px 20px; }
 .code-block { position: relative; }
 
-/* Tinted filled, as in @zakisheriff/liquid-glass 0.3.5: a soft wash of the
-   colour with a matching label. Drop this once the site runs 0.3.5. */
-.lg-button.lg-button--tinted-filled {
-  --lg-glass-fill: color-mix(in srgb, var(--lg-tint, var(--lg-tint-default, var(--lg-accent))) 26%, var(--lg-fill));
-  color: var(--lg-tint, var(--lg-tint-default, var(--lg-accent)));
-}
-
-.lg-button.lg-button--tinted-filled[data-pressed] {
-  background-color: color-mix(in srgb, var(--lg-tint, var(--lg-tint-default, var(--lg-accent))) 30%, var(--lg-fill-pressed));
-}
-
 /* Syntax colours, Xcode-style, in both themes. */
 :root {
   --tok-keyword: #ad3da4;

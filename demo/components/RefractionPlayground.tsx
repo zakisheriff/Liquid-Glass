@@ -5,7 +5,6 @@ import { GlassButton, GlassCard, GlassInput, GlassMenu, GlassNav, GlassSegmented
 import { Bookmark, Check, Compass, Ellipsis, Grid, Heart, HeartFill, Note, Person, Play, Plus, Search, Share, Speaker, Sun } from './icons';
 import { SheetFrame } from './SheetFrame';
 import { usePreviewMorph } from './PreviewMorph';
-import { TINTED_FILLED } from './tintedFilled';
 
 const TABS = [
   { label: 'Explore', icon: <Compass /> },
@@ -67,7 +66,7 @@ export function RefractionPlayground() {
             <GlassButton>Glass</GlassButton>
             <GlassButton variant="filled">Filled</GlassButton>
             <GlassButton variant="tinted" tint="#ff375f">Tinted</GlassButton>
-            <GlassButton variant={TINTED_FILLED} tint="#af52de">Tinted filled</GlassButton>
+            <GlassButton variant="tinted-filled" tint="#af52de">Tinted filled</GlassButton>
           </div>
           <div className="playground__buttons">
             <GlassButton destructive>Destructive</GlassButton>
