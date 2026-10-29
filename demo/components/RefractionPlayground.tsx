@@ -107,7 +107,7 @@ export function RefractionPlayground() {
           <div className="playground__menu-actions">
             <GlassMenu className="playground__menu" align="start" icon={<span className="playground__menu-label"><Ellipsis size={20} /><span>{sort}</span></span>} aria-label="Playground menu" width={200} check={<Check size={16} />} items={Object.keys(SORTS).map((label) => ({ label, checked: sort === label, onSelect: () => setSort(label) }))} />
             {/* Below the menu, so the open menu grows down inside the card. */}
-            <GlassButton className="playground__sheet-trigger" variant="filled" aria-label="Open playground sheet" onClick={() => setSheet(true)}>Open sheet</GlassButton>
+            <GlassButton className="playground__sheet-trigger" variant="filled" aria-label="Open playground sheet" onClick={() => setSheet(true)}>Open Sheet</GlassButton>
           </div>
           {/* The menu really sorts this list. */}
           <ul className="playground__list" aria-label="Wallpapers">

@@ -40,21 +40,24 @@ export function mountLensOptics(stage: HTMLElement, lens: HTMLElement, canvas: H
         float depth = max(-distance, 0.);
         // Apple's droplet: a clear, unmagnified centre and a rounded rim that
         // bends hard near the edge, curling letters under it into arcs.
-        float bevel = radius * .55;
+        float bevel = radius * .75;
         float t = clamp(depth / bevel, 0., 1.);
         float edge = 1. - t;
-        float bend = radius * .4 * pow(edge, 1.9);
-        vec2 ray = center + local + normal * bend;
-        float split = bend * .018;
+        float bend = radius * .9 * pow(edge, 2.);
+        // A slightly magnified, perfectly clear centre.
+        vec2 ray = center + local / 1.07 + normal * bend;
+        // Red bends least and blue most, so wherever the rim bends hard the
+        // letters split into a thin rainbow, like light through a water drop.
+        float split = bend * .11;
         vec3 glass = vec3(
-          samplePoster(ray + normal * split).r,
-          samplePoster(ray).g,
-          samplePoster(ray - normal * split).b
+          samplePoster(ray - normal * split).r,
+          samplePoster(ray - normal * split * .35).g * .5 + samplePoster(ray + normal * split * .35).g * .5,
+          samplePoster(ray + normal * split).b
         );
         // Fresnel reflection: a transparent centre, light gathering at the rim.
         float fresnel = pow(1. - t, 3.);
         float light = pow(abs(dot(normal, normalize(vec2(-.65, -1.)))), 3.);
-        glass = mix(glass, vec3(.88, .95, 1.), .025 + fresnel * .15);
+        glass = mix(glass, vec3(.9, .96, 1.), fresnel * .16);
         float rim = exp(-pow((depth - .8) / .65, 2.));
         glass = mix(glass, vec3(1.), rim * (.22 + .55 * light));
         float inner = exp(-pow((depth - 2.6) / 1.2, 2.));
@@ -122,6 +125,14 @@ export function mountLensOptics(stage: HTMLElement, lens: HTMLElement, canvas: H
   let visible = true;
   let frame = 0;
   let previous = '';
+  // Frames since the lens last moved. The loop sleeps after ~half a second
+  // of stillness and wakes when the lens, the page or the theme changes, so
+  // a lens left alone costs no frames (and no battery).
+  let still = 0;
+  const wake = () => {
+    still = 0;
+    if (!frame && !stopped) frame = requestAnimationFrame(tick);
+  };
 
   const paintPoster = () => {
     if (stopped || !image.complete || !image.naturalWidth) return;
@@ -165,10 +176,12 @@ export function mountLensOptics(stage: HTMLElement, lens: HTMLElement, canvas: H
     gl.uniform2f(uniforms.resolution, width, height);
     previous = '';
     ready = true;
+    wake();
   };
   const tick = () => {
-    if (stopped) return;
-    if (ready && visible && !document.hidden) {
+    frame = 0;
+    if (stopped || !visible || document.hidden) return;
+    if (ready) {
       const area = stage.getBoundingClientRect();
       const glass = lens.getBoundingClientRect();
       const sx = stage.clientWidth / area.width;
@@ -184,9 +197,12 @@ export function mountLensOptics(stage: HTMLElement, lens: HTMLElement, canvas: H
         gl.drawArrays(gl.TRIANGLES, 0, 6);
         stage.dataset.optics = 'ready';
         previous = key;
+        still = 0;
+      } else {
+        still++;
       }
     }
-    frame = requestAnimationFrame(tick);
+    if (still < 30) frame = requestAnimationFrame(tick);
   };
   const lost = (event: Event) => {
     event.preventDefault();
@@ -202,10 +218,17 @@ export function mountLensOptics(stage: HTMLElement, lens: HTMLElement, canvas: H
   // Repaint when the preview switches between light and dark.
   const theme = new MutationObserver(paintPoster);
   theme.observe(stage, { attributes: true, attributeFilter: ['data-theme'] });
-  const intersection = new IntersectionObserver((entries) => { visible = entries.some((entry) => entry.isIntersecting); });
+  const intersection = new IntersectionObserver((entries) => {
+    visible = entries.some((entry) => entry.isIntersecting);
+    if (visible) wake();
+  });
   intersection.observe(stage);
+  // Dragging and pressing the lens rewrite its transform and scale.
+  const moved = new MutationObserver(wake);
+  moved.observe(lens, { attributes: true, attributeFilter: ['style'] });
+  document.addEventListener('visibilitychange', wake);
   document.fonts.ready.then(() => { if (!stopped) paintPoster(); });
-  frame = requestAnimationFrame(tick);
+  wake();
 
   return () => {
     stopped = true;
@@ -213,6 +236,8 @@ export function mountLensOptics(stage: HTMLElement, lens: HTMLElement, canvas: H
     resize.disconnect();
     theme.disconnect();
     intersection.disconnect();
+    moved.disconnect();
+    document.removeEventListener('visibilitychange', wake);
     image.onload = null;
     canvas.removeEventListener('webglcontextlost', lost);
     delete stage.dataset.optics;

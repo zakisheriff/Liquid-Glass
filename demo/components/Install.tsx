@@ -73,7 +73,7 @@ export function Install() {
   return (
     <section className="install" id="install">
       <header className="section-head">
-        <h2>Get started.</h2>
+        <h2>Get Started.</h2>
       </header>
       <div className="install__command">
         <code>{COMMAND}</code>

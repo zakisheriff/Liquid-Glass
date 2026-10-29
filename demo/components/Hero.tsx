@@ -67,7 +67,7 @@ export function Hero() {
             variant="filled"
             onClick={() => document.getElementById('install')?.scrollIntoView()}
           >
-            Get started
+            Get Started
           </GlassButton>
           <GlassButton variant="tinted" tint="#a371f7" icon={<GitHub size={18} />} onClick={() => window.open('https://github.com/zakisheriff/Liquid-Glass', '_blank')}>
             GitHub

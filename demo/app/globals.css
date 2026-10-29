@@ -163,6 +163,26 @@
   object-fit: contain;
 }
 
+/* Morphing surfaces are lifted into the transition layer, above the whole
+   page, so one under the fixed nav would cover it until the morph ends. The
+   nav joins that layer too, above them as on the page, and holds still. */
+.nav-wrap {
+  view-transition-name: site-nav;
+}
+
+::view-transition-group(site-nav) {
+  z-index: 1;
+  animation: none;
+}
+
+::view-transition-old(site-nav) {
+  display: none;
+}
+
+::view-transition-new(site-nav) {
+  animation: none;
+}
+
 /* Mirror clones must never duplicate their source's transition identity. */
 [data-lg-copy], [data-lg-copy] * {
   view-transition-name: none !important;
@@ -251,6 +271,64 @@ select,
 
 [data-theme='dark'] .nav.lg-glass {
   --lg-glass-fill: rgb(28 28 30 / 0.36);
+}
+
+/* The bar adapts to what's beneath it (set from Nav.tsx as you scroll):
+   brighter glass and dark labels over light content, deeper glass and
+   white labels over dark. */
+.nav.lg-glass[data-tone] {
+  transition:
+    background-color 420ms ease,
+    color 420ms ease;
+}
+
+.nav.lg-glass[data-tone='light'] {
+  --lg-glass-fill: rgb(255 255 255 / 0.4);
+  --text: #1d1d1f;
+  --lg-fg: rgb(0 0 0 / 0.88);
+  --lg-fill: rgb(255 255 255 / 0.62);
+}
+
+.nav.lg-glass[data-tone='dark'] {
+  --lg-glass-fill: rgb(22 22 24 / 0.32);
+  --text: #f5f5f7;
+  --lg-fg: rgb(255 255 255 / 0.96);
+  --lg-fill: rgb(60 60 64 / 0.5);
+}
+
+.nav__links a,
+.nav__brand,
+.nav__theme {
+  transition:
+    color 420ms ease,
+    opacity 200ms ease;
+}
+
+.nav-shell {
+  position: relative;
+  display: flex;
+  border-radius: 25px;
+}
+
+/* Light from beneath gathers in the curved rim: a blurred, oversaturated
+   read of the page, strongest at the edges and faint across the middle. */
+.nav__bleed {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--nav-under, transparent) 14%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(2.6) brightness(1.06);
+  backdrop-filter: blur(14px) saturate(2.6) brightness(1.06);
+  -webkit-mask:
+    linear-gradient(90deg, #000, rgb(0 0 0 / 0.35) 44px, rgb(0 0 0 / 0.35) calc(100% - 44px), #000),
+    linear-gradient(#000, transparent 14px, transparent calc(100% - 14px), #000);
+  -webkit-mask-composite: source-over;
+  mask:
+    linear-gradient(90deg, #000, rgb(0 0 0 / 0.35) 44px, rgb(0 0 0 / 0.35) calc(100% - 44px), #000),
+    linear-gradient(#000, transparent 14px, transparent calc(100% - 14px), #000);
+  mask-composite: add;
+  transition: background-color 420ms ease;
 }
 
 .nav::after {

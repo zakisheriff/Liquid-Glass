@@ -289,7 +289,7 @@ function SheetTile() {
     <Tile title="Sheet">
       <div className="stage stage--candy" style={{ backgroundPosition: `center ${rate}%`, backgroundSize: 'auto 160%' }}>
         <GlassButton size="lg" variant="filled" onClick={() => setOpen(true)}>
-          Open sheet
+          Open Sheet
         </GlassButton>
       </div>
       <GlassSheet open={open} onClose={() => setOpen(false)} detents={['medium', 'large']} aria-label="Now playing">
