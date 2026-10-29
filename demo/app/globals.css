@@ -485,14 +485,14 @@ html[data-morph] .hero__title-text[data-docked] {
   isolation: isolate;
 }
 
-/* Plain white or black, so each example's own colours read true. */
+/* Plain mild grey or black, so each example's own colours read true. */
 .docs__preview::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: -1;
   border-radius: inherit;
-  background: #fff;
+  background: #e8e8ed;
 }
 
 .docs__preview[data-theme='dark']::before {
