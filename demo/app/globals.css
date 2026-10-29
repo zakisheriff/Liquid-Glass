@@ -88,7 +88,12 @@
   backdrop-filter: none;
 }
 
-.lens-demo > .preview-theme-toggle .lg-mirror__zoom > div:not([data-lg-copy]) {
+/* Every theme knob: the background replay under Safari's mirror is captured
+   once and goes stale the moment the scene re-themes (white inside the dark
+   phone), and it can't reproduce the playground canvas or the Tab bar's
+   washed, hue-shifted wallpaper. The knob copies just its track instead and
+   the real scene shows through around it, like a slider thumb. */
+.preview-theme-toggle .lg-mirror__zoom > div:not([data-lg-copy]) {
   display: none;
 }
 
@@ -1862,8 +1867,7 @@ html[data-morph] .hero__title-text[data-docked] {
 }
 
 .stage--gradient {
-  /* The live wallpaper is the hue-shifting layer inside; this copy is what
-     Safari's glass replays under the theme knob, so it must not be dark. */
+  /* The live wallpaper is the hue-shifting layer inside. */
   background: #6e67dc url('/wallpapers/violet.svg') center / cover;
   overflow: visible;
 }
