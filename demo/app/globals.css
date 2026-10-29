@@ -136,14 +136,12 @@
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-::view-transition-group(root),
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-}
-
-::view-transition-old(root) {
-  opacity: 0;
+/* The page itself is never captured: it keeps rendering live under the
+   morphing surfaces. A root snapshot would stand in for it for the whole
+   animation, and Safari's snapshot drops backdrop blur and the WebGL
+   wallpaper, so the background visibly jumped on every option change. */
+:root {
+  view-transition-name: none;
 }
 
 /* Mirror clones must never duplicate their source's transition identity. */
