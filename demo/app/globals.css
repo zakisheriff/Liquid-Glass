@@ -491,7 +491,10 @@ html[data-morph] .hero__title-text[data-docked] {
   isolation: isolate;
 }
 .docs__preview[data-tall] { min-height: 320px; align-items: flex-start; }
-.docs__preview + .docs__code { margin-top: 0; border-radius: 0 0 20px 20px; }
+.docs__preview + .docs__code pre { margin-top: 0; border-radius: 0 0 20px 20px; }
+.code-block { position: relative; }
+.code-block pre { padding-right: 64px; }
+.code-block__copy { position: absolute !important; top: 14px; right: 14px; }
 .docs__preview-row { display: flex; align-items: center; gap: 12px; max-width: 100%; }
 .docs__preview .lg-slider { width: min(320px, 100%); }
 .docs__preview .lg-input { width: min(360px, 100%); }
