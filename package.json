@@ -59,7 +59,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vercel/analytics": "^2.0.1",
-    "liquid-glass-release": "npm:@zakisheriff/liquid-glass@0.3.3",
+    "liquid-glass-release": "npm:@zakisheriff/liquid-glass@0.3.4",
     "next": "^16.4.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
