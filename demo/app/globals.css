@@ -78,6 +78,15 @@
   z-index: 3;
 }
 
+/* The playground's backdrop is a WebGL canvas, which Safari's
+   backdrop-filter samples as black: the lifted knob turned into a dark
+   bead. Here the knob stays a light glass bead over its own track. */
+.lens-demo > .preview-theme-toggle .lg-switch__thumb.lg-glass {
+  --lg-switch-face-fade: 0.55;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 /* In the phone it sits beside the menu, after the large title. */
 .device__top > .preview-theme-toggle {
   gap: 4px;
@@ -797,6 +806,69 @@ html[data-morph] .hero__title-text[data-docked] {
   box-shadow: 0 10px 22px -14px rgb(0 0 0 / 0.45), inset 0 0 0 0.5px rgb(255 255 255 / 0.12);
 }
 
+.home__widget.home__widget--album {
+  justify-content: flex-end;
+  align-items: center;
+  border-radius: 22%;
+  text-align: center;
+  background: #2b3a44;
+}
+
+.home__widget--album img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Scrim so the caption reads over any photo. */
+.home__widget--album::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent 45%, rgb(0 0 0 / 0.55));
+}
+
+.home__widget--album > :not(img) {
+  position: relative;
+  z-index: 1;
+}
+
+.home__widget.home__widget--rings {
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 12px 12px 10px;
+  border-radius: 22%;
+  background: #fff;
+  color: #1d1d1f;
+  box-shadow: 0 8px 14px rgb(0 0 0 / 0.1);
+}
+
+.home__widget--rings svg {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  fill: none;
+  stroke-width: 7;
+  stroke-linecap: round;
+  /* Arcs start at twelve o'clock. */
+  transform: rotate(-90deg);
+}
+
+.home__ring-track {
+  stroke: rgb(0 0 0 / 0.06);
+}
+
+.home__rings-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
 .home__widget > :not([aria-hidden]) {
   position: relative;
   z-index: 1;
@@ -1066,7 +1138,8 @@ html[data-morph] .hero__title-text[data-docked] {
   position: relative;
   flex: none;
   isolation: isolate;
-  perspective: 1800px;
+  /* Close enough that the swung-back phones visibly foreshorten, like Wabi. */
+  perspective: 1000px;
 }
 
 .device--ghost {

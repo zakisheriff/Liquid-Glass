@@ -6,7 +6,7 @@ import { AppDock } from './AppDock';
 import { Avatar, HomeFeed } from './HomeFeed';
 import { ArchivePage, SearchPage } from './PhonePages';
 import { PhonePreviewThemeToggle } from './PreviewTheme';
-import { PhoneStudio, studioArtwork, type StudioPalette } from './PhoneStudio';
+import { studioArtwork, type StudioPalette } from './PhoneStudio';
 import { ArrowLeft, Bookmark, Check, Home, Search } from './icons';
 
 const TABS = [
@@ -30,20 +30,18 @@ const background = (index: number) => PALETTES[index].color;
 
 export function MockApp() {
   const [tab, setTab] = useState(0);
-  const [studioOpen, setStudioOpen] = useState(false);
   const [saved, setSaved] = useState([1, 4]);
   const [selected, setSelected] = useState<number | null>(null);
   const [query, setQuery] = useState('');
   const [searching, setSearching] = useState(false);
   const [sheetHost, setSheetHost] = useState<HTMLDivElement | null>(null);
-  const [studio, setStudio] = useState<StudioPalette>({ name: 'Slate', brightness: 76, hue: 212, vivid: true });
+  const [studio] = useState<StudioPalette>({ name: 'Slate', brightness: 76, hue: 212, vivid: true });
   const palettes = PALETTES.map((palette, index) => index === 0 ? { ...palette, name: studio.name.trim() || 'Untitled palette' } : palette);
   const feed = useRef<HTMLDivElement>(null);
   const search = useRef<HTMLInputElement>(null);
   const changeTab = (index: number) => {
     setTab(index);
     setSelected(null);
-    setStudioOpen(false);
     setSearching(false);
     setQuery('');
     feed.current?.scrollTo({ top: 0 });
@@ -74,10 +72,7 @@ export function MockApp() {
           <SearchPage query={query} onQuery={setQuery} inputRef={search} onClose={() => {setSearching(false);setQuery('');}} paletteCards={query.trim() ? visible.map((index) => card(index)) : []} />
         ) : tab === 1 ? (
           <ArchivePage cards={visible.map((index) => card(index))} />
-        ) : studioOpen ? <>
-          <GlassButton className="mock__back" size="sm" icon={<ArrowLeft size={16} />} onClick={() => setStudioOpen(false)}>Home</GlassButton>
-          <PhoneStudio container={sheetHost} palette={studio} onChange={setStudio} saved={saved.includes(0)} onSave={() => toggleSaved(0)} />
-        </> : <HomeFeed artwork={studioArtwork(studio)} paletteName={palettes[0].name} onOpenPalette={() => {setStudioOpen(true);feed.current?.scrollTo({ top: 0 });}} />) : <>
+        ) : <HomeFeed />) : <>
           <GlassButton size="sm" icon={<ArrowLeft size={16} />} onClick={() => setSelected(null)}>Back</GlassButton>
           <div className="mock__preview" style={selected === 0 ? studioArtwork(studio) : { backgroundColor: background(selected) }} aria-label={`${palettes[selected].name} palette`} />
           <div className="mock__actions"><GlassButton icon={<Bookmark size={18} />} onClick={() => toggleSaved(selected)}>{saved.includes(selected) ? 'Saved' : 'Save'}</GlassButton><GlassButton variant="filled" icon={<Check size={18} />} onClick={() => {setSaved((items) => items.includes(selected) ? items : [...items, selected]);changeTab(1);}}>Show in Archive</GlassButton></div>
