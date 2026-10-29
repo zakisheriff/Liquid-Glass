@@ -32,9 +32,9 @@ const SORTS: Record<string, (a: (typeof WALLPAPERS)[number], b: (typeof WALLPAPE
 export function RefractionPlayground() {
   const [segment, setSegment] = useState(0);
   const [tab, setTab] = useState(0);
-  const [tabCount, setTabCount] = useState(4);
-  const [searchApart, setSearchApart] = useState(false);
-  const [labels, setLabels] = useState(false);
+  const [tabCount, setTabCount] = useState(5);
+  const [searchApart, setSearchApart] = useState(true);
+  const [labels, setLabels] = useState(true);
   // Tab bar options morph the bar in place, like the Tab bar tile.
   const { ref: dock, morph } = usePreviewMorph();
   const [query, setQuery] = useState('');

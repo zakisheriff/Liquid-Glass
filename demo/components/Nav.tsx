@@ -9,7 +9,6 @@ import { GitHub, Moon, Sun } from './icons';
 const LINKS = [
   { href: '#components', label: 'Components' },
   { href: '#refraction', label: 'Playground' },
-  { href: '#install', label: 'Install' },
 ];
 
 const smooth = (t: number) => t * t * (3 - 2 * t);
@@ -147,7 +146,7 @@ export function Nav() {
             variant="filled"
             onClick={() => document.getElementById('install')?.scrollIntoView()}
           >
-            Get
+            Install
           </GlassButton>
           <GlassButton
             size="sm"
