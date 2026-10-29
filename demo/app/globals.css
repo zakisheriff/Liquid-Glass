@@ -93,7 +93,10 @@
    phone), and it can't reproduce the playground canvas or the Tab bar's
    washed, hue-shifted wallpaper. The knob copies just its track instead and
    the real scene shows through around it, like a slider thumb. */
-.preview-theme-toggle .lg-mirror__zoom > div:not([data-lg-copy]) {
+.preview-theme-toggle .lg-mirror__zoom > div:not([data-lg-copy]),
+/* Same in the docs previews: their wallpaper is a pseudo-element the replay
+   can't see, so it fell back to the page's white behind every lifted lens. */
+.docs__preview .lg-mirror__zoom > div:not([data-lg-copy]) {
   display: none;
 }
 
