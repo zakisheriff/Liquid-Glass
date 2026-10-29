@@ -5,6 +5,8 @@ import { GUIDES } from '@/lib/guides';
 import { DemoVideo } from '@/components/DemoVideo';
 import { DocsPreview } from '@/components/DocsPreview';
 import { CodeBlock } from '@/components/CodeBlock';
+import { DocsThemeToggle } from '@/components/DocsThemeToggle';
+import { ThemeProvider } from '@/components/theme';
 import { NPM_URL, PACKAGE_VERSION, REPOSITORY, SITE_URL, UPDATED } from '@/lib/site';
 
 const title = 'Liquid Glass React & Next.js Documentation';
@@ -31,10 +33,10 @@ export default function Documentation() {
       { '@type': 'HowToStep', position: 3, name: 'Use a component', text: "Import a component such as GlassSwitch in a client component ('use client') and render it with React state.", url: `${SITE_URL}/docs#api` },
     ] },
   ] };
-  return <main className="docs">
+  return <ThemeProvider><main className="docs">
     <link rel="alternate" type="text/markdown" href={`${SITE_URL}/docs.md`} />
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
-    <nav className="docs__nav" aria-label="Documentation"><Link href="/">← Live demo</Link><a href={REPOSITORY}>GitHub</a><a href={NPM_URL}>npm · v{PACKAGE_VERSION}</a></nav>
+    <nav className="docs__nav" aria-label="Documentation"><Link href="/">← Live demo</Link><a href={REPOSITORY}>GitHub</a><a href={NPM_URL}>npm · v{PACKAGE_VERSION}</a><DocsThemeToggle /></nav>
     <header><h1>Liquid Glass for React and Next.js</h1><p>Apple-inspired glass for the web, with refraction and spring-based touch interactions. Built by <a href="https://github.com/zakisheriff" style={{ whiteSpace: 'nowrap' }}>Zaki Sheriff</a>. Open source under the MIT license.</p></header>
     <nav className="docs__contents" aria-label="On this page"><a href="#demo">Demo</a><a href="#quick-start">Quick start</a><a href="#api">Components</a><a href="#styling">Styling</a><a href="#performance">Performance</a><a href="#browser-support">Browser support</a><a href="#questions">Questions</a></nav>
     <section id="demo"><h2>See it in motion</h2><DemoVideo /><p>Every control in the recording is a component from this library. Try them yourself in the <Link href="/">live demo</Link>.</p></section>
@@ -54,5 +56,5 @@ export default function Documentation() {
     <section id="browser-support"><h2>Browser support</h2><p>Chromium applies SVG displacement to the live backdrop for bars, buttons and cards, and refracts a tinted live copy inside tab and segmented lenses. Safari and Firefox use translucent glass, highlights and magnified live copies inside lenses (switch, slider, tab bar and segmented control). Effects vary by browser. The large refraction example in the demo uses WebGL.</p><p>This project recreates an Apple-inspired visual style for websites; it is independent of Apple Inc.</p></section>
     <section id="questions"><h2>Common questions</h2>{FAQS.map(f => <details key={f.question}><summary>{f.question}</summary><p>{f.answer}</p></details>)}</section>
     <footer><p><Link href="/">Try the interactive demo</Link> · <a href="/docs.md">Markdown guide</a> · <a href="/llms.txt">llms.txt</a></p><p>Updated {UPDATED} · MIT license · Zaki Sheriff</p></footer>
-  </main>;
+  </main></ThemeProvider>;
 }

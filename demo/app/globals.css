@@ -483,9 +483,9 @@ html[data-morph] .hero__title-text[data-docked] {
   align-items: center;
   justify-content: center;
   gap: 14px;
-  min-height: 150px;
+  min-height: 170px;
   margin-bottom: 0;
-  padding: 32px 20px;
+  padding: 56px 20px 32px;
   border-radius: 20px 20px 0 0;
   isolation: isolate;
 }
@@ -509,6 +509,26 @@ html[data-morph] .hero__title-text[data-docked] {
   background: #77777f url('/wallpapers/violet.svg') center / cover;
   filter: grayscale(1) contrast(0.9) brightness(1.05);
 }
+
+.docs__preview[data-theme='dark']::before {
+  filter: grayscale(1) contrast(0.9) brightness(0.5);
+}
+/* Each preview has its own light / dark switch, as on the component tiles. */
+.docs__preview > .preview-theme-toggle {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  z-index: 6;
+}
+
+.docs__nav {
+  align-items: center;
+}
+
+.docs__nav .docs__theme {
+  margin-left: auto;
+}
+
 .docs__preview[data-tall] { min-height: 320px; align-items: flex-start; }
 .docs__preview + .docs__code pre { margin-top: 0; border-radius: 0 0 20px 20px; }
 .code-block { position: relative; }
@@ -542,6 +562,10 @@ html[data-morph] .hero__title-text[data-docked] {
 .tok-number { color: var(--tok-number); }
 .tok-call { color: var(--tok-call); }
 .code-block pre { padding-right: 64px; }
+@media (max-width: 560px) {
+  /* Code scrolls sideways on phones; it starts below the copy button. */
+  .code-block pre { padding: 58px 20px 20px; }
+}
 .code-block__copy { position: absolute !important; top: 14px; right: 14px; }
 .docs__preview-row { display: flex; align-items: center; gap: 12px; max-width: 100%; }
 .docs__preview .lg-slider { width: min(320px, 100%); }
@@ -549,7 +573,7 @@ html[data-morph] .hero__title-text[data-docked] {
 .docs__preview-card { width: min(300px, 100%); color: var(--lg-fg); }
 .docs__preview-card .lg-slider { width: 100%; margin-block: 12px 8px; }
 .docs__preview-meta { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; opacity: 0.8; }
-.docs__preview-frame { position: absolute; inset: 0; display: flex; align-items: flex-start; justify-content: center; padding-top: 32px; overflow: hidden; border-radius: inherit; }
+.docs__preview-frame { position: absolute; inset: 0; display: flex; align-items: flex-start; justify-content: center; padding-top: 56px; overflow: hidden; border-radius: inherit; }
 .docs__preview-sheet { display: grid; gap: 6px; justify-items: center; padding: 8px 20px 20px; color: var(--lg-fg); text-align: center; }
 .docs__preview-sheet p { margin: 0 0 10px; color: var(--lg-fg-muted); font-size: 14px; }
 .docs__components { display: flex; flex-wrap: wrap; gap: 8px 18px; }

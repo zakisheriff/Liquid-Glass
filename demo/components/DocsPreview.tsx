@@ -12,6 +12,7 @@ import {
   GlassSlider,
   GlassSwitch,
 } from '@zakisheriff/liquid-glass';
+import { PreviewThemeToggle, usePreviewMode } from './PreviewTheme';
 import { Bookmark, Check, Close, Compass, Copy, Ellipsis, Grid, Heart, Menu, Mic, Moon, Note, Plus, Search, Share, Star, Sun } from './icons';
 
 const TABS = [
@@ -180,11 +181,13 @@ const PREVIEWS: Record<string, () => ReactNode> = {
 
 /** The example running live over a wallpaper, above its code. */
 export function DocsPreview({ guide, example }: { guide: string; example: string }) {
+  const [mode, setMode] = usePreviewMode();
   const render = PREVIEWS[`${guide}:${example}`];
   if (!render) return null;
   const tall = guide === 'sheet' || guide === 'menu';
   return (
-    <div className="docs__preview" data-tall={tall ? '' : undefined} aria-label={`Live example: ${example}`}>
+    <div className="docs__preview preview-scope" data-theme={mode} data-tall={tall ? '' : undefined} aria-label={`Live example: ${example}`}>
+      <PreviewThemeToggle label={example} mode={mode} onChange={setMode} />
       {render()}
     </div>
   );
