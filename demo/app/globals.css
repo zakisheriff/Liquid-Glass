@@ -144,6 +144,22 @@
   view-transition-name: none;
 }
 
+/* Tabs, actions and menu rows slide to their new place as they are instead
+   of crossfading two snapshots of different widths, which doubled and
+   blurred their labels while the bar resized. Items that only enter or
+   leave still fade. */
+::view-transition-old(*.preview-item):not(:only-child) {
+  animation: none;
+  opacity: 0;
+}
+
+::view-transition-new(*.preview-item):not(:only-child) {
+  animation: none;
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+}
+
 /* Mirror clones must never duplicate their source's transition identity. */
 [data-lg-copy], [data-lg-copy] * {
   view-transition-name: none !important;

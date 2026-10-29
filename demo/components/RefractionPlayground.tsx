@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { GlassButton, GlassCard, GlassInput, GlassMenu, GlassNav, GlassSegmented, GlassSheet, GlassSlider, GlassSwitch } from '@zakisheriff/liquid-glass';
 import { Bookmark, Check, Compass, Ellipsis, Grid, Heart, HeartFill, Note, Person, Play, Plus, Search, Share, Speaker, Sun } from './icons';
 import { SheetFrame } from './SheetFrame';
@@ -34,11 +34,6 @@ export function RefractionPlayground() {
   const [tab, setTab] = useState(0);
   const [tabCount, setTabCount] = useState(4);
   const [searchApart, setSearchApart] = useState(false);
-  // The switch flips at once; the bar morphs after the knob has slid, so
-  // rebuilding the bar's glass never stalls the switch's own animation.
-  const [searchSwitch, setSearchSwitch] = useState(false);
-  const searchTimer = useRef(0);
-  useEffect(() => () => window.clearTimeout(searchTimer.current), []);
   const [labels, setLabels] = useState(false);
   // Tab bar options morph the bar in place, like the Tab bar tile.
   const { ref: dock, morph } = usePreviewMorph();
@@ -96,11 +91,7 @@ export function RefractionPlayground() {
         </div>
         <div>
           <div className="setting"><span className="setting__label">Tabs</span><GlassSegmented size="sm" options={TAB_COUNTS.map(String)} value={TAB_COUNTS.indexOf(tabCount)} onChange={(index) => morph(() => setTabCount(TAB_COUNTS[index]))} aria-label="Number of tabs" /></div>
-          <div className="setting"><span className="setting__label">Search on its own</span><GlassSwitch checked={searchSwitch} onChange={(on) => {
-            setSearchSwitch(on);
-            window.clearTimeout(searchTimer.current);
-            searchTimer.current = window.setTimeout(() => morph(() => setSearchApart(on)), 260);
-          }} aria-label="Search on its own" /></div>
+          <div className="setting"><span className="setting__label">Search on its own</span><GlassSwitch checked={searchApart} onChange={(on) => morph(() => setSearchApart(on))} aria-label="Search on its own" /></div>
           <div className="setting"><span className="setting__label">Show labels</span><GlassSwitch checked={labels} onChange={(on) => morph(() => setLabels(on))} aria-label="Show tab labels" /></div>
         </div>
       </GlassCard>

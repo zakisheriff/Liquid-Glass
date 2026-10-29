@@ -33,6 +33,7 @@ export function usePreviewMorph() {
           if (item.closest('[data-lg-copy]')) return;
           const label = item.getAttribute('aria-label') ?? item.textContent ?? '';
           item.style.setProperty('view-transition-name', `${name}-${label.replace(/[^a-zA-Z0-9_-]/g, '-')}`);
+          item.style.setProperty('view-transition-class', 'preview-item');
           marked.add(item);
         });
       });
@@ -53,7 +54,10 @@ export function usePreviewMorph() {
     // A newer option supersedes the current animation instead of queuing it.
     void transition.finished.catch(() => {}).finally(() => {
       if (version !== revision.current) return;
-      marked.forEach((element) => element.style.removeProperty('view-transition-name'));
+      marked.forEach((element) => {
+        element.style.removeProperty('view-transition-name');
+        element.style.removeProperty('view-transition-class');
+      });
       running.current = null;
     });
   }, [id]);
