@@ -278,6 +278,9 @@ select,
   /* A slot that opens as the hero title flies in (driven by --p). */
   width: calc(var(--brand-w, 0px) * var(--p, 0));
   margin-right: calc((var(--p, 0) - 1) * var(--nav-gap));
+  transition:
+    width 0.42s cubic-bezier(0.32, 0.72, 0, 1),
+    margin-right 0.42s cubic-bezier(0.32, 0.72, 0, 1);
   overflow: visible;
   color: var(--text);
   font-family: var(--display);
@@ -285,6 +288,11 @@ select,
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
+}
+
+/* Measuring reads the slot fully open, so it must not be mid-transition. */
+html[data-morph='measure'] .nav__brand {
+  transition: none;
 }
 
 .nav__brand span {

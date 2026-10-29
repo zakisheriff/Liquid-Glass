@@ -39,6 +39,7 @@ function useTitleMorph(bar: React.RefObject<HTMLDivElement | null>, brand: React
     const measure = () => {
       // Read both ends with the animation parked.
       root.dataset.morph = 'measure';
+      const slot = nav.style.getPropertyValue('--p') || '0';
       nav.style.setProperty('--p', '1');
       title.style.transform = 'none';
       const scrollY = window.scrollY;
@@ -54,8 +55,11 @@ function useTitleMorph(bar: React.RefObject<HTMLDivElement | null>, brand: React
       root.style.setProperty('--fly-x', `${fx}px`);
       root.style.setProperty('--fly-y', `${fy}px`);
       root.style.setProperty('--fly-k', String(k));
-      nav.style.removeProperty('--p');
+      // Put the slot back while transitions are still off, so measuring
+      // doesn't animate it shut.
+      nav.style.setProperty('--p', slot);
       title.style.transform = '';
+      void nav.offsetWidth;
       root.dataset.morph = native && !still ? 'native' : 'script';
     };
 
@@ -68,10 +72,12 @@ function useTitleMorph(bar: React.RefObject<HTMLDivElement | null>, brand: React
       // jump. Synchronize the handoff even when the compositor owns motion.
       nav.dataset.brand = done ? 'shown' : '';
       title.toggleAttribute('data-docked', done);
-      // The nav's slot always follows script: Safari leaves a scroll-timeline
-      // custom property stale after a quick scroll back up, holding the slot
-      // open with the nav's contents unpainted.
-      nav.style.setProperty('--p', String(e));
+      // The nav's slot opens and closes as one eased transition once the
+      // title is halfway in, rather than tracking every scroll frame: that
+      // resized the pill on the main thread each frame and fell behind the
+      // compositor-driven title on iOS.
+      const open = e > 0.5 ? '1' : '0';
+      if (nav.style.getPropertyValue('--p') !== open) nav.style.setProperty('--p', open);
       if (root.dataset.morph !== 'script') return;
       const s = 1 - (1 - k) * e;
       title.style.transform = `translate(${fx * e}px, ${fy * e}px) scale(${s})`;
