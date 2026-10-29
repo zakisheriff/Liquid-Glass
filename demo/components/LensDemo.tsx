@@ -89,7 +89,7 @@ export function LensDemo() {
     <PreviewThemeContext.Provider value={mode}>
     <section className="lens-section" id="refraction">
       <header className="section-head">
-        <h2>Everything in one place.</h2>
+        <h2><span className="lens-section__long">Everything in one place.</span><span className="lens-section__short">Playground.</span></h2>
       </header>
       <div ref={stage} className="lens-demo preview-scope" data-theme={mode}>
         <PreviewThemeToggle label="Refraction" mode={mode} onChange={setMode} defer />

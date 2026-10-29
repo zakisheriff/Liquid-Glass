@@ -487,8 +487,27 @@ html[data-morph] .hero__title-text[data-docked] {
   margin-bottom: 0;
   padding: 32px 20px;
   border-radius: 20px 20px 0 0;
-  background: #6e67dc url('/wallpapers/violet.svg') center / cover;
   isolation: isolate;
+}
+
+/* Phones get a one-word heading for the playground. */
+.lens-section__short { display: none; }
+
+@media (max-width: 560px) {
+  .lens-section__long { display: none; }
+  .lens-section__short { display: inline; }
+}
+
+/* The wallpaper in greyscale: the glass still has waves to bend, and every
+   tint (purple fills, orange labels, blue buttons) reads against it. */
+.docs__preview::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: #77777f url('/wallpapers/violet.svg') center / cover;
+  filter: grayscale(1) contrast(0.9) brightness(1.05);
 }
 .docs__preview[data-tall] { min-height: 320px; align-items: flex-start; }
 .docs__preview + .docs__code pre { margin-top: 0; border-radius: 0 0 20px 20px; }
