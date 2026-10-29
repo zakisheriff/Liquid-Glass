@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { GlassButton } from '@zakisheriff/liquid-glass';
+import { CodeBlock } from './CodeBlock';
 import { Check, Copy } from './icons';
 
 const COMMAND = 'npm i @zakisheriff/liquid-glass';
@@ -9,12 +10,29 @@ const COMMAND = 'npm i @zakisheriff/liquid-glass';
 const SNIPPET = `'use client';
 
 import { useState } from 'react';
-import { GlassSwitch } from '@zakisheriff/liquid-glass';
+import { GlassButton, GlassCard, GlassSlider, GlassSwitch } from '@zakisheriff/liquid-glass';
 import '@zakisheriff/liquid-glass/styles.css';
 
-export function Settings() {
-  const [on, setOn] = useState(true);
-  return <GlassSwitch checked={on} onChange={setOn} />;
+// A quick-settings panel. Glass needs something behind it to bend,
+// so it sits on a gradient; swap in any image.
+export default function QuickSettings() {
+  const [wifi, setWifi] = useState(true);
+  const [volume, setVolume] = useState(60);
+
+  return (
+    <main style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: 'linear-gradient(135deg, #5b8cff, #c86dd7)' }}>
+      <GlassCard padding="20px" radius="28px" style={{ display: 'grid', gap: 18, width: 320 }}>
+        <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          Wi-Fi
+          <GlassSwitch checked={wifi} onChange={setWifi} />
+        </label>
+        <GlassSlider value={volume} onChange={setVolume} aria-label="Volume" />
+        <GlassButton variant="filled" onClick={() => console.log({ wifi, volume })}>
+          Save
+        </GlassButton>
+      </GlassCard>
+    </main>
+  );
 }`;
 
 const PROMPT = `Add Apple-style Liquid Glass to this React / Next.js app using @zakisheriff/liquid-glass.
@@ -66,9 +84,7 @@ export function Install() {
           onClick={() => copy('cmd', COMMAND)}
         />
       </div>
-      <pre className="install__code">
-        <code>{SNIPPET}</code>
-      </pre>
+      <CodeBlock className="install__snippet" code={SNIPPET} label="example component" />
       <div className="install__links">
         <a className="install__docs" href="/docs">Documentation →</a>
         <GlassButton onClick={() => window.open('https://www.npmjs.com/package/@zakisheriff/liquid-glass', '_blank')}>
