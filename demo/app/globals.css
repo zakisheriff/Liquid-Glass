@@ -1866,10 +1866,9 @@ html[data-morph] .hero__title-text[data-docked] {
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  background:
-    linear-gradient(color-mix(in srgb, var(--tile) 72%, transparent), color-mix(in srgb, var(--tile) 72%, transparent)),
-    #6e67dc url('/wallpapers/violet.svg') center / cover;
-  filter: hue-rotate(var(--gradient-hue, 0deg)) saturate(0.65);
+  /* Full-strength wallpaper, vivid like the Switch tile's coral. */
+  background: #6e67dc url('/wallpapers/violet.svg') center / cover;
+  filter: hue-rotate(var(--gradient-hue, 0deg));
   transition: filter 800ms ease;
 }
 
