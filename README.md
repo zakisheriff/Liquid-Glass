@@ -18,6 +18,7 @@
 <br />
 
 [![Live demo](https://img.shields.io/badge/Live_demo-liquidglass.theatom.lk-0a84ff?style=for-the-badge&logo=safari&logoColor=white)](https://liquidglass.theatom.lk)
+[![Demo video](https://img.shields.io/badge/Demo_video-watch-ff375f?style=for-the-badge&logo=airplayvideo&logoColor=white)](https://liquidglass.theatom.lk/docs#demo)
 [![Docs](https://img.shields.io/badge/Docs-read-1d1d1f?style=for-the-badge&logo=readthedocs&logoColor=white)](https://liquidglass.theatom.lk/docs)
 [![npm](https://img.shields.io/badge/npm-install-cb3837?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/@zakisheriff/liquid-glass)
 [![GitHub](https://img.shields.io/badge/GitHub-star-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/zakisheriff/Liquid-Glass)
@@ -25,9 +26,9 @@
 <br />
 <br />
 
-<a href="https://liquidglass.theatom.lk/docs#demo"><img src="https://liquidglass.theatom.lk/video/demo-poster.jpg" alt="Liquid Glass demo: buttons, sliders, switches, tab bar, menu and sheet in motion. Click to watch." width="100%" /></a>
+<a href="https://liquidglass.theatom.lk/docs#demo"><img src="https://raw.githubusercontent.com/zakisheriff/Liquid-Glass/main/.github/demo-cover.webp" alt="Liquid Glass playground: buttons, sliders, switches, tab bar, menu and sheet. Click to watch the demo video." width="100%" /></a>
 
-<sub>Click to watch the demo</sub>
+**[▶ Click to watch the demo video](https://liquidglass.theatom.lk/docs#demo)**
 
 </div>
 
