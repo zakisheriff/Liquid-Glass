@@ -69,7 +69,7 @@ export const GUIDES: Guide[] = [
   {
     name: 'GlassSwitch',
     id: 'switch',
-    title: 'Toggle switch',
+    title: 'Toggle Switch',
     summary: 'An iOS toggle. On press the knob lifts into a clear lens that refracts the track. Tap it, or drag the knob with rubber-banding at the ends.',
     examples: [
       { title: 'Controlled', code: `import { useState } from 'react';
@@ -136,7 +136,7 @@ const [volume, setVolume] = useState(40);
   {
     name: 'GlassSegmented',
     id: 'segmented',
-    title: 'Segmented control',
+    title: 'Segmented Control',
     summary: 'A row of choices. On press the whole control swells and the selection becomes a lens you can drag between segments.',
     examples: [
       { title: 'Text segments', code: `import { GlassSegmented } from '@zakisheriff/liquid-glass';
@@ -165,10 +165,10 @@ const [mode, setMode] = useState(0);
   {
     name: 'GlassNav',
     id: 'tab-bar',
-    title: 'Tab bar',
+    title: 'Tab Bar',
     summary: 'A floating iOS 26 tab bar. The selection inflates into a lens you can drag across the tabs. Icons with labels, or icons only.',
     examples: [
-      { title: 'Icons and labels', code: `import { GlassNav } from '@zakisheriff/liquid-glass';
+      { title: 'Icons and Labels', code: `import { GlassNav } from '@zakisheriff/liquid-glass';
 
 const [tab, setTab] = useState(0);
 <GlassNav
@@ -182,7 +182,7 @@ const [tab, setTab] = useState(0);
     { label: 'Search', icon: <SearchIcon /> },
   ]}
 />` },
-      { title: 'Icons only', code: `{/* Labels become each tab's accessible name */}
+      { title: 'Icons Only', code: `{/* Labels become each tab's accessible name */}
 <GlassNav showLabels={false} activeIndex={tab} onChange={setTab} items={tabs} />` },
       { title: 'Tabs plus a separate search button', code: `<div style={{ display: 'flex', gap: 12 }}>
   <GlassNav activeIndex={tab} onChange={setTab} items={tabs} />
@@ -244,7 +244,7 @@ const [tab, setTab] = useState(0);
   {
     name: 'GlassInput',
     id: 'input',
-    title: 'Search and text field',
+    title: 'Search and Text Field',
     summary: 'A glass text field with a leading icon, an optional trailing accessory and a clear button.',
     examples: [
       { title: 'Search', code: `import { GlassInput } from '@zakisheriff/liquid-glass';

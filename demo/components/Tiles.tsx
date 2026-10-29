@@ -135,11 +135,11 @@ function TabTile() {
   const width = count * (labels === 'show' ? 86 : 70) + (split ? 72 : 0);
   return (
     <Tile
-      title="Tab bar"
+      title="Tab Bar"
       options={<>
         <Choice label="Tabs" options={[2, 3, 4, 5, 6]} value={count} onChange={setCount} />
-        <Choice label="Layout" options={[{ value: 'bar', label: 'Bar' }, { value: 'split', label: 'Tabs + button' }]} value={layout} onChange={setLayout} />
-        <Choice label="Labels" options={[{ value: 'show', label: 'Icons + labels' }, { value: 'hide', label: 'Icons only' }]} value={labels} onChange={setLabels} />
+        <Choice label="Layout" options={[{ value: 'bar', label: 'Bar' }, { value: 'split', label: 'Tabs + Button' }]} value={layout} onChange={setLayout} />
+        <Choice label="Labels" options={[{ value: 'show', label: 'Icons + Labels' }, { value: 'hide', label: 'Icons Only' }]} value={labels} onChange={setLabels} />
       </>}
     >
       <div className="stage stage--gradient" style={{ '--gradient-hue': `${(selected * 64) % 360}deg` } as React.CSSProperties}>

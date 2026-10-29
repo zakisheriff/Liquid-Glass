@@ -60,12 +60,12 @@ Works with Next.js (the bundle is marked `"use client"`), Vite and CRA.
 | Component | Import | What it does |
 | --- | --- | --- |
 | [Button](#button--glassbutton) | `GlassButton` | Pill or circle. Swells, leans toward a drag, wobbles on release. |
-| [Toggle switch](#toggle-switch--glassswitch) | `GlassSwitch` | The knob lifts into a clear lens that refracts the track. Tap, or drag with rubber-banding. |
+| [Toggle Switch](#toggle-switch--glassswitch) | `GlassSwitch` | The knob lifts into a clear lens that refracts the track. Tap, or drag with rubber-banding. |
 | [Slider](#slider--glassslider) | `GlassSlider` | Thin track with a lens thumb, or a Control Center block. |
-| [Segmented control](#segmented-control--glasssegmented) | `GlassSegmented` | The control swells and the selection becomes a draggable lens. |
-| [Tab bar](#tab-bar--glassnav) | `GlassNav` | Floating tab bar. The selection inflates into a lens you can drag across tabs. |
+| [Segmented Control](#segmented-control--glasssegmented) | `GlassSegmented` | The control swells and the selection becomes a draggable lens. |
+| [Tab Bar](#tab-bar--glassnav) | `GlassNav` | Floating tab bar. The selection inflates into a lens you can drag across tabs. |
 | [Menu](#menu--glassmenu) | `GlassMenu` | Pull-down menu that grows out of its glass button and folds back into it. |
-| [Search and text field](#search-and-text-field--glassinput) | `GlassInput` | Text or search field with icon, trailing accessory and clear button. |
+| [Search and Text Field](#search-and-text-field--glassinput) | `GlassInput` | Text or search field with icon, trailing accessory and clear button. |
 | [Card](#card--glasscard) | `GlassCard` | Refracting panel, frosted or clear. |
 | [Sheet](#sheet--glasssheet) | `GlassSheet` | Bottom sheet. Drag or flick to dismiss; with detents, half height to full screen. |
 
@@ -140,7 +140,7 @@ import { GlassButton } from '@zakisheriff/liquid-glass';
 
 Also accepts every `<button>` prop (`onClick`, `disabled`, `type`, `aria-*`, …).
 
-### Toggle switch · `GlassSwitch`
+### Toggle Switch · `GlassSwitch`
 
 An iOS toggle. On press the knob lifts into a clear lens that refracts the track. Tap it, or drag the knob with rubber-banding at the ends.
 
@@ -245,7 +245,7 @@ Also accepts other `<input type="range">` props (`aria-label`, `disabled`, `name
 
 Arrow keys, Page Up/Down, Home and End work as on a native range input.
 
-### Segmented control · `GlassSegmented`
+### Segmented Control · `GlassSegmented`
 
 A row of choices. On press the whole control swells and the selection becomes a lens you can drag between segments.
 
@@ -287,11 +287,11 @@ const [mode, setMode] = useState(0);
 
 Arrow keys, Home and End move the selection.
 
-### Tab bar · `GlassNav`
+### Tab Bar · `GlassNav`
 
 A floating iOS 26 tab bar. The selection inflates into a lens you can drag across the tabs. Icons with labels, or icons only.
 
-**Icons and labels**
+**Icons and Labels**
 
 ```tsx
 import { GlassNav } from '@zakisheriff/liquid-glass';
@@ -310,7 +310,7 @@ const [tab, setTab] = useState(0);
 />
 ```
 
-**Icons only**
+**Icons Only**
 
 ```tsx
 {/* Labels become each tab's accessible name */}
@@ -392,7 +392,7 @@ import { GlassMenu } from '@zakisheriff/liquid-glass';
 
 Escape or a tap outside closes the menu. Arrow keys move between items.
 
-### Search and text field · `GlassInput`
+### Search and Text Field · `GlassInput`
 
 A glass text field with a leading icon, an optional trailing accessory and a clear button.
 
