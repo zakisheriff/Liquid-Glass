@@ -78,18 +78,18 @@
   z-index: 3;
 }
 
-/* The playground's backdrop is a WebGL canvas that neither Safari's
-   backdrop-filter nor its mirror copy can show: the copy fell back to the
-   whole page background and the lifted knob rendered as a black bead. Here
-   the knob stays a light glass bead over its own track instead. */
-.lens-demo > .preview-theme-toggle .lg-switch__thumb.lg-glass {
-  --lg-switch-face-fade: 0.55;
+/* The playground's backdrop is a WebGL canvas that Safari can show neither
+   through backdrop-filter (it samples black) nor in its mirror copy, which
+   fell back to replaying the whole page background under the knob. Where
+   the mirror is in use, the lifted knob refracts just the switch's own
+   track, like a slider thumb over its rail. Chromium keeps live refraction. */
+.lens-demo > .preview-theme-toggle .lg-switch__thumb.lg-glass:has(> .lg-mirror) {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 
-.lens-demo > .preview-theme-toggle .lg-switch__thumb > .lg-mirror {
-  display: none !important;
+.lens-demo > .preview-theme-toggle .lg-mirror__zoom > div:not([data-lg-copy]) {
+  display: none;
 }
 
 /* In the phone it sits beside the menu, after the large title. */
