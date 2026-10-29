@@ -1159,12 +1159,12 @@ html[data-morph] .hero__title-text[data-docked] {
 /* Outer edges recede, so the pair reads as a fan around the live phone. */
 .device--ghost-left {
   transform-origin: right center;
-  transform: translate3d(-46%, 0, -260px) rotateY(-26deg);
+  transform: translate3d(-64%, 0, -150px) rotateY(-36deg);
 }
 
 .device--ghost-right {
   transform-origin: left center;
-  transform: translate3d(46%, 0, -260px) rotateY(26deg);
+  transform: translate3d(64%, 0, -150px) rotateY(36deg);
 }
 
 .mock__card {
