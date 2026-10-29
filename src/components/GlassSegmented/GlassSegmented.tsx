@@ -48,7 +48,9 @@ export const GlassSegmented: React.FC<GlassSegmentedProps> = ({
       labels={normalized.map((option) => option.label)}
       items={normalized.map((option, i) => (
         <React.Fragment key={i}>
-          {option.icon}
+          {/* Wrapped like tab bar icons, so the real icon hides under the lens
+              (only its magnified copy shows) and takes the lens tint. */}
+          {option.icon != null && <span className="lg-nav__icon">{option.icon}</span>}
           <span className="lg-nav__label">{option.label}</span>
         </React.Fragment>
       ))}

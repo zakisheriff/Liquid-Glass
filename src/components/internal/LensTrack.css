@@ -223,6 +223,10 @@
   color: var(--lg-fg);
 }
 
+.lg-track--segmented .lg-nav__icon {
+  display: inline-flex;
+}
+
 .lg-track--sm.lg-track--segmented {
   --lg-item-h: 28px;
   --lg-pad: 3px;
