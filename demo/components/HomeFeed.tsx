@@ -24,7 +24,7 @@ const Palette = ({ artwork, name, onOpen }: { artwork?: CSSProperties; name: str
 export type Thumb = { src: string; photo?: boolean; round?: boolean };
 
 export const ROWS: Array<{ thumb: Thumb; title: string; text: string; time: string; unread: boolean }> = [
-  { thumb: { src: '/phone/lena.webp', photo: true }, title: 'Lena', text: 'Found a place by the fort', time: '2m', unread: true },
+  { thumb: { src: '/phone/mia.webp', photo: true }, title: 'Mia', text: 'Found a place by the fort', time: '2m', unread: true },
   { thumb: { src: '/phone/night.webp' }, title: 'Weekends', text: 'Ava voted for karaoke. Again.', time: '20m', unread: true },
   { thumb: { src: '/phone/popcorn.webp' }, title: 'Movie night', text: 'Ava: Past Lives. Your place?', time: '1h', unread: false },
   { thumb: { src: '/phone/city.webp', photo: true }, title: 'Weekend in Galle', text: '3 spots saved for Saturday', time: '3h', unread: false },

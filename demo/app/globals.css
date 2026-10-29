@@ -1943,7 +1943,7 @@ html[data-morph] .hero__title-text[data-docked] {
 
 .lens-demo__title {
   position: absolute;
-  top: 70px;
+  top: calc(70px + var(--lens-drop, 0px));
   left: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
@@ -1964,7 +1964,7 @@ html[data-morph] .hero__title-text[data-docked] {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
   /* Compact, so the whole scene fits one screen under the nav. */
-  padding: 132px 18px 18px;
+  padding: calc(132px + var(--lens-drop, 0px)) 18px 18px;
   color: var(--lg-fg);
   pointer-events: none;
 }
@@ -2086,6 +2086,19 @@ html[data-morph] .hero__title-text[data-docked] {
   align-self: flex-start;
 }
 
+/* The open menu is the same clear, liquid glass as its button: lightly
+   frosted so items stay readable, with a bright rim instead of a flat sheet. */
+.lg-menu.lg-glass {
+  --lg-glass-fill: color-mix(in srgb, var(--lg-fill) 55%, transparent);
+  --lg-glass-blur: 12px;
+  --lg-saturate: 1.9;
+  box-shadow:
+    0 18px 44px rgb(0 0 0 / 0.18),
+    inset 0 0 0 0.5px rgb(255 255 255 / 0.6),
+    inset 0 1px 1px rgb(255 255 255 / 0.75),
+    inset 0 -1px 1px rgb(255 255 255 / 0.25);
+}
+
 .playground__menu > .lg-button[data-icon-only] {
   width: auto;
   padding-inline: 16px;
@@ -2141,9 +2154,21 @@ html[data-morph] .hero__title-text[data-docked] {
 }
 
 @media (max-width: 640px) {
+  /* On a phone the blob would sit under the light/dark toggle, so the
+     blob, its title and the cards below all drop beneath it. */
+  .lens-demo {
+    --lens-drop: 48px;
+  }
+
   .playground {
     grid-template-columns: minmax(0, 1fr);
     padding-inline: 16px;
+  }
+
+  /* Single digits need narrow segments, so the selector fits its row. */
+  .playground__panel .setting .lg-track {
+    --lg-item-w: 46px;
+    flex: none;
   }
 
   .playground__buttons .lg-button {
@@ -2155,7 +2180,7 @@ html[data-morph] .hero__title-text[data-docked] {
   position: absolute;
   /* Centred from the first paint, before script takes over the position;
      otherwise a slow load shows it in the corner, then jumps. */
-  top: 20px;
+  top: calc(20px + var(--lens-drop, 0px));
   left: calc(50% - clamp(100px, 16%, 160px));
   width: clamp(200px, 32%, 320px);
   height: 100px;

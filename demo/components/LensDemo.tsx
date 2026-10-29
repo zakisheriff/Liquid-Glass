@@ -39,7 +39,8 @@ export function LensDemo() {
     el.style.left = '0';
     const center = () => {
       x.set((area.clientWidth - el.offsetWidth) / 2, true);
-      y.set(20, true);
+      // Matches the CSS start position, which drops below the toggle on phones.
+      y.set(20 + (parseFloat(getComputedStyle(area).getPropertyValue('--lens-drop')) || 0), true);
     };
     center();
 
