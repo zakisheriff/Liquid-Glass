@@ -2518,8 +2518,8 @@ html[data-morph] .hero__title-text[data-docked] {
 /* Phones: wide enough to hold the whole title, so none of it peeks out. */
 @media (max-width: 560px) {
   .lens-demo__lens.lg-glass {
-    left: calc(50% - min(150px, 50% - 14px));
-    width: min(300px, calc(100% - 28px));
+    left: calc(50% - min(125px, 50% - 14px));
+    width: min(250px, calc(100% - 28px));
   }
 }
 
