@@ -26,7 +26,7 @@
   --lg-lens-ring: rgb(0 0 0 / 0.22);
   /* A clear lens still needs a contour against a pale backdrop. */
   --lg-navigation-fill: rgb(255 255 255 / 0.48);
-  --lg-selection-lens-fill: rgb(255 255 255 / 0.55);
+  --lg-selection-lens-fill: rgb(255 255 255 / 0.14);
   --lg-selection-lens-edge: rgb(45 48 53 / 0.28);
   --lg-selection-lens-bevel: inset 0 3px 7px rgb(45 48 53 / 0.1), inset 0 -1px 2px rgb(255 255 255 / 0.8);
   --lg-selection-lens-brightness: 1;
