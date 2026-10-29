@@ -68,9 +68,12 @@ function useTitleMorph(bar: React.RefObject<HTMLDivElement | null>, brand: React
       // jump. Synchronize the handoff even when the compositor owns motion.
       nav.dataset.brand = done ? 'shown' : '';
       title.toggleAttribute('data-docked', done);
+      // The nav's slot always follows script: Safari leaves a scroll-timeline
+      // custom property stale after a quick scroll back up, holding the slot
+      // open with the nav's contents unpainted.
+      nav.style.setProperty('--p', String(e));
       if (root.dataset.morph !== 'script') return;
       const s = 1 - (1 - k) * e;
-      nav.style.setProperty('--p', String(e));
       title.style.transform = `translate(${fx * e}px, ${fy * e}px) scale(${s})`;
       title.style.opacity = done ? '0' : '';
     };
