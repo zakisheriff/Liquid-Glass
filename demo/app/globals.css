@@ -127,12 +127,6 @@
   opacity: 0;
 }
 
-/* A preview's light/dark switch is a gentle crossfade of the whole scene. */
-::view-transition-group(preview-theme) {
-  animation-duration: 340ms;
-  animation-timing-function: ease-out;
-}
-
 /* Mirror clones must never duplicate their source's transition identity. */
 [data-lg-copy], [data-lg-copy] * {
   view-transition-name: none !important;

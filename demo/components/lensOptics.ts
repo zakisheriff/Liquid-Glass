@@ -112,6 +112,10 @@ export function mountLensOptics(stage: HTMLElement, lens: HTMLElement, canvas: H
   };
   const source = document.createElement('canvas');
   const context = source.getContext('2d')!;
+  // The wallpaper rasterised once per size; a theme change only re-tints.
+  const base = document.createElement('canvas');
+  const baseContext = base.getContext('2d')!;
+  let baseSize = '';
   const image = new Image();
   let stopped = false;
   let ready = false;
@@ -127,11 +131,20 @@ export function mountLensOptics(stage: HTMLElement, lens: HTMLElement, canvas: H
     const density = Math.min(devicePixelRatio || 1, 2, gl.getParameter(gl.MAX_TEXTURE_SIZE) / Math.max(width, height));
     source.width = canvas.width = Math.round(width * density);
     source.height = canvas.height = Math.round(height * density);
+    const size = `${source.width}x${source.height}`;
+    if (size !== baseSize) {
+      base.width = source.width;
+      base.height = source.height;
+      baseContext.setTransform(density, 0, 0, density, 0, 0);
+      const cover = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+      const iw = image.naturalWidth * cover;
+      const ih = image.naturalHeight * cover;
+      baseContext.drawImage(image, (width - iw) / 2, (height - ih) / 2, iw, ih);
+      baseSize = size;
+    }
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.drawImage(base, 0, 0);
     context.setTransform(density, 0, 0, density, 0, 0);
-    const cover = Math.max(width / image.naturalWidth, height / image.naturalHeight);
-    const iw = image.naturalWidth * cover;
-    const ih = image.naturalHeight * cover;
-    context.drawImage(image, (width - iw) / 2, (height - ih) / 2, iw, ih);
     // The theme's wash (lighter in light mode, deeper in dark), under the title.
     const tint = getComputedStyle(stage).getPropertyValue('--poster-tint').trim();
     if (tint) {
