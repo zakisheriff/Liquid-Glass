@@ -37,8 +37,9 @@ export const GUIDES: Guide[] = [
 <GlassButton>Glass</GlassButton>
 <GlassButton variant="clear">Clear</GlassButton>
 <GlassButton variant="tinted">Tinted</GlassButton>
-<GlassButton variant="filled">Filled</GlassButton>` },
-      { title: 'Any colour', code: `<GlassButton variant="tinted" tint="#ff9f0a">Orange label</GlassButton>
+<GlassButton variant="filled">Filled</GlassButton>
+<GlassButton variant="filled" tint="#af52de">Tinted filled</GlassButton>` },
+      { title: 'Any colour', code: `<GlassButton variant="tinted" tint="#c2255c">Burgundy label</GlassButton>
 <GlassButton variant="filled" tint="#af52de">Purple fill</GlassButton>` },
       { title: 'Destructive', code: `<GlassButton destructive>Delete</GlassButton>
 <GlassButton variant="filled" destructive>Delete</GlassButton>` },

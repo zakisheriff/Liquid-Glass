@@ -28,6 +28,7 @@ function Buttons() {
     <GlassButton variant="clear">Clear</GlassButton>
     <GlassButton variant="tinted">Tinted</GlassButton>
     <GlassButton variant="filled">Filled</GlassButton>
+    <GlassButton variant="filled" tint="#af52de">Tinted filled</GlassButton>
   </>;
 }
 
@@ -126,7 +127,7 @@ function Sheet({ detents, label }: { detents?: boolean; label: string }) {
 const PREVIEWS: Record<string, () => ReactNode> = {
   'button:Variants': () => <Buttons />,
   'button:Any colour': () => <>
-    <GlassButton variant="tinted" tint="#ff9f0a">Orange label</GlassButton>
+    <GlassButton variant="tinted" tint="#c2255c">Burgundy label</GlassButton>
     <GlassButton variant="filled" tint="#af52de">Purple fill</GlassButton>
   </>,
   'button:Destructive': () => <>
