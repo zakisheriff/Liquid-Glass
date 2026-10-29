@@ -8,7 +8,7 @@
  */
 import { useEffect, useRef } from 'react';
 import { guardSelection } from './selection';
-import { SPRINGS, clamp, createSpring, rubberband } from './spring';
+import { SPRINGS, clamp, createJelly, createSpring, rubberband } from './spring';
 import { haptic } from './haptics';
 
 export interface LensTrackRefs {
@@ -191,10 +191,15 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       if (!gesture && lift < 0.02) delete bar.dataset.lifted;
     };
 
+    // Travel stretches the droplet along its path, more the faster it goes,
+    // and it jiggles back to round when the drag slows or stops.
+    const jelly = createJelly((value) => {
+      state.squash = value;
+      paint();
+    }, 0.13, 1600);
     const x = createSpring(current * slot, SPRINGS.snap, (value, velocity) => {
       state.x = value;
-      // Fast travel stretches the droplet along its path.
-      state.squash = clamp(Math.abs(velocity) / 6000, 0, 0.08);
+      jelly.feed(velocity);
       paint();
     });
     const lift = createSpring(0, SPRINGS.lift, (value) => {
@@ -395,7 +400,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     return () => {
       clearTimeout(dropTimer);
       api.current = null;
-      [x, lift, swell].forEach((s) => s.stop());
+      [x, lift, swell, jelly].forEach((s) => s.stop());
       unguard();
       observer.disconnect();
       bar.removeEventListener('pointerdown', onDown);

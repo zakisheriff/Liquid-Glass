@@ -1,5 +1,5 @@
 import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { SPRINGS, clamp, createSpring, rubberband, springFrom } from '../../engine/spring';
+import { SPRINGS, clamp, createJelly, createSpring, rubberband, springFrom } from '../../engine/spring';
 
 /** The knob drops back with a short, gentle settle rather than a jelly bounce. */
 const SETTLE = springFrom(0.36, 0.68);
@@ -58,7 +58,7 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
     // track runs on through the lens, thinner inside and flaring back to full
     // height at the rim where it meets the track outside. It's drawn from a
     // live copy of the switch so it can show past its own edge.
-    useRefraction(thumbRef, { kind: 'lens', zoom: 0.72, zoomX: 1, dispersion: 0.5, copy: true, strength: Math.max(1, Math.min(10, intensity)) / 5 }, true, ref, () =>
+    useRefraction(thumbRef, { kind: 'lens', zoom: 0.72, zoomX: 1, dispersion: 1, copy: 'refract', strength: Math.max(1, Math.min(10, intensity)) / 5 }, true, ref, () =>
       parseFloat(ref.current?.style.getPropertyValue('--lg-lift') || '0') > 0.01,
     );
 
@@ -81,9 +81,14 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
         el.style.setProperty('--lg-lift', String(l));
         el.toggleAttribute('data-lifted', l > 0.01);
       };
+      // The knob stretches with its speed and jiggles round when it stops.
+      const jelly = createJelly((value) => {
+        v.stretch = value;
+        paint();
+      }, 0.14, 5);
       const position = createSpring(v.x, SPRINGS.snap, (value, velocity) => {
         v.x = value;
-        v.stretch = clamp(Math.abs(velocity) / 140, 0, 0.05);
+        jelly.feed(velocity);
         paint();
       });
       const lift = createSpring(0, SPRINGS.lift, (value) => {
@@ -101,6 +106,10 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
         position.set(value ? 1 : 0);
         color.set(value ? 1 : 0);
       };
+
+      // The knob has to travel most of the way before the switch flips, so a
+      // drag that wanders past the middle doesn't toggle it by accident.
+      const flips = (from: number, raw: number) => (from ? raw > 0.3 : raw > 0.7);
 
       let gesture: { id: number; x: number; from: number; moved: boolean; at: number } | null = null;
       let dropTimer = 0;
@@ -137,7 +146,7 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
         const over = raw < 0 ? rubberband(raw * TRAVEL, TRAVEL, 0.6) / TRAVEL : raw > 1 ? 1 + rubberband((raw - 1) * TRAVEL, TRAVEL, 0.6) / TRAVEL : raw;
         position.tune(SPRINGS.drag);
         position.set(over);
-        const on = raw > 0.5;
+        const on = flips(gesture.from, raw);
         if ((color.target === 1) !== on) haptic();
         color.set(on ? 1 : 0);
       };
@@ -146,7 +155,7 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
         const { from, x, moved, at } = gesture;
         gesture = null;
         ignoreClick = true;
-        const next = moved ? from + (event.clientX - x) / TRAVEL > 0.5 : !latest.current.checked;
+        const next = moved ? flips(from, from + (event.clientX - x) / TRAVEL) : !latest.current.checked;
         position.tune(SPRINGS.snap);
         position.set(next ? 1 : 0);
         color.set(next ? 1 : 0);
@@ -183,7 +192,7 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
       el.addEventListener('click', click);
       return () => {
         clearTimeout(dropTimer);
-        [position, lift, color].forEach((s) => s.stop());
+        [position, lift, color, jelly].forEach((s) => s.stop());
         unguard();
         el.removeEventListener('pointerdown', down);
         el.removeEventListener('pointermove', move);

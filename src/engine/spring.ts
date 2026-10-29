@@ -76,7 +76,9 @@ function loop(time: number) {
   frame = 0;
   const dt = Math.min(0.064, Math.max(0, (time - last) / 1000));
   last = time;
-  for (const s of active) {
+  // A snapshot: an update may wake another spring (a drag feeding its
+  // jelly), which must wait for the next frame rather than be revisited.
+  for (const s of [...active]) {
     step(s, dt);
     if (Math.abs(s.value - s.target) < 1e-4 && Math.abs(s.velocity) < 1e-3) {
       s.value = s.target;
@@ -85,7 +87,9 @@ function loop(time: number) {
     }
     s.onUpdate(s.value, s.velocity);
   }
-  if (active.size) frame = requestAnimationFrame(loop);
+  // A spring woken during this pass has already queued the next frame;
+  // queueing another would double the loop every frame.
+  if (active.size && !frame) frame = requestAnimationFrame(loop);
 }
 
 function wake() {
@@ -171,7 +175,29 @@ export const SPRINGS = {
   settle: springFrom(0.45, 0.46),
   /** Colour cross-fades. */
   fade: springFrom(0.3, 1),
+  /** A dragged lens's stretch: loose, so it wobbles when the drag stops. */
+  jelly: springFrom(0.3, 0.3),
 } as const;
+
+/**
+ * Speed-driven stretch for a dragged droplet. Feed it the travel velocity
+ * every frame: the faster the drag the more it stretches (easing off so a
+ * flick never smears it), and when the motion slows or stops the stretch
+ * springs back past round and wobbles once or twice before it settles.
+ * The value is positive when stretched along the path, negative when the
+ * rebound briefly makes it narrower and taller.
+ */
+export function createJelly(onUpdate: (stretch: number) => void, max: number, speed: number) {
+  const spring = createSpring(0, SPRINGS.jelly, (value) => onUpdate(value));
+  return {
+    feed(velocity: number) {
+      spring.set(max * Math.tanh(Math.abs(velocity) / speed));
+    },
+    stop() {
+      spring.stop();
+    },
+  };
+}
 
 /** iOS-style rubber banding for overscroll. */
 export function rubberband(offset: number, dimension: number, constant = 0.55): number {

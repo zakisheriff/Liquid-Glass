@@ -46,7 +46,7 @@ export function LensTrack({
   // The lens shows a magnified, fully tinted copy of the bar, bent at its rim
   // where the browser can filter it: whatever the rim draws in is tinted too,
   // as on iOS, instead of the real glyphs showing white through it.
-  useRefraction(lens, { kind: 'lens', strength: 0.85, zoom, dispersion: 0.25, inset: overhang / 2, copy: 'refract' }, true, bar, () =>
+  useRefraction(lens, { kind: 'lens', strength: 1.15, zoom, dispersion: 1, copy: 'refract' }, true, bar, () =>
     bar.current?.hasAttribute('data-lifted') ?? false,
   );
 

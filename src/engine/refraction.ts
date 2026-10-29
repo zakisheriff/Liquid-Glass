@@ -112,7 +112,7 @@ function bevelProfile(bezel: number, thickness: number, ior: number) {
   };
 }
 
-function bake(width: number, height: number, radius: number, shape: Required<GlassShape>, pad = 0, simple = false): Baked {
+function bake(width: number, height: number, radius: number, shape: Required<GlassShape>, pad = 0, simple = false, fringe = false): Baked {
   // `simple`: one displacement pass (edge bend + magnification baked into a
   // single map), no colour split. Safari's GPU filter path renders chained
   // displacement + arithmetic composites black, so its mirrors use this.
@@ -328,7 +328,37 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   }
 
   const scale = max * 2;
-  if (shape.dispersion > 0 && !simple) {
+  if (shape.dispersion > 0 && !simple && fringe) {
+    // A transparent copy (glyphs, a track) can't be split by summing three
+    // single-channel images: where their alphas overlap the sum saturates and
+    // the glyph edges go grey. Instead the green ray is the image, and only
+    // light the red and blue rays carry past it shows, as a thin warm and cool
+    // fringe on either side of each edge (purple outside, green inside, as
+    // on iOS): the rainbow a water drop throws.
+    const spread = 0.3 * shape.dispersion;
+    for (const [name, factor] of [['r', 1 + spread], ['g', 1], ['b', 1 - spread]] as const) {
+      filter.append(
+        el('feDisplacementMap', {
+          in: source,
+          in2: 'field',
+          scale: scale * factor,
+          xChannelSelector: 'R',
+          yChannelSelector: 'G',
+          result: `${name}-ray`,
+        }),
+      );
+    }
+    filter.append(
+      el('feComposite', { in: 'r-ray', in2: 'g-ray', operator: 'out', result: 'r-edge' }),
+      el('feColorMatrix', { in: 'r-edge', type: 'matrix', values: '0.2 0 0 0 0.62  0 0.2 0 0 0.16  0 0 0.2 0 0.8  0 0 0 1 0', result: 'warm' }),
+      el('feComposite', { in: 'b-ray', in2: 'g-ray', operator: 'out', result: 'b-edge' }),
+      el('feColorMatrix', { in: 'b-edge', type: 'matrix', values: '0.2 0 0 0 0.1  0 0.2 0 0 0.78  0 0 0.2 0 0.62  0 0 0 1 0', result: 'cool' }),
+      el('feMerge', {}),
+    );
+    const merge = filter.lastElementChild!;
+    for (const name of ['warm', 'cool', 'g-ray']) merge.append(el('feMergeNode', { in: name }));
+    merge.setAttribute('result', 'bent');
+  } else if (shape.dispersion > 0 && !simple) {
     const spread = 0.16 * shape.dispersion;
     const channels: Array<[string, number, string]> = [
       ['r', 1 + spread, '1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0'],
@@ -403,15 +433,15 @@ function resolve(shape: GlassShape, width: number, height: number): Required<Gla
   };
 }
 
-export function glassFor(width: number, height: number, radius: number, shape: GlassShape = {}, pad = 0, simple = false): Baked {
+export function glassFor(width: number, height: number, radius: number, shape: GlassShape = {}, pad = 0, simple = false, fringe = false): Baked {
   const w = Math.round(width);
   const h = Math.round(height);
   const r = Math.min(w / 2, h / 2, Math.max(0, radius));
   const full = resolve(shape, w, h);
-  const key = [w, h, Math.round(r * 2) / 2, full.kind, full.bezel.toFixed(1), full.thickness.toFixed(1), full.ior, full.zoom, full.dispersion, full.strength, full.inset, pad, simple].join('|');
+  const key = [w, h, Math.round(r * 2) / 2, full.kind, full.bezel.toFixed(1), full.thickness.toFixed(1), full.ior, full.zoom, full.dispersion, full.strength, full.inset, pad, simple, fringe].join('|');
   let baked = cache.get(key);
   if (!baked) {
-    baked = bake(w, h, r, full, pad, simple);
+    baked = bake(w, h, r, full, pad, simple, fringe);
     cache.set(key, baked);
   }
   return baked;
@@ -481,14 +511,22 @@ export function useRefraction(
         ({ zoom, zoomX } = resolve(shape, width, height));
         element.style.setProperty('--lg-inner-mask', baked.inner);
         if (bendCopy) {
-          // The copy is magnified by CSS; the filter only bends the rim. No
-          // colour split: on a transparent copy it darkens glyph edges.
-          copyFilter = glassFor(width, height, radius, { ...shape, zoom: 1, zoomX: 1, dispersion: 0 }, pad).filter;
+          // The copy is magnified by CSS; the filter only bends the rim and
+          // fringes what it bends with colour.
+          copyFilter = glassFor(width, height, radius, { ...shape, zoom: 1, zoomX: 1 }, pad, false, true).filter;
           applyCopyFilter();
         }
       }
-      if (live) {
-        element.style.setProperty('--lg-filter', baked.filter);
+      // A bent copy also refracts the real backdrop: the bar's glass, its edge
+      // and the page bend and split into colour at the rim, so the lens
+      // merges with what's beneath instead of sitting on it.
+      if (live || bendCopy) {
+        // Behind a bent copy the backdrop only carries the bar's glass and
+        // edges: the copy already magnifies the content, so the backdrop isn't
+        // zoomed (that pushed the bar's edge into a ring inside the lens) and
+        // its rim bends gently, curling the bar's edge into thin arcs.
+        const backdrop = live ? baked.filter : glassFor(width, height, radius, { ...shape, zoom: 1, zoomX: 1, strength: (shape.strength ?? 1) * 0.45 }).filter;
+        element.style.setProperty('--lg-filter', backdrop);
         // Lets CSS keep its softening/saturation for real refraction only.
         element.setAttribute('data-lg-refract', '');
       }

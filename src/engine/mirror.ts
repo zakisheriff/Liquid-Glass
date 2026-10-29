@@ -251,14 +251,19 @@ export function mirrorBackdrop(
       shown = on;
       layer.style.visibility = on ? '' : 'hidden';
     }
-    if (on) {
-      applyZoom();
-      sync();
-      align();
-    }
+    if (!on) return;
+    applyZoom();
+    sync();
+    align();
     frame = requestAnimationFrame(tick);
   };
-  frame = requestAnimationFrame(tick);
+  // While its lens rests the copy sleeps: no frames at all, so a page full of
+  // controls lets the CPU idle. Lifting writes the source's style, which the
+  // observer below sees, and that wakes it again.
+  const wake = () => {
+    if (!frame && !stopped) frame = requestAnimationFrame(tick);
+  };
+  wake();
 
   let pending = 0;
   const recopy = () => {
@@ -275,6 +280,7 @@ export function mirrorBackdrop(
   const mutations = new MutationObserver((records) => {
     // Our own copies live inside the glass, which may sit inside the source.
     if (records.every((r) => layer.contains(r.target) || r.target === layer || r.target === glass)) return;
+    wake();
     const structural = records.some((r) => r.type !== 'attributes' && !layer.contains(r.target));
     if (structural && !pending) pending = requestAnimationFrame(recopy);
     else if (!structural && !stopped && visible && !document.hidden && active()) {
@@ -291,9 +297,11 @@ export function mirrorBackdrop(
     typeof IntersectionObserver === 'function'
       ? new IntersectionObserver((entries) => {
           visible = entries.some((e) => e.isIntersecting);
+          wake();
         })
       : null;
   io?.observe(glass);
+  document.addEventListener('visibilitychange', wake);
 
   return () => {
     stopped = true;
@@ -301,6 +309,7 @@ export function mirrorBackdrop(
     cancelAnimationFrame(pending);
     mutations.disconnect();
     io?.disconnect();
+    document.removeEventListener('visibilitychange', wake);
     layer.remove();
     glass.removeAttribute(SELF);
   };
