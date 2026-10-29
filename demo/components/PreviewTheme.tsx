@@ -26,13 +26,14 @@ export function usePreviewTheme() {
   return inherited ?? theme;
 }
 
-export function PreviewThemeToggle({ label, mode, onChange }: {
+export function PreviewThemeToggle({ label, mode, onChange, defer = false }: {
   label: string;
   mode: PreviewMode;
   onChange: (mode: PreviewMode) => void;
+  /** Re-theme once the knob has slid instead of as it goes: for scenes heavy
+   *  enough that repainting their glass would stall the knob. */
+  defer?: boolean;
 }) {
-  // The knob slides at once, like any switch; the scene re-themes once the
-  // slide is done, so repainting its glass never stalls the knob.
   const [dark, setDark] = useState(mode === 'dark');
   const timer = useRef(0);
   useEffect(() => setDark(mode === 'dark'), [mode]);
@@ -45,6 +46,7 @@ export function PreviewThemeToggle({ label, mode, onChange }: {
         onChange={(next) => {
           setDark(next);
           window.clearTimeout(timer.current);
+          if (!defer) return onChange(next ? 'dark' : 'light');
           timer.current = window.setTimeout(() => onChange(next ? 'dark' : 'light'), 240);
         }}
         aria-label={`${label} dark mode`}

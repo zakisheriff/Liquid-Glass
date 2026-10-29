@@ -78,13 +78,18 @@
   z-index: 3;
 }
 
-/* The playground's backdrop is a WebGL canvas, which Safari's
-   backdrop-filter samples as black: the lifted knob turned into a dark
-   bead. Here the knob stays a light glass bead over its own track. */
+/* The playground's backdrop is a WebGL canvas that neither Safari's
+   backdrop-filter nor its mirror copy can show: the copy fell back to the
+   whole page background and the lifted knob rendered as a black bead. Here
+   the knob stays a light glass bead over its own track instead. */
 .lens-demo > .preview-theme-toggle .lg-switch__thumb.lg-glass {
   --lg-switch-face-fade: 0.55;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
+}
+
+.lens-demo > .preview-theme-toggle .lg-switch__thumb > .lg-mirror {
+  display: none !important;
 }
 
 /* In the phone it sits beside the menu, after the large title. */
@@ -529,6 +534,18 @@ html[data-morph] .hero__title-text[data-docked] {
   height: 98px;
 }
 
+/* A typed colour, so the phone's screen (and the header scrim drawn from
+   it) fades between themes like the tiles instead of snapping. */
+@property --screen {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #ffffff;
+}
+
+.device.preview-scope {
+  transition: --screen 400ms ease;
+}
+
 .device__screen {
   position: relative;
   width: 100%;
@@ -537,6 +554,18 @@ html[data-morph] .hero__title-text[data-docked] {
   border-radius: 54px;
   background: var(--screen);
   isolation: isolate;
+}
+
+.device__title,
+.device__brand,
+.home__list button,
+.home__text span,
+.home__time,
+.page__heading,
+.page__heading span,
+.page__row,
+.page__empty {
+  transition: color 400ms ease;
 }
 
 .status {

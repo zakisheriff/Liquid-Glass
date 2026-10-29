@@ -92,7 +92,7 @@ export function LensDemo() {
         <h2>Everything in one place.</h2>
       </header>
       <div ref={stage} className="lens-demo preview-scope" data-theme={mode}>
-        <PreviewThemeToggle label="Refraction" mode={mode} onChange={setMode} />
+        <PreviewThemeToggle label="Refraction" mode={mode} onChange={setMode} defer />
         <div ref={poster} className="lens-demo__poster" aria-hidden="true">
           <span className="lens-demo__title">Liquid Glass</span>
           <canvas ref={canvas} className="lens-demo__optics" />
