@@ -318,10 +318,19 @@ const MENU_ITEMS = [
   { label: 'Share', icon: <Share size={18} /> },
 ];
 
+const NOTES = [
+  { title: 'Trip to Galle', text: 'Fort walk at 5, dinner by the lighthouse', day: 'Sat' },
+  { title: 'Groceries', text: 'Oat milk, limes, coffee beans', day: 'Fri' },
+  { title: 'Design review', text: 'Soften the menu blur, check dark mode', day: 'Thu' },
+  { title: 'Ideas', text: 'Glass widgets for the home screen', day: 'Mon' },
+];
+
 function MenuTile() {
   const [count, setCount] = useState(3);
   const [side, setSide] = useState<'end' | 'start'>('end');
-  const [picked, setPicked] = useState(0);
+  const [picked, setPicked] = useState(-1);
+  // What the menu picks shows up in the notes below it.
+  const choice = MENU_ITEMS[picked]?.label;
   return (
     <Tile
       title="Menu"
@@ -342,9 +351,22 @@ function MenuTile() {
               items={MENU_ITEMS.slice(0, count).map((item, i) => ({ ...item, checked: i === picked, onSelect: () => setPicked(i) }))}
             />
           </div>
-          <div className="stage__notes" aria-hidden="true">
-            <span /><span /><span /><span />
-          </div>
+          <ul className="stage__notes" data-view={choice === 'View as Gallery' ? 'gallery' : 'list'}>
+            {NOTES.map((note, i) => (
+              <li key={note.title}>
+                {choice === 'Select Notes' && <span className="stage__select" data-on={i === 0 ? '' : undefined} aria-hidden="true" />}
+                <span className="stage__note">
+                  <strong>{note.title}</strong>
+                  <span>{note.text}</span>
+                </span>
+                <span className="stage__day">
+                  {i === 0 && choice === 'Pin Note' && <Pin size={13} />}
+                  {i === 0 && choice === 'Favourite' && <Star size={13} />}
+                  {note.day}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </Tile>

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { GlassButton, GlassCard, GlassInput, GlassMenu, GlassNav, GlassSegmented, GlassSheet, GlassSlider, GlassSwitch } from '@zakisheriff/liquid-glass';
 import { Bookmark, Check, Compass, Ellipsis, Grid, Heart, HeartFill, Note, Person, Play, Plus, Search, Share, Speaker, Sun } from './icons';
 import { SheetFrame } from './SheetFrame';
+import { usePreviewMorph } from './PreviewMorph';
 
 const TABS = [
   { label: 'Explore', icon: <Compass /> },
@@ -33,6 +34,14 @@ export function RefractionPlayground() {
   const [tab, setTab] = useState(0);
   const [tabCount, setTabCount] = useState(4);
   const [searchApart, setSearchApart] = useState(false);
+  // The switch flips at once; the bar morphs after the knob has slid, so
+  // rebuilding the bar's glass never stalls the switch's own animation.
+  const [searchSwitch, setSearchSwitch] = useState(false);
+  const searchTimer = useRef(0);
+  useEffect(() => () => window.clearTimeout(searchTimer.current), []);
+  const [labels, setLabels] = useState(false);
+  // Tab bar options morph the bar in place, like the Tab bar tile.
+  const { ref: dock, morph } = usePreviewMorph();
   const [query, setQuery] = useState('');
   const [volume, setVolume] = useState(64);
   const [display, setDisplay] = useState(64);
@@ -81,13 +90,18 @@ export function RefractionPlayground() {
       </GlassCard>
       <GlassCard className="playground__panel" padding="16px 18px" radius="24px">
         <h3>Tab bar</h3>
-        <div className="playground__dock">
-          <GlassNav items={tabs} showLabels={false} activeIndex={Math.min(tab, tabs.length - 1)} onChange={setTab} aria-label="Playground navigation" />
+        <div ref={dock} className="playground__dock" data-labels={labels ? '' : undefined}>
+          <GlassNav items={tabs} showLabels={labels} activeIndex={Math.min(tab, tabs.length - 1)} onChange={setTab} aria-label="Playground navigation" />
           {searchApart && <GlassButton className="playground__dock-search" icon={<Search size={22} />} aria-label="Search" />}
         </div>
         <div>
-          <div className="setting"><span className="setting__label">Tabs</span><GlassSegmented size="sm" options={TAB_COUNTS.map(String)} value={TAB_COUNTS.indexOf(tabCount)} onChange={(index) => setTabCount(TAB_COUNTS[index])} aria-label="Number of tabs" /></div>
-          <div className="setting"><span className="setting__label">Search on its own</span><GlassSwitch checked={searchApart} onChange={setSearchApart} aria-label="Search on its own" /></div>
+          <div className="setting"><span className="setting__label">Tabs</span><GlassSegmented size="sm" options={TAB_COUNTS.map(String)} value={TAB_COUNTS.indexOf(tabCount)} onChange={(index) => morph(() => setTabCount(TAB_COUNTS[index]))} aria-label="Number of tabs" /></div>
+          <div className="setting"><span className="setting__label">Search on its own</span><GlassSwitch checked={searchSwitch} onChange={(on) => {
+            setSearchSwitch(on);
+            window.clearTimeout(searchTimer.current);
+            searchTimer.current = window.setTimeout(() => morph(() => setSearchApart(on)), 260);
+          }} aria-label="Search on its own" /></div>
+          <div className="setting"><span className="setting__label">Show labels</span><GlassSwitch checked={labels} onChange={(on) => morph(() => setLabels(on))} aria-label="Show tab labels" /></div>
         </div>
       </GlassCard>
       <GlassCard className="playground__panel playground__panel--menu" padding="16px 18px" radius="24px">

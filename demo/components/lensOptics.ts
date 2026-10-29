@@ -132,6 +132,12 @@ export function mountLensOptics(stage: HTMLElement, lens: HTMLElement, canvas: H
     const iw = image.naturalWidth * cover;
     const ih = image.naturalHeight * cover;
     context.drawImage(image, (width - iw) / 2, (height - ih) / 2, iw, ih);
+    // The theme's wash (lighter in light mode, deeper in dark), under the title.
+    const tint = getComputedStyle(stage).getPropertyValue('--poster-tint').trim();
+    if (tint) {
+      context.fillStyle = tint;
+      context.fillRect(0, 0, width, height);
+    }
     const title = stage.querySelector<HTMLElement>('.lens-demo__title')!;
     const style = getComputedStyle(title);
     context.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
@@ -180,6 +186,9 @@ export function mountLensOptics(stage: HTMLElement, lens: HTMLElement, canvas: H
   image.src = '/glass-wallpaper.svg';
   const resize = new ResizeObserver(paintPoster);
   resize.observe(stage);
+  // Repaint when the preview switches between light and dark.
+  const theme = new MutationObserver(paintPoster);
+  theme.observe(stage, { attributes: true, attributeFilter: ['data-theme'] });
   const intersection = new IntersectionObserver((entries) => { visible = entries.some((entry) => entry.isIntersecting); });
   intersection.observe(stage);
   document.fonts.ready.then(() => { if (!stopped) paintPoster(); });
@@ -189,6 +198,7 @@ export function mountLensOptics(stage: HTMLElement, lens: HTMLElement, canvas: H
     stopped = true;
     cancelAnimationFrame(frame);
     resize.disconnect();
+    theme.disconnect();
     intersection.disconnect();
     image.onload = null;
     canvas.removeEventListener('webglcontextlost', lost);

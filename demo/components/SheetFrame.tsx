@@ -25,10 +25,12 @@ export function SheetFrame({ children, footer }: { children: React.ReactNode; fo
       const floor = box.height / 2 - offset;
       element.style.height = `${Math.max(0, box.bottom - top, floor)}px`;
     };
-    // The grabber owns sheet dragging; the body owns scrolling. Interactive
-    // controls retain their own pointer handlers and the sheet ignores them.
+    // As on iOS: below full height a drag anywhere on the sheet moves it.
+    // Fully raised, the body scrolls first, and only once it is back at the
+    // top does a pull drag the sheet down. Controls keep their own gestures.
     const scrollBody = (event: PointerEvent) => {
-      if (!(event.target as HTMLElement).closest('button, input, textarea, a, [role="slider"], [role="switch"]')) event.stopPropagation();
+      if ((event.target as HTMLElement).closest('button, input, textarea, a, [role="slider"], [role="switch"]')) return;
+      if (sheet.hasAttribute('data-raised') && content.scrollTop > 0) event.stopPropagation();
     };
     fit();
     const motion = new MutationObserver(fit);

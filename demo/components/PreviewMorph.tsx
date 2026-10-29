@@ -24,7 +24,7 @@ export function usePreviewMorph() {
     const version = ++revision.current;
     const marked = new Set<HTMLElement>();
     const mark = () => {
-      const surfaces = area.querySelectorAll<HTMLElement>('.device__bottom, .stage__column > .lg-track, .stage__buttons .lg-button, .lg-menu-surface');
+      const surfaces = area.querySelectorAll<HTMLElement>('.device__bottom, .stage__column > .lg-track, .stage__buttons .lg-button, .lg-menu-surface, .playground__dock > .lg-nav, .playground__dock-search');
       surfaces.forEach((surface, i) => {
         const name = `preview-${id}-${i}`;
         surface.style.setProperty('view-transition-name', name);
