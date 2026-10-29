@@ -1,3 +1,4 @@
+import { guidesMarkdown } from './guides';
 import { NPM_URL, PACKAGE_VERSION, REPOSITORY, SITE_URL } from './site';
 
 export const QUICK_START = `'use client';
@@ -72,7 +73,7 @@ ${QUICK_START}
 Import the stylesheet once at the app root. In the Next.js App Router use app/layout.tsx; in the Pages Router use pages/_app.tsx. The library requires React and React DOM >=17. Keep interactive state in a client component.
 
 ## Components
-${COMPONENTS.map(c => `### ${c.name}\n${c.description}\nKey props: ${c.props}.`).join('\n\n')}
+${guidesMarkdown(3)}
 
 ## Styling and interaction
 Sliders use step="any" for continuous dragging by default. Set a numeric step for fixed increments. onChange receives the numeric value.
