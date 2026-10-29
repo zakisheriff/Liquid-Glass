@@ -327,9 +327,11 @@ html[data-morph] .nav[data-brand='shown'] .nav__brand span {
   opacity: 1;
 }
 
+/* Hide the docked title without stopping its animation: Safari draws a
+   restarted scroll-driven animation's first frame untransformed, so the
+   title flashed back in the hero when the scroll eased off the dock. */
 html[data-morph] .hero__title-text[data-docked] {
-  animation: none;
-  opacity: 0;
+  visibility: hidden;
 }
 
 @keyframes lg-title-fly {
