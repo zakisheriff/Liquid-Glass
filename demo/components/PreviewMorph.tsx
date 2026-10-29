@@ -24,6 +24,14 @@ export function usePreviewMorph() {
     const version = ++revision.current;
     const marked = new Set<HTMLElement>();
     const mark = () => {
+      // Morphing surfaces are lifted above the whole page, so one under the
+      // fixed nav would hide it. The nav joins the transition for its length
+      // only: a transition name cuts its glass off from the page behind it.
+      const nav = document.querySelector<HTMLElement>('.nav-wrap');
+      if (nav) {
+        nav.style.setProperty('view-transition-name', 'site-nav');
+        marked.add(nav);
+      }
       const surfaces = area.querySelectorAll<HTMLElement>('.device__bottom, .stage__column > .lg-track, .lg-menu-surface, .playground__dock > .lg-nav');
       surfaces.forEach((surface, i) => {
         const name = `preview-${id}-${i}`;

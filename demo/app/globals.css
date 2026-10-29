@@ -163,13 +163,8 @@
   object-fit: contain;
 }
 
-/* Morphing surfaces are lifted into the transition layer, above the whole
-   page, so one under the fixed nav would cover it until the morph ends. The
-   nav joins that layer too, above them as on the page, and holds still. */
-.nav-wrap {
-  view-transition-name: site-nav;
-}
-
+/* The nav joins each playground morph (PreviewMorph names it) so morphing
+   surfaces can't cover it; there it sits above them and holds still. */
 ::view-transition-group(site-nav) {
   z-index: 1;
   animation: none;
