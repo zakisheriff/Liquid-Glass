@@ -3,29 +3,29 @@ import { Symbol } from '../../src/components/internal/Symbol';
 
 type P = { size?: number } & React.HTMLAttributes<HTMLSpanElement>;
 
-// Official Apple SF Symbols, kept as local masks so colour follows the UI.
-export const Home = (props: P) => <Symbol source="/symbols/house.fill.png" {...props} />;
-export const Grid = (props: P) => <Symbol source="/symbols/square.grid.2x2.fill.png" {...props} />;
-export const Note = (props: P) => <Symbol source="/symbols/music.note.png" {...props} />;
-export const Search = (props: P) => <Symbol source="/symbols/magnifyingglass.png" {...props} />;
-export const Person = (props: P) => <Symbol source="/symbols/person.crop.circle.fill.png" {...props} />;
-export const Menu = (props: P) => <Symbol source="/symbols/line.3.horizontal.png" {...props} />;
-export const Plus = (props: P) => <Symbol source="/symbols/plus.png" {...props} />;
-export const Ellipsis = (props: P) => <Symbol source="/symbols/ellipsis.png" {...props} />;
-export const Heart = (props: P) => <Symbol source="/symbols/heart.png" {...props} />;
-export const Share = (props: P) => <Symbol source="/symbols/square.and.arrow.up.png" {...props} />;
-export const Mic = (props: P) => <Symbol source="/symbols/mic.fill.png" {...props} />;
-export const Sun = (props: P) => <Symbol source="/symbols/sun.max.fill.png" {...props} />;
-export const Moon = (props: P) => <Symbol source="/symbols/moon.fill.png" {...props} />;
-export const Speaker = (props: P) => <Symbol source="/symbols/speaker.wave.2.fill.png" {...props} />;
-export const Wifi = (props: P) => <Symbol source="/symbols/wifi.png" {...props} />;
-export const Plane = (props: P) => <Symbol source="/symbols/airplane.png" {...props} />;
-export const Bolt = (props: P) => <Symbol source="/symbols/bolt.fill.png" {...props} />;
-export const Play = (props: P) => <Symbol source="/symbols/play.fill.png" {...props} />;
-export const Copy = (props: P) => <Symbol source="/symbols/doc.on.doc.png" {...props} />;
-export const Check = (props: P) => <Symbol source="/symbols/checkmark.png" {...props} />;
-export const ArrowUpRight = (props: P) => <Symbol source="/symbols/arrow.up.right.png" {...props} />;
-/** Inline icons drawn in the text colour, for marks with no SF Symbol. */
+// Phosphor Icons (MIT), kept as local SVG masks so colour follows the UI.
+export const Home = (props: P) => <Symbol source="/icons/house-fill.svg" {...props} />;
+export const Grid = (props: P) => <Symbol source="/icons/squares-four-fill.svg" {...props} />;
+export const Note = (props: P) => <Symbol source="/icons/music-note-fill.svg" {...props} />;
+export const Search = (props: P) => <Symbol source="/icons/magnifying-glass-bold.svg" {...props} />;
+export const Person = (props: P) => <Symbol source="/icons/user-circle-fill.svg" {...props} />;
+export const Menu = (props: P) => <Symbol source="/icons/list-bold.svg" {...props} />;
+export const Plus = (props: P) => <Symbol source="/icons/plus-bold.svg" {...props} />;
+export const Ellipsis = (props: P) => <Symbol source="/icons/dots-three-bold.svg" {...props} />;
+export const Heart = (props: P) => <Symbol source="/icons/heart-bold.svg" {...props} />;
+export const Share = (props: P) => <Symbol source="/icons/export-bold.svg" {...props} />;
+export const Mic = (props: P) => <Symbol source="/icons/microphone-fill.svg" {...props} />;
+export const Sun = (props: P) => <Symbol source="/icons/sun-fill.svg" {...props} />;
+export const Moon = (props: P) => <Symbol source="/icons/moon-fill.svg" {...props} />;
+export const Speaker = (props: P) => <Symbol source="/icons/speaker-high-fill.svg" {...props} />;
+export const Wifi = (props: P) => <Symbol source="/icons/wifi-high-bold.svg" {...props} />;
+export const Plane = (props: P) => <Symbol source="/icons/airplane-fill.svg" {...props} />;
+export const Bolt = (props: P) => <Symbol source="/icons/lightning-fill.svg" {...props} />;
+export const Play = (props: P) => <Symbol source="/icons/play-fill.svg" {...props} />;
+export const Copy = (props: P) => <Symbol source="/icons/copy-bold.svg" {...props} />;
+export const Check = (props: P) => <Symbol source="/icons/check-bold.svg" {...props} />;
+export const ArrowUpRight = (props: P) => <Symbol source="/icons/arrow-up-right-bold.svg" {...props} />;
+/** Inline icons drawn in the text colour, for brand marks and the docs book. */
 const Inline = ({ size = 16, viewBox, children, ...props }: P & { viewBox: string; children: React.ReactNode }) => (
   <span aria-hidden="true" {...props} style={{ display: 'inline-flex', width: size, height: size, ...props.style }}>
     <svg viewBox={viewBox} width={size} height={size} fill="currentColor">{children}</svg>
@@ -46,7 +46,7 @@ export const Docs = (props: P) => (
   </Inline>
 );
 
-// GitHub's own mark (no SF Symbol exists for it), drawn in the text colour.
+// GitHub's own mark, drawn in the text colour.
 export const GitHub = ({ size = 16, ...props }: P) => (
   <span aria-hidden="true" {...props} style={{ display: 'inline-flex', width: size, height: size, ...props.style }}>
     <svg viewBox="0 0 16 16" width={size} height={size} fill="currentColor">
@@ -54,18 +54,18 @@ export const GitHub = ({ size = 16, ...props }: P) => (
     </svg>
   </span>
 );
-export const Drop = (props: P) => <Symbol source="/symbols/drop.fill.png" {...props} />;
-export const Sparkle = (props: P) => <Symbol source="/symbols/sparkles.png" {...props} />;
-export const Cellular = (props: P) => <Symbol source="/symbols/cellularbars.png" {...props} />;
-export const Battery = (props: P) => <Symbol source="/symbols/battery.100.png" {...props} />;
-export const Compass = (props: P) => <Symbol source="/symbols/safari.fill.png" {...props} />;
-export const Bookmark = (props: P) => <Symbol source="/symbols/bookmark.fill.png" {...props} />;
-export const Suitcase = (props: P) => <Symbol source="/symbols/suitcase.rolling.fill.png" {...props} />;
-export const Pin = (props: P) => <Symbol source="/symbols/mappin.and.ellipse.png" {...props} />;
-export const ArrowRight = (props: P) => <Symbol source="/symbols/arrow.right.png" {...props} />;
-export const Close = (props: P) => <Symbol source="/symbols/xmark.png" {...props} />;
-export const Star = (props: P) => <Symbol source="/symbols/star.fill.png" {...props} />;
-export const MapIcon = (props: P) => <Symbol source="/symbols/map.fill.png" {...props} />;
-export const HeartFill = (props: P) => <Symbol source="/symbols/heart.fill.png" {...props} />;
+export const Drop = (props: P) => <Symbol source="/icons/drop-fill.svg" {...props} />;
+export const Sparkle = (props: P) => <Symbol source="/icons/sparkle-fill.svg" {...props} />;
+export const Cellular = (props: P) => <Symbol source="/icons/cell-signal-full-fill.svg" {...props} />;
+export const Battery = (props: P) => <Symbol source="/icons/battery-full-fill.svg" {...props} />;
+export const Compass = (props: P) => <Symbol source="/icons/compass-fill.svg" {...props} />;
+export const Bookmark = (props: P) => <Symbol source="/icons/bookmark-simple-fill.svg" {...props} />;
+export const Suitcase = (props: P) => <Symbol source="/icons/suitcase-rolling-fill.svg" {...props} />;
+export const Pin = (props: P) => <Symbol source="/icons/map-pin-fill.svg" {...props} />;
+export const ArrowRight = (props: P) => <Symbol source="/icons/arrow-right-bold.svg" {...props} />;
+export const Close = (props: P) => <Symbol source="/icons/x-bold.svg" {...props} />;
+export const Star = (props: P) => <Symbol source="/icons/star-fill.svg" {...props} />;
+export const MapIcon = (props: P) => <Symbol source="/icons/map-trifold-fill.svg" {...props} />;
+export const HeartFill = (props: P) => <Symbol source="/icons/heart-fill.svg" {...props} />;
 
-export const ArrowLeft = (props: P) => <Symbol source="/symbols/arrow.left.png" {...props} />;
+export const ArrowLeft = (props: P) => <Symbol source="/icons/arrow-left-bold.svg" {...props} />;
