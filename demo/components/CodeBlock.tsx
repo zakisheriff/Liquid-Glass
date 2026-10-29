@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { GlassButton } from '@zakisheriff/liquid-glass';
+import { highlight } from './highlight';
 import { Check, Copy } from './icons';
 
 /** A code sample with a copy button in its top-right corner. */
@@ -23,7 +24,7 @@ export function CodeBlock({ code, className, label = 'code' }: { code: string; c
 
   return (
     <div className={['code-block', className].filter(Boolean).join(' ')}>
-      <pre><code>{code}</code></pre>
+      <pre><code>{highlight(code)}</code></pre>
       <GlassButton
         className="code-block__copy"
         size="sm"

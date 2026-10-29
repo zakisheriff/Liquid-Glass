@@ -493,6 +493,35 @@ html[data-morph] .hero__title-text[data-docked] {
 .docs__preview[data-tall] { min-height: 320px; align-items: flex-start; }
 .docs__preview + .docs__code pre { margin-top: 0; border-radius: 0 0 20px 20px; }
 .code-block { position: relative; }
+
+/* Syntax colours, Xcode-style, in both themes. */
+:root {
+  --tok-keyword: #ad3da4;
+  --tok-string: #c41a16;
+  --tok-comment: #707f8c;
+  --tok-tag: #0b4f79;
+  --tok-attr: #815f03;
+  --tok-number: #1c00cf;
+  --tok-call: #3e6d74;
+}
+
+:root[data-theme='dark'] {
+  --tok-keyword: #fc5fa3;
+  --tok-string: #fc6a5d;
+  --tok-comment: #7f8c98;
+  --tok-tag: #5dd8ff;
+  --tok-attr: #d9c97c;
+  --tok-number: #d0bf69;
+  --tok-call: #67b7a4;
+}
+
+.tok-keyword { color: var(--tok-keyword); font-weight: 600; }
+.tok-string { color: var(--tok-string); }
+.tok-comment { color: var(--tok-comment); font-style: italic; }
+.tok-tag { color: var(--tok-tag); }
+.tok-attr { color: var(--tok-attr); }
+.tok-number { color: var(--tok-number); }
+.tok-call { color: var(--tok-call); }
 .code-block pre { padding-right: 64px; }
 .code-block__copy { position: absolute !important; top: 14px; right: 14px; }
 .docs__preview-row { display: flex; align-items: center; gap: 12px; max-width: 100%; }
