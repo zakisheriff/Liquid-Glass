@@ -5,7 +5,7 @@ import { SUPPORT_URL } from '@/lib/site';
 import { Avatar, HomeFeed } from './HomeFeed';
 import { MockApp } from './MockApp';
 import { PreviewThemeContext, PreviewThemeControlsContext, usePreviewMode } from './PreviewTheme';
-import { Heart } from './icons';
+import { Docs, GitHub, Heart, Npm } from './icons';
 
 /** Just the Dynamic Island: no clock or status icons on the mockup. */
 function Island() {
@@ -69,14 +69,14 @@ export function Hero() {
           >
             Get started
           </GlassButton>
-          <GlassButton onClick={() => { window.location.href = '/docs'; }}>
-            Documentation
-          </GlassButton>
-          <GlassButton onClick={() => window.open('https://github.com/zakisheriff/Liquid-Glass', '_blank')}>
+          <GlassButton variant="tinted" tint="#a371f7" icon={<GitHub size={18} />} onClick={() => window.open('https://github.com/zakisheriff/Liquid-Glass', '_blank')}>
             GitHub
           </GlassButton>
-          <GlassButton onClick={() => window.open('https://www.npmjs.com/package/@zakisheriff/liquid-glass', '_blank')}>
+          <GlassButton variant="tinted" tint="#e5484d" icon={<Npm size={16} />} onClick={() => window.open('https://www.npmjs.com/package/@zakisheriff/liquid-glass', '_blank')}>
             npm
+          </GlassButton>
+          <GlassButton variant="tinted" icon={<Docs size={18} />} onClick={() => { window.location.href = '/docs'; }}>
+            Documentation
           </GlassButton>
           <GlassButton variant="filled" tint="#ff375f" icon={<Heart size={18} />} aria-label="Support on Buy Me a Coffee" onClick={() => window.open(SUPPORT_URL, '_blank', 'noopener,noreferrer')}>
             Support

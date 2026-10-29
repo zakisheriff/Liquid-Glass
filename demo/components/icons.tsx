@@ -25,6 +25,27 @@ export const Play = (props: P) => <Symbol source="/symbols/play.fill.png" {...pr
 export const Copy = (props: P) => <Symbol source="/symbols/doc.on.doc.png" {...props} />;
 export const Check = (props: P) => <Symbol source="/symbols/checkmark.png" {...props} />;
 export const ArrowUpRight = (props: P) => <Symbol source="/symbols/arrow.up.right.png" {...props} />;
+/** Inline icons drawn in the text colour, for marks with no SF Symbol. */
+const Inline = ({ size = 16, viewBox, children, ...props }: P & { viewBox: string; children: React.ReactNode }) => (
+  <span aria-hidden="true" {...props} style={{ display: 'inline-flex', width: size, height: size, ...props.style }}>
+    <svg viewBox={viewBox} width={size} height={size} fill="currentColor">{children}</svg>
+  </span>
+);
+
+// npm's own mark: the "n" cut from a square.
+export const Npm = (props: P) => (
+  <Inline viewBox="0 0 16 16" {...props}>
+    <path d="M0 0v16h16V0H0zm13 13h-2.5V5.5H8V13H3V3h10v10z" />
+  </Inline>
+);
+
+// An open book, for documentation.
+export const Docs = (props: P) => (
+  <Inline viewBox="0 0 16 16" {...props}>
+    <path d="M1 2.6C2.6 1.9 4.9 1.8 7.25 3v10.6C5 12.5 2.8 12.6 1 13.3V2.6zm14 0c-1.6-.7-3.9-.8-6.25.4v10.6c2.25-1.1 4.45-1 6.25-.3V2.6z" />
+  </Inline>
+);
+
 // GitHub's own mark (no SF Symbol exists for it), drawn in the text colour.
 export const GitHub = ({ size = 16, ...props }: P) => (
   <span aria-hidden="true" {...props} style={{ display: 'inline-flex', width: size, height: size, ...props.style }}>
