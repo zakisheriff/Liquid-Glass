@@ -54,13 +54,13 @@ export const viewport: Viewport = {
 
 // The site's own toggle wins over the OS: theme, colour-scheme and the
 // browser toolbar tint (theme-color) all follow data-theme, never the system.
-const themeScript = `(function(){var t='light';try{t=localStorage.getItem('lg-theme');if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}}catch(e){}var d=document.documentElement;d.dataset.theme=t;d.style.colorScheme=t;var m=document.getElementById('theme-color');if(m)m.setAttribute('content',t==='dark'?'#000000':'#f5f5f7')})()`;
+const themeScript = `(function(){var t='light';try{t=localStorage.getItem('lg-theme');if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}}catch(e){}var d=document.documentElement;d.dataset.theme=t;d.style.colorScheme=t;var m=document.getElementById('theme-color');if(m)m.setAttribute('content',t==='dark'?'#000000':'#ffffff')})()`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
-        <meta id="theme-color" name="theme-color" content="#f5f5f7" />
+        <meta id="theme-color" name="theme-color" content="#ffffff" />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <link rel="describedby" href={`${SITE_URL}/llms.txt`} type="text/plain" />
         <link rel="alternate" type="text/markdown" href={`${SITE_URL}/docs.md`} title="Documentation (Markdown)" />

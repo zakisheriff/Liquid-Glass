@@ -21,7 +21,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const root = document.documentElement;
     root.dataset.theme = next;
     root.style.colorScheme = next;
-    document.getElementById('theme-color')?.setAttribute('content', next === 'dark' ? '#000000' : '#f5f5f7');
+    document.getElementById('theme-color')?.setAttribute('content', next === 'dark' ? '#000000' : '#ffffff');
     try {
       localStorage.setItem('lg-theme', next);
     } catch {

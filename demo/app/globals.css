@@ -1,12 +1,13 @@
 :root {
-  --page: #f5f5f7;
-  --tile: #ffffff;
+  /* Pure white page; tiles and code sit on it in Apple's light grey. */
+  --page: #ffffff;
+  --tile: #f5f5f7;
   --screen: #ffffff;
   --text: #1d1d1f;
   --muted: #6e6e73;
   --hairline: rgb(0 0 0 / 0.08);
   --bezel: #1d1d1f;
-  --code-bg: #ffffff;
+  --code-bg: #f5f5f7;
   --link: #0066cc;
   --display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, var(--font-inter), 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --text-font: 'SF Pro Text', -apple-system, BlinkMacSystemFont, var(--font-inter), 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -28,12 +29,12 @@
 }
 
 .preview-scope[data-theme='light'] {
-  --tile: #ffffff;
+  --tile: #f5f5f7;
   --screen: #ffffff;
   --text: #1d1d1f;
   --muted: #6e6e73;
   --hairline: rgb(0 0 0 / 0.08);
-  --code-bg: #ffffff;
+  --code-bg: #f5f5f7;
   --link: #0066cc;
   color: var(--text);
   color-scheme: light;
@@ -51,11 +52,59 @@
   color-scheme: dark;
 }
 
+
 .preview-theme-toggle {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   color: var(--lg-fg);
+}
+
+/* Bare sun / switch / moon, with no pill behind it. Stages that stretch
+   their children (the Menu tile) must not stretch it across the card. */
+.stage > .preview-theme-toggle {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  left: auto;
+  z-index: 6;
+  width: auto !important;
+}
+
+.lens-demo > .preview-theme-toggle {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  z-index: 3;
+}
+
+/* In the phone it sits beside the menu, after the large title. */
+.device__top > .preview-theme-toggle {
+  gap: 4px;
+  margin-left: auto;
+  margin-right: 10px;
+}
+
+.device__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 6px;
+  color: var(--lg-fg);
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+
+.device__top > .device__me {
+  width: 36px;
+  height: 36px;
+  padding: 2px;
+  border-radius: 50%;
+  background: var(--screen);
+  box-shadow: 0 0 0 1px var(--hairline), 0 2px 8px rgb(0 0 0 / 0.12);
 }
 
 /* Only named preview surfaces morph; the rest of the page stays still. */
@@ -328,7 +377,10 @@ html[data-morph] .hero__title-text[data-docked] {
 .hero {
   position: relative;
   padding: 132px 16px 72px;
-  overflow: visible;
+  /* Sideways the blurred phones are cut at the screen edge; upward the
+     title still flies out into the nav. */
+  overflow-x: clip;
+  overflow-y: visible;
   text-align: center;
 }
 
@@ -408,29 +460,10 @@ html[data-morph] .hero__title-text[data-docked] {
   margin-top: 56px;
 }
 
-.hero__float {
-  width: 300px;
-  text-align: left;
-}
-
-.hero__float--left {
-  transform: translateY(-80px);
-}
-
-.hero__float--right {
-  transform: translateY(90px);
-}
-
 .hero__hint {
   margin: 28px 0 0;
   color: var(--muted);
   font-size: 14px;
-}
-
-@media (max-width: 1080px) {
-  .hero__float {
-    display: none;
-  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -442,8 +475,8 @@ html[data-morph] .hero__title-text[data-docked] {
   flex: none;
   width: 402px;
   height: 840px;
-  padding: 12px;
-  border-radius: 66px;
+  padding: 8px;
+  border-radius: 64px;
   /* Brushed titanium band with a black inner bezel */
   background:
     linear-gradient(#0b0b0c, #0b0b0c) padding-box,
@@ -492,7 +525,7 @@ html[data-morph] .hero__title-text[data-docked] {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  border-radius: 52px;
+  border-radius: 54px;
   background: var(--screen);
   isolation: isolate;
 }
@@ -605,6 +638,32 @@ html[data-morph] .hero__title-text[data-docked] {
   flex: none;
 }
 
+/* iOS large title, with the feed fading out as it scrolls beneath it. */
+.device__title {
+  margin: 0 0 0 6px;
+  color: var(--lg-fg);
+  font-family: var(--display);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.mock-app::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  height: 118px;
+  background: linear-gradient(var(--screen) 62%, color-mix(in srgb, var(--screen) 0%, transparent));
+  pointer-events: none;
+}
+
+.mock__back.lg-button {
+  margin-bottom: 14px;
+}
+
 /* The phone dock stays full size while its content scrolls. */
 .device__bottom {
   --gap: 10px;
@@ -685,6 +744,354 @@ html[data-morph] .hero__title-text[data-docked] {
   margin-bottom: 18px;
   font-size: 29px;
   letter-spacing: -0.045em;
+}
+
+/* Home: a sideways grid of widgets, then an activity list. */
+.home__grid {
+  --gap: 12px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(2, auto);
+  /* Two whole columns, and the third cut off by the screen edge. */
+  grid-auto-columns: calc((100% - var(--gap)) / 2.32);
+  gap: var(--gap);
+  margin-right: -16px;
+}
+
+/* The cut-off column must not make the feed scroll sideways. */
+.mock-app .device__feed {
+  overflow-x: hidden;
+}
+
+/* Home is one fixed screen; its list fades out instead of scrolling. */
+.mock-app .device__feed:has(> .home) {
+  /* clip, not hidden: nothing (not even focus or script) can scroll it. */
+  overflow: clip;
+}
+
+.home__widget.home__widget--picture {
+  width: 100%;
+  height: auto;
+  padding: 0;
+  overflow: visible;
+  border-radius: 0;
+  box-shadow: none;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 14px rgb(0 0 0 / 0.1));
+}
+
+/* The live palette tile matches the artwork's squircle. */
+.home__widget.home__widget--palette {
+  border-radius: 22%;
+}
+
+.home__widget {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 1;
+  padding: 13px;
+  overflow: hidden;
+  border-radius: 24px;
+  color: #fff;
+  box-shadow: 0 10px 22px -14px rgb(0 0 0 / 0.45), inset 0 0 0 0.5px rgb(255 255 255 / 0.12);
+}
+
+.home__widget > :not([aria-hidden]) {
+  position: relative;
+  z-index: 1;
+}
+
+
+
+.home__label {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.72;
+}
+
+.home__value {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.home__widget--palette {
+  border: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  background-image: linear-gradient(160deg, rgb(255 255 255 / 0.22), rgb(0 0 0 / 0.18));
+}
+
+.home__chips {
+  display: flex;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.home__chips span {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.7);
+}
+
+.home__chips span:nth-child(1) { background: rgb(255 255 255 / 0.55); }
+.home__chips span:nth-child(2) { background: rgb(255 255 255 / 0.25); }
+.home__chips span:nth-child(3) { background: rgb(0 0 0 / 0.25); }
+
+.home__list {
+  display: grid;
+  gap: 0;
+  margin: 10px 0 0;
+  /* Later rows fade out, so the list reads as continuing below. */
+  -webkit-mask-image: linear-gradient(#000 48%, transparent 96%);
+  mask-image: linear-gradient(#000 48%, transparent 96%);
+  padding: 0;
+  list-style: none;
+}
+
+.home__list button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 6px 4px;
+  border: 0;
+  border-radius: 16px;
+  background: none;
+  color: var(--lg-fg);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.home__list button:active {
+  background: color-mix(in srgb, var(--lg-fg) 6%, transparent);
+}
+
+.home__avatar,
+.page__icon,
+.page__tile-art,
+.device__me {
+  display: block;
+  flex: none;
+  width: 44px;
+  height: 44px;
+}
+
+:is(.home__avatar, .page__icon, .page__tile-art, .device__me) img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Photos are cropped round; icon artwork keeps its own shape. */
+:is(.home__avatar, .page__icon, .page__tile-art, .device__me)[data-round] img {
+  border-radius: 50%;
+}
+
+:is(.home__avatar, .page__icon, .page__tile-art, .device__me)[data-photo] img {
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.home__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.home__text strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.home__text span {
+  overflow: hidden;
+  color: var(--lg-fg-muted);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home__text span[data-unread] {
+  color: var(--lg-fg);
+  font-weight: 500;
+}
+
+.home__time {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  margin-top: 4px;
+  color: var(--lg-fg-muted);
+  font-size: 12px;
+}
+
+.home__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0a84ff;
+}
+
+/* Archive and Search pages inside the phone. */
+.page__heading {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 22px 4px 10px;
+  color: var(--lg-fg);
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.page > .page__heading:first-child,
+.mock__search + .page__heading {
+  margin-top: 2px;
+}
+
+.page__heading span {
+  color: var(--lg-fg-muted);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.page__list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.page__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 4px;
+  color: var(--lg-fg);
+}
+
+
+.page__empty {
+  margin: 8px 4px;
+  color: var(--lg-fg-muted);
+  font-size: 14px;
+}
+
+.page__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.page__browse {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.page__tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 104px;
+  padding: 14px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 22px;
+  color: #fff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 10px 22px -14px rgb(0 0 0 / 0.45);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* An odd tile out spans the row, so the grid stays even. */
+.page__tile:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.page__tile-art {
+  width: 38px;
+  height: 38px;
+}
+
+.page__tile strong {
+  font-size: 16px;
+  font-weight: 650;
+}
+
+/* Blurred phones behind the hero device, peeking out either side. */
+.hero__phones {
+  position: relative;
+  flex: none;
+  isolation: isolate;
+  perspective: 1800px;
+}
+
+.device--ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  /* Same app on the phones behind, swung back on a curve and well out of
+     focus, fading out towards the bottom like a product shot. */
+  filter: blur(9px) saturate(0.9);
+  opacity: 0.55;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(#000 40%, transparent 92%);
+  mask-image: linear-gradient(#000 40%, transparent 92%);
+}
+
+/* Outer edges recede, so the pair reads as a fan around the live phone. */
+.device--ghost-left {
+  transform-origin: right center;
+  transform: translate3d(-46%, 0, -260px) rotateY(-26deg);
+}
+
+.device--ghost-right {
+  transform-origin: left center;
+  transform: translate3d(46%, 0, -260px) rotateY(26deg);
 }
 
 .mock__card {
@@ -782,10 +1189,6 @@ html[data-morph] .hero__title-text[data-docked] {
   white-space: nowrap;
 }
 
-.phone-studio__heading > .preview-theme-toggle {
-  flex: none;
-  gap: 4px;
-}
 
 .phone-studio__canvas {
   position: relative;
@@ -993,45 +1396,25 @@ html[data-morph] .hero__title-text[data-docked] {
     grid-template-columns: repeat(2, max-content);
   }
 
-  /* On a phone the mockup stays clearly smaller than the screen it's on. */
-  .device {
-    width: min(340px, calc(100vw - 60px));
-    height: 710px;
-    padding: 10px;
-    border-radius: 54px;
-  }
-
-  .device__screen {
-    border-radius: 42px;
-  }
-
   .hero__stage {
-    margin-top: 44px;
+    margin-top: 36px;
   }
 
-  /* A narrower screen gets a proportionally narrower island, with the time
-     and status icons tucked either side of it, never on it. */
-  .status {
-    height: 48px;
-    padding: 3px 22px 0 30px;
+  /* Like a product shot: the full-size phone and its blurred companions,
+     shrunk together, so the side phones peek out on both edges. */
+  .hero__phones {
+    --phone-scale: 0.6;
+    transform: scale(var(--phone-scale));
+    transform-origin: top center;
+    /* Give back the height the scale frees up. */
+    margin-bottom: calc(-840px * (1 - var(--phone-scale)));
   }
 
-  .status__time {
-    font-size: 14px;
-  }
+}
 
-  .status__island {
-    top: 10px;
-    width: 30%;
-    height: 30px;
-    margin-left: -15%;
-    border-radius: 16px;
-  }
-
-  .status__icons {
-    gap: 4px;
-    transform: scale(0.86);
-    transform-origin: right center;
+@media (max-width: 360px) {
+  .hero__phones {
+    --phone-scale: 0.54;
   }
 }
 
@@ -1148,16 +1531,6 @@ html[data-morph] .hero__title-text[data-docked] {
   text-align: center;
 }
 
-.stage > .preview-theme-toggle {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 6;
-  width: auto;
-  padding: 6px 8px;
-  border-radius: 22px;
-  background: var(--lg-fill);
-}
 
 .tile__title {
   margin: 0;
@@ -1345,9 +1718,9 @@ html[data-morph] .hero__title-text[data-docked] {
 }
 
 @media (max-width: 480px) {
-  :is(.stage--gradient, .mock-app) .device__bottom { --bar: 50px; }
-  :is(.stage--gradient, .mock-app) .lg-nav { --lg-item-h: 42px; }
-  :is(.stage--gradient, .mock-app) .lg-nav__icon { width: 22px; height: 22px; }
+  .stage--gradient .device__bottom { --bar: 50px; }
+  .stage--gradient .lg-nav { --lg-item-h: 42px; }
+  .stage--gradient .lg-nav__icon { width: 22px; height: 22px; }
 }
 
 .stage--type {
@@ -1472,7 +1845,8 @@ html[data-morph] .hero__title-text[data-docked] {
 }
 
 .stage--candy {
-  background: #4557ca url('/wallpapers/indigo.svg') center / cover;
+  /* Coral, so the Sheet tile never reads as the indigo Menu tile beside it. */
+  background: #d2847e url('/wallpapers/coral.svg') center / cover;
 }
 
 .sheet-demo {
@@ -1556,15 +1930,6 @@ html[data-morph] .hero__title-text[data-docked] {
   border-radius: 28px;
 }
 
-.lens-demo > .preview-theme-toggle {
-  position: absolute;
-  top: 16px;
-  right: 20px;
-  z-index: 3;
-  padding: 8px 10px;
-  border-radius: 24px;
-  background: var(--lg-fill);
-}
 
 /* Wallpaper with a glossy swoosh and big white type, as in Apple's art. */
 .lens-demo__poster {
@@ -2049,7 +2414,8 @@ html[data-morph] .hero__title-text[data-docked] {
     --nav-gap: 14px;
   }
 
+  /* The title and buttons sit nearer the middle of the first screen. */
   .hero {
-    padding-top: 112px;
+    padding-top: max(112px, 24vh);
   }
 }

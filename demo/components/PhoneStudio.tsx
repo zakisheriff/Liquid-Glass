@@ -3,7 +3,6 @@
 import { useState, type CSSProperties } from 'react';
 import { GlassButton, GlassCard, GlassInput, GlassSegmented, GlassSheet, GlassSlider, GlassSwitch } from '@zakisheriff/liquid-glass';
 import { SheetFrame } from './SheetFrame';
-import { PhonePreviewThemeToggle } from './PreviewTheme';
 import { Bookmark, Check, Copy, Drop, Sun } from './icons';
 
 export type StudioPalette = { brightness: number; hue: number; vivid: boolean; name: string };
@@ -66,7 +65,6 @@ export function PhoneStudio({ container, palette, onChange, saved, onSave }: {
     <div className="phone-studio">
       <header className="phone-studio__heading">
         <h2>The Atom</h2>
-        <PhonePreviewThemeToggle />
       </header>
       <section className="phone-studio__canvas" style={{ '--studio-art': studioColor(palette) } as CSSProperties} aria-label="Palette editor">
         <div className="phone-studio__art" style={artwork} aria-hidden="true" />
