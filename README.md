@@ -22,6 +22,13 @@
 [![npm](https://img.shields.io/badge/npm-install-cb3837?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/@zakisheriff/liquid-glass)
 [![GitHub](https://img.shields.io/badge/GitHub-star-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/zakisheriff/Liquid-Glass)
 
+<br />
+<br />
+
+<a href="https://liquidglass.theatom.lk/docs#demo"><img src="https://liquidglass.theatom.lk/video/demo-poster.jpg" alt="Liquid Glass demo: buttons, sliders, switches, tab bar, menu and sheet in motion. Click to watch." width="100%" /></a>
+
+<sub>Click to watch the demo</sub>
+
 </div>
 
 ---

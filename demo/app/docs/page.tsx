@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { FAQS, PERFORMANCE, QUICK_START } from '@/lib/docs';
 import { GUIDES } from '@/lib/guides';
+import { DemoVideo } from '@/components/DemoVideo';
 import { NPM_URL, PACKAGE_VERSION, REPOSITORY, SITE_URL, UPDATED } from '@/lib/site';
 
 const title = 'Liquid Glass React & Next.js Documentation';
@@ -33,7 +34,8 @@ export default function Documentation() {
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
     <nav className="docs__nav" aria-label="Documentation"><Link href="/">← Live demo</Link><a href={REPOSITORY}>GitHub</a><a href={NPM_URL}>npm · v{PACKAGE_VERSION}</a></nav>
     <header><h1>Liquid Glass for React and Next.js</h1><p>Apple-inspired glass for the web, with refraction and spring-based touch interactions. Built by <a href="https://github.com/zakisheriff">Zaki Sheriff</a>. Open source under the MIT license.</p></header>
-    <nav className="docs__contents" aria-label="On this page"><a href="#quick-start">Quick start</a><a href="#api">Components</a><a href="#styling">Styling</a><a href="#performance">Performance</a><a href="#browser-support">Browser support</a><a href="#questions">Questions</a></nav>
+    <nav className="docs__contents" aria-label="On this page"><a href="#demo">Demo</a><a href="#quick-start">Quick start</a><a href="#api">Components</a><a href="#styling">Styling</a><a href="#performance">Performance</a><a href="#browser-support">Browser support</a><a href="#questions">Questions</a></nav>
+    <section id="demo"><h2>See it in motion</h2><DemoVideo /><p>Every control in the recording is a component from this library. Try them yourself in the <Link href="/">live demo</Link>.</p></section>
     <section id="quick-start"><h2>Add liquid glass to your app</h2><pre><code>npm i @zakisheriff/liquid-glass</code></pre><p>Requires React and React DOM 17 or later. Import the stylesheet once at the app root: <code>app/layout.tsx</code> for the Next.js App Router, or <code>pages/_app.tsx</code> for the Pages Router. Keep components that manage interactive state in a client component.</p><pre><code>{QUICK_START}</code></pre></section>
     <section id="api"><h2>Liquid glass components</h2><p>Every example assumes <code>useState</code> from React and the stylesheet imported once. Icons such as <code>{'<PlusIcon />'}</code> stand for any React node, like an SVG icon component.</p><nav className="docs__components" aria-label="Components">{GUIDES.map(g => <a key={g.id} href={`#${g.id}`}>{g.title}</a>)}</nav></section>
     {GUIDES.map(g => <section key={g.id} id={g.id} className="docs__guide">

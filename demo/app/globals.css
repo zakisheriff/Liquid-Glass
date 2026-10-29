@@ -475,6 +475,7 @@ html[data-morph] .hero__title-text[data-docked] {
 .docs details { padding: 20px 0; border-bottom: 1px solid var(--hairline); }
 .docs summary { cursor: pointer; font-weight: 600; }
 .docs footer { color: var(--muted); font-size: 14px; }
+.demo-video { display: block; width: 100%; height: auto; margin-bottom: 16px; border-radius: 20px; background: #000; }
 .docs__components { display: flex; flex-wrap: wrap; gap: 8px 18px; }
 .docs__guide h2 code { margin-left: 6px; color: var(--muted); font-size: 0.6em; font-weight: 500; }
 .docs__guide h3 { margin: 28px 0 12px; font-size: 17px; }

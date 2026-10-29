@@ -9,3 +9,6 @@ demo/.next
 demo/next-env.d.ts
 demo/tsconfig.tsbuildinfo
 .claude/
+
+# Raw screen recordings; the compressed versions live in demo/public/video
+demo/public/*.mov
