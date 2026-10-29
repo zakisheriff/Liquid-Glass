@@ -2623,7 +2623,18 @@ html[data-morph] .hero__title-text[data-docked] {
     mask-image: linear-gradient(transparent, #000 18px, #000 calc(100% - 28px), transparent);
   }
 
+  /* Documentation on its own line, npm and GitHub as a pair below. */
+  .install__docs {
+    flex-basis: 100%;
+    text-align: center;
+  }
+
   .install__snippet pre {
+    max-height: 300px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-mask-image: linear-gradient(#000 calc(100% - 28px), transparent);
+    mask-image: linear-gradient(#000 calc(100% - 28px), transparent);
     padding: 20px 56px 20px 20px;
     font-size: 12.5px;
     white-space: pre-wrap;
