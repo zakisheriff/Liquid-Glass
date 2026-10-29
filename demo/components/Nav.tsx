@@ -8,7 +8,7 @@ import { GitHub, Moon, Sun } from './icons';
 
 const LINKS = [
   { href: '#components', label: 'Components' },
-  { href: '#refraction', label: 'Refraction' },
+  { href: '#refraction', label: 'Playground' },
   { href: '#install', label: 'Install' },
 ];
 

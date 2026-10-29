@@ -20,7 +20,7 @@ export default function Page() {
           <p className="footer__brand">Liquid Glass</p>
           <nav className="footer__links" aria-label="Footer">
             <a href="#components">Components</a>
-            <a href="#refraction">Refraction</a>
+            <a href="#refraction">Playground</a>
             <a href="#install">Install</a>
             <a href="/docs">Documentation</a>
             <a href="/llms.txt">llms.txt</a>
