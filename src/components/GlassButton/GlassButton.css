@@ -102,6 +102,17 @@
   color: var(--lg-tint, var(--lg-accent));
 }
 
+/* Tinted filled: a soft wash of the colour, label in the same colour
+   (iOS's bordered tinted style). */
+.lg-button--tinted-filled {
+  --lg-glass-fill: color-mix(in srgb, var(--lg-tint, var(--lg-tint-default, var(--lg-accent))) 26%, var(--lg-fill));
+  color: var(--lg-tint, var(--lg-tint-default, var(--lg-accent)));
+}
+
+.lg-button--tinted-filled[data-pressed] {
+  background-color: color-mix(in srgb, var(--lg-tint, var(--lg-tint-default, var(--lg-accent))) 30%, var(--lg-fill-pressed));
+}
+
 /* Destructive defaults the tint to red; an explicit `tint` still wins. */
 .lg-button[data-destructive] {
   --lg-tint-default: var(--lg-red);

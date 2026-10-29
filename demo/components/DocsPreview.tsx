@@ -14,6 +14,7 @@ import {
 } from '@zakisheriff/liquid-glass';
 import { PreviewThemeToggle, usePreviewMode } from './PreviewTheme';
 import { Bookmark, Check, Close, Compass, Copy, Ellipsis, Grid, Heart, Menu, Mic, Moon, Note, Plus, Search, Share, Star, Sun } from './icons';
+import { TINTED_FILLED } from './tintedFilled';
 
 const TABS = [
   { label: 'Home', icon: <Compass size={22} /> },
@@ -28,7 +29,7 @@ function Buttons() {
     <GlassButton variant="clear">Clear</GlassButton>
     <GlassButton variant="tinted">Tinted</GlassButton>
     <GlassButton variant="filled">Filled</GlassButton>
-    <GlassButton variant="filled" tint="#af52de">Tinted filled</GlassButton>
+    <GlassButton variant={TINTED_FILLED} tint="#af52de">Tinted filled</GlassButton>
   </>;
 }
 

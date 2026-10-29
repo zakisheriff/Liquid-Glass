@@ -38,7 +38,7 @@ export const GUIDES: Guide[] = [
 <GlassButton variant="clear">Clear</GlassButton>
 <GlassButton variant="tinted">Tinted</GlassButton>
 <GlassButton variant="filled">Filled</GlassButton>
-<GlassButton variant="filled" tint="#af52de">Tinted filled</GlassButton>` },
+<GlassButton variant="tinted-filled" tint="#af52de">Tinted filled</GlassButton>` },
       { title: 'Any colour', code: `<GlassButton variant="tinted" tint="#c2255c">Burgundy label</GlassButton>
 <GlassButton variant="filled" tint="#af52de">Purple fill</GlassButton>` },
       { title: 'Destructive', code: `<GlassButton destructive>Delete</GlassButton>
@@ -56,7 +56,7 @@ export const GUIDES: Guide[] = [
 </GlassButton>` },
     ],
     props: [
-      { name: 'variant', type: "'glass' | 'clear' | 'tinted' | 'filled'", default: "'glass'", description: 'Regular glass, see-through glass, glass with a coloured label, or a solid colour.' },
+      { name: 'variant', type: "'glass' | 'clear' | 'tinted' | 'tinted-filled' | 'filled'", default: "'glass'", description: 'Regular glass, see-through glass, glass with a coloured label, a soft wash of the colour with a matching label, or a solid colour.' },
       { name: 'tint', type: 'string', default: 'accent blue', description: 'Any CSS colour. Colours the label for `tinted` and the fill for `filled`.' },
       { name: 'destructive', type: 'boolean', default: 'false', description: 'Red label, or a red fill with `filled`, for delete and other irreversible actions.' },
       { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Height: 36, 44 or 52 px.' },

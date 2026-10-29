@@ -85,7 +85,7 @@ import { GlassButton } from '@zakisheriff/liquid-glass';
 <GlassButton variant="clear">Clear</GlassButton>
 <GlassButton variant="tinted">Tinted</GlassButton>
 <GlassButton variant="filled">Filled</GlassButton>
-<GlassButton variant="filled" tint="#af52de">Tinted filled</GlassButton>
+<GlassButton variant="tinted-filled" tint="#af52de">Tinted filled</GlassButton>
 ```
 
 **Any colour**
@@ -130,7 +130,7 @@ import { GlassButton } from '@zakisheriff/liquid-glass';
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `variant` | `'glass' \| 'clear' \| 'tinted' \| 'filled'` | `'glass'` | Regular glass, see-through glass, glass with a coloured label, or a solid colour. |
+| `variant` | `'glass' \| 'clear' \| 'tinted' \| 'tinted-filled' \| 'filled'` | `'glass'` | Regular glass, see-through glass, glass with a coloured label, a soft wash of the colour with a matching label, or a solid colour. |
 | `tint` | `string` | `accent blue` | Any CSS colour. Colours the label for `tinted` and the fill for `filled`. |
 | `destructive` | `boolean` | `false` | Red label, or a red fill with `filled`, for delete and other irreversible actions. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Height: 36, 44 or 52 px. |

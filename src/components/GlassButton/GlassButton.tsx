@@ -17,10 +17,11 @@ export interface GlassButtonProps extends React.ButtonHTMLAttributes<HTMLButtonE
   size?: 'sm' | 'md' | 'lg';
   /**
    * `glass` (alias `default`) regular glass · `clear` (alias `ghost`) see-through
-   * glass · `tinted` glass with a coloured label · `filled` solid colour.
+   * glass · `tinted` glass with a coloured label · `tinted-filled` a soft wash
+   * of the colour with a label in that colour · `filled` solid colour.
    * Combine with `tint` for any colour, or `destructive` for red.
    */
-  variant?: 'glass' | 'default' | 'clear' | 'ghost' | 'tinted' | 'filled' | 'destructive';
+  variant?: 'glass' | 'default' | 'clear' | 'ghost' | 'tinted' | 'tinted-filled' | 'filled' | 'destructive';
   /** Marks a delete / irreversible action: red label, or red fill with `filled`. */
   destructive?: boolean;
   /** Leading icon. With no children the button becomes a circle. */

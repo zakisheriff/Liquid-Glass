@@ -18,6 +18,7 @@ import { AppDock } from './AppDock';
 import { PreviewThemeContext, PreviewThemeToggle, usePreviewMode } from './PreviewTheme';
 import { SheetFrame } from './SheetFrame';
 import { PreviewMorphContext, usePreviewChange, usePreviewMorph } from './PreviewMorph';
+import { TINTED_FILLED } from './tintedFilled';
 
 function Tile({
   title,
@@ -244,7 +245,7 @@ function ButtonTile() {
             <GlassButton size={size} variant="tinted">Tinted</GlassButton>
           </div>
           <div className="stage__row">
-            <GlassButton size={size} variant="filled" tint="#af52de">
+            <GlassButton size={size} variant={TINTED_FILLED} tint="#af52de">
               Tinted filled
             </GlassButton>
             <GlassButton size={size} variant="clear">Clear</GlassButton>
