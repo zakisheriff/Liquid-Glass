@@ -376,6 +376,9 @@ function MenuTile() {
 export function Tiles() {
   return (
     <section className="tiles" id="components">
+      <header className="section-head tiles__head">
+        <h2>Components</h2>
+      </header>
       <SwitchTile />
       <TabTile />
       <SegmentTile />

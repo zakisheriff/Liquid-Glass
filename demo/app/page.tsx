@@ -4,6 +4,7 @@ import { Hero } from '@/components/Hero';
 import { Tiles } from '@/components/Tiles';
 import { LensDemo } from '@/components/LensDemo';
 import { Install } from '@/components/Install';
+import { DemoVideo } from '@/components/DemoVideo';
 
 export default function Page() {
   return (
@@ -11,6 +12,12 @@ export default function Page() {
       <Nav />
       <main>
         <Hero />
+        <section className="showreel" id="demo" aria-labelledby="showreel-title">
+          <header className="section-head">
+            <h2 id="showreel-title">Demo Video</h2>
+          </header>
+          <DemoVideo />
+        </section>
         <Tiles />
         <LensDemo />
         <Install />
