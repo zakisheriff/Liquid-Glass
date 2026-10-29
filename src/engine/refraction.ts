@@ -533,9 +533,16 @@ export function useRefraction(
       element.style.setProperty('--lg-rim', baked.rim);
     };
 
+    // Refit once resizing settles: a bake is a full canvas pass, and a
+    // surface that animates its size (a nav growing a slot) would otherwise
+    // rebake nearly every frame on Safari, which has no idle callback. The
+    // rim stretches to the box meanwhile.
     const observer = new ResizeObserver(() => {
       cancel?.();
-      cancel = idle(fit);
+      const timer = setTimeout(() => {
+        cancel = idle(fit);
+      }, 140);
+      cancel = () => clearTimeout(timer);
     });
     observer.observe(element);
     fit();
