@@ -5,9 +5,9 @@ import { GUIDES } from '@/lib/guides';
 import { DemoVideo } from '@/components/DemoVideo';
 import { DocsPreview } from '@/components/DocsPreview';
 import { CodeBlock } from '@/components/CodeBlock';
-import { DocsThemeToggle } from '@/components/DocsThemeToggle';
+import { DocsNav } from '@/components/DocsNav';
 import { ThemeProvider } from '@/components/theme';
-import { NPM_URL, PACKAGE_VERSION, REPOSITORY, SITE_URL, UPDATED } from '@/lib/site';
+import { NPM_URL, REPOSITORY, SITE_URL, UPDATED } from '@/lib/site';
 
 const title = 'Liquid Glass React & Next.js Documentation';
 const description = 'Install and use liquid glass in React and Next.js. Component APIs, continuous sliders, theming, keyboard controls and browser support for @zakisheriff/liquid-glass.';
@@ -36,7 +36,7 @@ export default function Documentation() {
   return <ThemeProvider><main className="docs">
     <link rel="alternate" type="text/markdown" href={`${SITE_URL}/docs.md`} />
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
-    <nav className="docs__nav" aria-label="Documentation"><Link href="/">← Live demo</Link><a href={REPOSITORY}>GitHub</a><a href={NPM_URL}>npm · v{PACKAGE_VERSION}</a><DocsThemeToggle /></nav>
+    <DocsNav repository={REPOSITORY} npm={NPM_URL} />
     <header><h1>Liquid Glass for React and Next.js</h1><p>Apple-inspired glass for the web, with refraction and spring-based touch interactions. Built by <a href="https://github.com/zakisheriff" style={{ whiteSpace: 'nowrap' }}>Zaki Sheriff</a>. Open source under the MIT license.</p></header>
     <nav className="docs__contents" aria-label="On this page"><a href="#demo">Demo</a><a href="#quick-start">Quick start</a><a href="#api">Components</a><a href="#styling">Styling</a><a href="#performance">Performance</a><a href="#browser-support">Browser support</a><a href="#questions">Questions</a></nav>
     <section id="demo"><h2>Demo Video</h2><DemoVideo /><p>Every control in the recording is a component from this library. Try them yourself in the <Link href="/">live demo</Link>.</p></section>
