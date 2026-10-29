@@ -1857,7 +1857,9 @@ html[data-morph] .hero__title-text[data-docked] {
 }
 
 .stage--gradient {
-  background: #1c1613;
+  /* The live wallpaper is the hue-shifting layer inside; this copy is what
+     Safari's glass replays under the theme knob, so it must not be dark. */
+  background: #6e67dc url('/wallpapers/violet.svg') center / cover;
   overflow: visible;
 }
 
