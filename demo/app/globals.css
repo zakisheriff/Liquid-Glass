@@ -476,6 +476,31 @@ html[data-morph] .hero__title-text[data-docked] {
 .docs summary { cursor: pointer; font-weight: 600; }
 .docs footer { color: var(--muted); font-size: 14px; }
 .demo-video { display: block; width: 100%; height: auto; margin-bottom: 16px; border-radius: 20px; background: #000; }
+.docs__preview {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 150px;
+  margin-bottom: 0;
+  padding: 32px 20px;
+  border-radius: 20px 20px 0 0;
+  background: #6e67dc url('/wallpapers/violet.svg') center / cover;
+  isolation: isolate;
+}
+.docs__preview[data-tall] { min-height: 320px; align-items: flex-start; }
+.docs__preview + .docs__code { margin-top: 0; border-radius: 0 0 20px 20px; }
+.docs__preview-row { display: flex; align-items: center; gap: 12px; max-width: 100%; }
+.docs__preview .lg-slider { width: min(320px, 100%); }
+.docs__preview .lg-input { width: min(360px, 100%); }
+.docs__preview-card { width: min(300px, 100%); color: var(--lg-fg); }
+.docs__preview-card .lg-slider { width: 100%; margin-block: 12px 8px; }
+.docs__preview-meta { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; opacity: 0.8; }
+.docs__preview-frame { position: absolute; inset: 0; display: flex; align-items: flex-start; justify-content: center; padding-top: 32px; overflow: hidden; border-radius: inherit; }
+.docs__preview-sheet { display: grid; gap: 6px; justify-items: center; padding: 8px 20px 20px; color: var(--lg-fg); text-align: center; }
+.docs__preview-sheet p { margin: 0 0 10px; color: var(--lg-fg-muted); font-size: 14px; }
 .docs__components { display: flex; flex-wrap: wrap; gap: 8px 18px; }
 .docs__guide h2 code { margin-left: 6px; color: var(--muted); font-size: 0.6em; font-weight: 500; }
 .docs__guide h3 { margin: 28px 0 12px; font-size: 17px; }
@@ -1518,9 +1543,16 @@ html[data-morph] .hero__title-text[data-docked] {
 }
 
 @media (max-width: 480px) {
+  /* Get started across the top, then two even pairs. */
   .hero__ctas {
     display: grid;
-    grid-template-columns: repeat(2, max-content);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(100%, 340px);
+    margin-inline: auto;
+  }
+
+  .hero__ctas > :first-child {
+    grid-column: 1 / -1;
   }
 
   .hero__stage {

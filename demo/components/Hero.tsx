@@ -69,6 +69,9 @@ export function Hero() {
           >
             Get started
           </GlassButton>
+          <GlassButton onClick={() => { window.location.href = '/docs'; }}>
+            Documentation
+          </GlassButton>
           <GlassButton onClick={() => window.open('https://github.com/zakisheriff/Liquid-Glass', '_blank')}>
             GitHub
           </GlassButton>

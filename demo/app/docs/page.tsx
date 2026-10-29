@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { FAQS, PERFORMANCE, QUICK_START } from '@/lib/docs';
 import { GUIDES } from '@/lib/guides';
 import { DemoVideo } from '@/components/DemoVideo';
+import { DocsPreview } from '@/components/DocsPreview';
 import { NPM_URL, PACKAGE_VERSION, REPOSITORY, SITE_URL, UPDATED } from '@/lib/site';
 
 const title = 'Liquid Glass React & Next.js Documentation';
@@ -41,7 +42,7 @@ export default function Documentation() {
     {GUIDES.map(g => <section key={g.id} id={g.id} className="docs__guide">
       <h2>{g.title} <code>{g.name}</code></h2>
       <p>{g.summary}</p>
-      {g.examples.map(e => <div key={e.title}><h3>{e.title}</h3><pre><code>{e.code}</code></pre></div>)}
+      {g.examples.map(e => <div key={e.title}><h3>{e.title}</h3><DocsPreview guide={g.id} example={e.title} /><pre className="docs__code"><code>{e.code}</code></pre></div>)}
       <h3>Props</h3>
       <div className="docs__table"><table><thead><tr><th scope="col">Prop</th><th scope="col">Type</th><th scope="col">Default</th><th scope="col">Description</th></tr></thead><tbody>{g.props.map(p => <tr key={p.name}><th scope="row"><code>{p.name}</code></th><td>{p.type && <code>{p.type}</code>}</td><td>{p.default && <code>{p.default}</code>}</td><td>{p.description.split('`').map((part, i) => i % 2 ? <code key={i}>{part}</code> : part)}</td></tr>)}</tbody></table></div>
       {g.passthrough && <p>Also accepts {g.passthrough.split('`').map((part, i) => i % 2 ? <code key={i}>{part}</code> : part)}.</p>}
