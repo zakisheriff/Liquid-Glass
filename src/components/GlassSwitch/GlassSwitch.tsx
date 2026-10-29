@@ -66,14 +66,18 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
       const el = ref.current!;
       const thumb = thumbRef.current!;
       const fill = fillRef.current!;
-      const v = { x: checked ? 1 : 0, lift: 0, stretch: 0 };
+      // `glass` is how far the knob reads as a lens. It follows the lift up,
+      // but on the way down it only falls: the lift spring bounces past rest
+      // to wobble the knob's size, and letting the lens look ride that bounce
+      // flashed it back on before it snapped off.
+      const v = { x: checked ? 1 : 0, lift: 0, glass: 0, stretch: 0 };
 
       const paint = () => {
         const s = REST + (1 - REST) * v.lift;
         const sx = s * (1 + v.stretch);
         const sy = s * (1 - v.stretch * 0.5);
         thumb.style.transform = `translate(${v.x * TRAVEL}px, -50%) scale(${sx}, ${sy})`;
-        const l = clamp(v.lift, 0, 1);
+        const l = clamp(v.glass, 0, 1);
         // Open a gap in the real track under the lifted lens; the lens shows
         // the track shrunk inside it, so drawing it here too would double it.
         el.style.setProperty('--lg-knob-x', `${(21 + v.x * TRAVEL).toFixed(2)}px`);
@@ -93,6 +97,7 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
       });
       const lift = createSpring(0, SPRINGS.lift, (value) => {
         v.lift = value;
+        v.glass = lift.target ? value : Math.min(v.glass, value);
         paint();
       });
       const color = createSpring(checked ? 1 : 0, SPRINGS.fade, (value) => {
