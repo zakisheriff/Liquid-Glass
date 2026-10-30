@@ -13,7 +13,7 @@ import {
   type GlassSliderProps,
 } from '@zakisheriff/liquid-glass';
 import { Cover } from './art';
-import { Bookmark, Check, Compass, Ellipsis, Grid, Heart, HeartFill, MapIcon, Mic, Note, Person, Pin, Plus, Search, Share, Speaker, Star, Sun } from './icons';
+import { Bookmark, Check, Compass, Ellipsis, Grid, Heart, HeartFill, MapIcon, Mic, Person, Pin, Plus, Search, Share, Speaker, Star, Suitcase, Sun } from './icons';
 import { AppDock } from './AppDock';
 import { PreviewThemeContext, PreviewThemeToggle, usePreviewMode } from './PreviewTheme';
 import { SheetFrame } from './SheetFrame';
@@ -116,8 +116,8 @@ function SwitchTile() {
 const TAB_POOL = [
   { label: 'Explore', icon: <Compass /> },
   { label: 'Saved', icon: <Bookmark /> },
-  { label: 'Library', icon: <Grid /> },
-  { label: 'Music', icon: <Note /> },
+  { label: 'Favorites', icon: <HeartFill /> },
+  { label: 'Trips', icon: <Suitcase /> },
   { label: 'Places', icon: <MapIcon /> },
   { label: 'Profile', icon: <Person /> },
 ];
