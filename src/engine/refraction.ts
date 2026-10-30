@@ -426,10 +426,13 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
     );
   }
   let out = 'bent';
+  const soften = shape.stretch > 0 ? 1.1 : 0.65;
   if (smooth) {
     // Blend a slightly softened copy in across the rim only.
     filter.append(
-      el('feGaussianBlur', { in: 'bent', stdDeviation: box ? `${0.65 / W} ${0.65 / H}` : 0.65, result: 'bent-soft' }),
+      // A stretched rim magnifies the pixel steps of whatever edge it smears,
+      // so it gets a little more softening.
+      el('feGaussianBlur', { in: 'bent', stdDeviation: box ? `${soften / W} ${soften / H}` : soften, result: 'bent-soft' }),
       el('feImage', { href: smooth, ...area, preserveAspectRatio: 'none', result: 'rim-zone' }),
       el('feComposite', { in: 'bent-soft', in2: 'rim-zone', operator: 'in', result: 'rim-soft' }),
       el('feComposite', { in: 'bent', in2: 'rim-zone', operator: 'out', result: 'core' }),
