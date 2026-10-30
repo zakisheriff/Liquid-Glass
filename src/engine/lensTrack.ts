@@ -53,6 +53,13 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     const select = refs.select.current;
     if (!bar || !lens || !glass || !select) return;
 
+    // The swell and pull move the whole component. A bar that is the only
+    // thing inside a glass shell (a dock that frosts the page for it) moves
+    // with that shell; otherwise its own glass would stay put while the
+    // icons and labels moved.
+    const parent = bar.parentElement;
+    const shell = parent?.classList.contains('lg-glass') && parent.childElementCount === 1 ? parent : bar;
+
     let slot = 0;
     let height = 0;
     let pad = 0;
@@ -142,8 +149,8 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       lens.style.transform = transform;
       select.style.transform = `translateX(${x}px)`;
       lens.style.opacity = String(clamp(lift * 4, 0, 1));
-      bar.style.scale = `${grow * (1 - ey * 0.15)} ${grow * (1 + ey * 0.5)}`;
-      bar.style.translate = `0px ${pull / 2}px`;
+      shell.style.scale = `${grow * (1 - ey * 0.15)} ${grow * (1 + ey * 0.5)}`;
+      shell.style.translate = `0px ${pull / 2}px`;
       lens.style.setProperty('--lg-lift', String(clamp(lift, 0, 1)));
       bar.style.setProperty('--lg-lift', String(clamp(lift, 0, 1)));
       // Paint a true capsule over each original glyph. A single horizontal
@@ -428,7 +435,8 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       clearTimeout(dropTimer);
       api.current = null;
       [x, lift, swell, pullY, jelly].forEach((s) => s.stop());
-      bar.style.removeProperty('translate');
+      shell.style.removeProperty('scale');
+      shell.style.removeProperty('translate');
       unguard();
       observer.disconnect();
       bar.removeEventListener('pointerdown', onDown);
