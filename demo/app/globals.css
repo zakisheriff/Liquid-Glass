@@ -681,8 +681,41 @@ html[data-morph] .hero__title-text[data-docked] {
   initial-value: #ffffff;
 }
 
+/* The glass tokens it carries fade the same way, so the dock's fill, icons,
+   labels and selection follow the screen instead of snapping ahead of it. */
+@property --lg-fg {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
+
+@property --lg-fill {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
+
+@property --lg-edge {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
+
+@property --lg-glow {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
+
+@property --lg-tab-selection {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
+
 .device.preview-scope {
-  transition: --screen 400ms ease;
+  transition: --screen 400ms ease, --lg-fg 400ms ease, --lg-fill 400ms ease, --lg-edge 400ms ease,
+    --lg-glow 400ms ease, --lg-tab-selection 400ms ease;
 }
 
 .device__screen {

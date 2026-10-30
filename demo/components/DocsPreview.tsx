@@ -13,12 +13,12 @@ import {
   GlassSwitch,
 } from '@zakisheriff/liquid-glass';
 import { PreviewThemeToggle, usePreviewMode } from './PreviewTheme';
-import { Bookmark, Check, Close, Compass, Copy, Ellipsis, Grid, Heart, Menu, Mic, Moon, Note, Plus, Search, Share, Star, Sun } from './icons';
+import { Bookmark, Check, Close, Compass, Copy, Ellipsis, Heart, HeartFill, Menu, Mic, Moon, Note, Plus, Search, Share, Star, Sun } from './icons';
 
 const TABS = [
   { label: 'Home', icon: <Compass size={22} /> },
   { label: 'Saved', icon: <Bookmark size={22} /> },
-  { label: 'Library', icon: <Grid size={22} /> },
+  { label: 'Favorites', icon: <HeartFill size={22} /> },
   { label: 'Search', icon: <Search size={22} /> },
 ];
 

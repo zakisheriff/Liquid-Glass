@@ -2,15 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { GlassButton, GlassCard, GlassInput, GlassMenu, GlassNav, GlassSegmented, GlassSheet, GlassSlider, GlassSwitch } from '@zakisheriff/liquid-glass';
-import { Bookmark, Check, Compass, Ellipsis, Grid, Heart, HeartFill, Note, Person, Play, Plus, Search, Share, Speaker, Sun } from './icons';
+import { Bookmark, Check, Compass, Ellipsis, Heart, HeartFill, Person, Play, Plus, Search, Share, Speaker, Suitcase, Sun } from './icons';
 import { SheetFrame } from './SheetFrame';
 import { usePreviewMorph } from './PreviewMorph';
 
 const TABS = [
   { label: 'Explore', icon: <Compass /> },
   { label: 'Saved', icon: <Bookmark /> },
-  { label: 'Library', icon: <Grid /> },
-  { label: 'Music', icon: <Note /> },
+  { label: 'Favorites', icon: <HeartFill /> },
+  { label: 'Trips', icon: <Suitcase /> },
   { label: 'Profile', icon: <Person /> },
 ];
 const SEARCH_TAB = { label: 'Search', icon: <Search /> };
