@@ -204,6 +204,9 @@
 /* ------------------------------------------------------------------ */
 
 .lg-track--segmented {
+  /* Like the tab bar: no inner bevel on the lifted lens, which read as a
+     stroke; its edge comes from the light it stretches. */
+  --lg-selection-lens-bevel: inset 0 0 0 transparent;
   --lg-pad: 4px;
   --lg-item-h: 36px;
   --lg-item-w: 64px;
