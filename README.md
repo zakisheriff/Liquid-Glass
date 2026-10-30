@@ -26,7 +26,7 @@
 <br />
 <br />
 
-<a href="https://liquidglass.theatom.lk/docs#demo"><img src="https://raw.githubusercontent.com/zakisheriff/Liquid-Glass/main/.github/demo-cover.webp" alt="Liquid Glass playground: buttons, sliders, switches, tab bar, menu and sheet. Click to watch the demo video." width="100%" /></a>
+<a href="https://liquidglass.theatom.lk/docs#demo"><img src="https://raw.githubusercontent.com/zakisheriff/Liquid-Glass/main/.github/demo-cover-2.webp" alt="Liquid Glass playground: buttons, sliders, switches, tab bar, menu and sheet. Click to watch the demo video." width="100%" /></a>
 
 **[▶ Click to watch the demo video](https://liquidglass.theatom.lk/docs#demo)**
 
@@ -533,6 +533,8 @@ About **31 KB of JavaScript and 5.5 KB of CSS gzipped**, with **no runtime depen
 - Refraction maps are computed once per glass size, cached and shared, then drawn by the browser. Nothing is recalculated while you scroll.
 - Springs run on one shared animation frame loop and stop when they settle.
 - Lens copies only copy and lay out content while a control is pressed, and stop entirely off screen.
+- Refraction pauses while the page scrolls and for glass off screen; blur and the rim carry the look in motion.
+- On slower devices resting surfaces keep blur and rim only, and lenses still bend while held. The quality is picked from the device and the first scrolls; `setGlassQuality('high' | 'low' | 'auto')` pins it.
 - The demo page, with 99 glass elements, holds about 11 MB of JavaScript memory and renders at 60 fps in Chrome.
 
 The GPU cost is in what moves *under* the glass. Keep large refracting panels over static or slow content, prefer a few large glass surfaces over many small overlapping ones, and lower `intensity` (or use `GlassCard variant="clear"`) for low-end devices.
@@ -554,12 +556,12 @@ function Droplet() {
 }
 ```
 
-`createSpring`, `SPRINGS` and `haptic()` are exported too.
+Lenses take `stretch: 1` for the iOS rim, where light under the edge smears out to it. `createSpring`, `SPRINGS`, `haptic()` and `setGlassQuality()` are exported too.
 
 ## Browser support
 
 - **Chrome / Edge / Arc:** live refraction of anything behind the glass through `backdrop-filter: url(#svg)`. Tab and segmented lenses refract a tinted live copy of the bar, so everything inside the lens takes the active colour.
-- **Safari:** lenses (switch, slider, tab bar, segmented) show a magnified live copy of the content beneath them. Bars, buttons and cards over arbitrary page content get frosting, rims and motion.
+- **Safari:** lenses (switch, slider, tab bar, segmented) refract a live copy of the content beneath them, bending and stretching it into the rim. Bars, buttons and cards over arbitrary page content get frosting, rims and motion.
 - **Firefox:** uses the same path as Safari; not yet tested.
 - Respects `prefers-reduced-motion` and `prefers-reduced-transparency`.
 

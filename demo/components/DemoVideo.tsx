@@ -30,8 +30,8 @@ export function DemoVideo() {
       ref={video}
       className="demo-video"
       poster="/video/demo-poster.jpg"
-      width={2626}
-      height={1664}
+      width={2440}
+      height={1652}
       muted
       loop
       playsInline

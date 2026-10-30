@@ -33,12 +33,15 @@ export const PERFORMANCE = {
     'Refraction maps are computed once per glass size, cached and shared, then drawn by the browser. Nothing is recalculated while you scroll.',
     'Springs run on one shared animation frame loop and stop when they settle.',
     'Lens copies only copy and lay out content while a control is pressed, and stop entirely off screen.',
+    'Refraction pauses while the page scrolls and for glass off screen; blur and the rim carry the look in motion.',
+    'On slower devices resting surfaces keep blur and rim only, and lenses still bend while held. setGlassQuality() pins high or low.',
     'The demo page, with 99 glass elements, holds about 11 MB of JavaScript memory and renders at 60 fps.',
   ],
   tips: [
     'The GPU cost is in what moves under the glass. Keep large refracting panels over static or slow content.',
     'Use a few large glass surfaces rather than many small overlapping ones.',
     'Lower intensity, or use GlassCard variant="clear", on low-end devices.',
+    "Quality is picked automatically from the device and the first scrolls. Call setGlassQuality('high') or setGlassQuality('low') to fix it.",
   ],
 };
 
@@ -46,7 +49,7 @@ export const FAQS = [
   { question: 'Is liquid glass lightweight enough for a website?', answer: 'Yes. The whole library is about 31 KB of JavaScript and 5.5 KB of CSS gzipped, with no runtime dependencies. Refraction maps are computed once per size and cached, springs stop when they settle, and lens copies only do work while a control is pressed. The GPU does the drawing, so keep large refracting panels over content that is not constantly animating.' },
   { question: 'What is Liquid Glass for the Web?', answer: '@zakisheriff/liquid-glass is an open-source React component library by Zaki Sheriff. It brings an Apple-inspired liquid glass appearance to web apps, with refraction, translucent surfaces and spring-based touch interactions. It is an independent project, not an Apple product.' },
   { question: 'How do I add liquid glass to a React or Next.js app?', answer: "Run npm i @zakisheriff/liquid-glass, import @zakisheriff/liquid-glass/styles.css once, then import the components you need. In Next.js, import the stylesheet in app/layout.tsx or pages/_app.tsx and add 'use client' to components that manage state. React and React DOM 17 or later are required." },
-  { question: 'Does liquid glass work in Safari, Firefox and Chrome?', answer: 'The optical effect varies by browser. Chromium can apply SVG displacement to the live backdrop. Safari and Firefox use translucent glass, highlights and mirrored content for supported thumbs. The demo also includes a WebGL refraction example. Place glass over gradients, images or content to make the effect visible.' },
+  { question: 'Does liquid glass work in Safari, Firefox and Chrome?', answer: 'Yes. Chromium applies SVG displacement to the live backdrop. In Safari and Firefox the lenses (switch, slider, tab bar, segmented control) refract a live copy of the content beneath them, bending and stretching it at the rim; bars, buttons and cards there use translucent glass and highlights. The demo also includes a WebGL refraction example. Place glass over gradients, images or content to make the effect visible.' },
   { question: 'Is the React liquid glass library free to use?', answer: 'Yes. The component library is MIT licensed and can be used in personal and commercial projects under that license. See the repository license and third-party notices for details.' },
 ];
 

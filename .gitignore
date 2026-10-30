@@ -12,3 +12,4 @@ demo/tsconfig.tsbuildinfo
 
 # Raw screen recordings; the compressed versions live in demo/public/video
 demo/public/*.mov
+demo/public/video/*.mov
