@@ -15,6 +15,7 @@ import { useEffect } from 'react';
 import '../styles/base.css';
 import { clamp } from './spring';
 import { mirrorBackdrop } from './mirror';
+import { governRefraction } from './quality';
 
 export type GlassKind = 'surface' | 'lens';
 
@@ -496,7 +497,9 @@ function cornerRadius(element: HTMLElement, width: number, height: number): numb
 
 /**
  * Bakes refraction for `ref`'s current box (untransformed) and keeps it fresh
- * on resize. Writes `--lg-filter` (Chromium) and `--lg-rim` on the element.
+ * on resize. Writes `--lg-refraction` (Chromium) and `--lg-rim` on the element;
+ * CSS maps the first to `--lg-filter` unless the page is scrolling, the glass
+ * is off screen, or a weak device rests it (see quality.ts).
  *
  * `mirror` names the content that sits beneath the glass. Where the browser
  * can't refract the live backdrop (Safari, Firefox), a live copy of it is
@@ -559,9 +562,10 @@ export function useRefraction(
         // zoomed (that pushed the bar's edge into a ring inside the lens) and
         // its rim bends gently, curling the bar's edge into thin arcs.
         const backdrop = live ? baked.filter : glassFor(width, height, radius, { ...shape, zoom: 1, zoomX: 1, strength: (shape.strength ?? 1) * 0.45 }).filter;
-        element.style.setProperty('--lg-filter', backdrop);
-        // Lets CSS keep its softening/saturation for real refraction only.
-        element.setAttribute('data-lg-refract', '');
+        element.style.setProperty('--lg-refraction', backdrop);
+        // Lets CSS keep its softening/saturation for real refraction only, and
+        // tells resting surfaces from lenses.
+        element.setAttribute('data-lg-refract', shape.kind ?? 'surface');
       }
       element.style.setProperty('--lg-rim', baked.rim);
     };
@@ -583,12 +587,14 @@ export function useRefraction(
     const source = mirror?.current;
     const unmirror = !live && source ? mirrorBackdrop(element, source, () => pad, () => [zoomX, zoom], mirrorActive) : undefined;
     applyCopyFilter();
+    const ungovern = governRefraction(element);
 
     return () => {
       cancel?.();
       unmirror?.();
+      ungovern();
       observer.disconnect();
-      element.style.removeProperty('--lg-filter');
+      element.style.removeProperty('--lg-refraction');
       element.style.removeProperty('--lg-rim');
       element.removeAttribute('data-lg-refract');
     };

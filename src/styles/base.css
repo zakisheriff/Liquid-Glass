@@ -164,6 +164,19 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Refraction is the costly part of glass: the backdrop is re-bent on every
+   frame it moves. It pauses while the page scrolls (blur and rim carry the
+   look in motion), off screen, and on resting surfaces of weak devices. */
+[data-lg-refract] {
+  --lg-filter: var(--lg-refraction);
+}
+
+html[data-lg-scrolling] [data-lg-refract],
+[data-lg-refract][data-lg-offscreen],
+html[data-lg-quality='low'] [data-lg-refract='surface'] {
+  --lg-filter: initial;
+}
+
 /* Baked specular rim: thin bright line, hottest on the diagonal corners. */
 .lg-glass::before {
   content: '';

@@ -37,6 +37,8 @@ export type { LiquidGlassFilterProps } from './filters/LiquidGlassFilter';
 
 // Engine (for building custom glass components)
 export { useRefraction, canRefractBackdrop } from './engine/refraction';
+export { setGlassQuality } from './engine/quality';
+export type { GlassQuality } from './engine/quality';
 export type { GlassShape, GlassKind } from './engine/refraction';
 export { usePress } from './engine/press';
 export type { PressOptions } from './engine/press';
