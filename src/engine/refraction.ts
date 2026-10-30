@@ -168,6 +168,12 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
     return 1 - t * t * (3 - 2 * t);
   };
 
+  // Deep inside the shape every output is settled: no bend (past the bevel),
+  // fully inside, outside the softening zone, and the rim's glow has decayed
+  // to nothing. Large surfaces are mostly interior, so this skips most of
+  // the per-pixel maths.
+  const flat = simple && magnify ? Infinity : Math.max(shape.bezel * 1.7, 5);
+
   for (let y = 0; y < ch; y++) {
     for (let x = 0; x < cw; x++) {
       const px = ((x + 0.5) * W) / cw - W / 2;
@@ -180,6 +186,10 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
       const oy = Math.max(qy, 0);
       const len = Math.hypot(ox, oy);
       const d = radius - (len + Math.min(Math.max(qx, qy), 0));
+      if (d > flat) {
+        inside[y * cw + x] = 1;
+        continue;
+      }
 
       let nx: number;
       let ny: number;
@@ -482,7 +492,46 @@ export function glassFor(width: number, height: number, radius: number, shape: G
   return baked;
 }
 
-function idle(callback: () => void): () => void {
+/**
+ * Bakes wait their turn: a page full of glass would otherwise bake every
+ * shape in one long task on load. Glass near the viewport goes first; the
+ * rest of the page follows in the background, so it's ready before it's
+ * scrolled to. Each slice runs fits until its time is spent (always at least
+ * one), so the page stays responsive while glass fills in.
+ */
+const soon: Array<() => void> = [];
+const later: Array<() => void> = [];
+let pumping = false;
+
+function pump() {
+  pumping = true;
+  const run = (deadline?: IdleDeadline) => {
+    // Without idle callbacks (Safari) a slice gets a fixed budget instead.
+    const end = performance.now() + 8;
+    const left = () => (deadline ? deadline.timeRemaining() > 4 : performance.now() < end);
+    let ran = 0;
+    while ((soon.length || later.length) && (ran === 0 || left())) {
+      (soon.shift() ?? later.shift())!();
+      ran++;
+    }
+    if (soon.length || later.length) idle(run);
+    else pumping = false;
+  };
+  idle(run);
+}
+
+function bakeSoon(job: () => void, urgent = true): () => void {
+  (urgent ? soon : later).push(job);
+  if (!pumping) pump();
+  return () => {
+    for (const list of [soon, later]) {
+      const at = list.indexOf(job);
+      if (at >= 0) list.splice(at, 1);
+    }
+  };
+}
+
+function idle(callback: (deadline?: IdleDeadline) => void): () => void {
   if (typeof requestIdleCallback === 'function') {
     const handle = requestIdleCallback(callback, { timeout: 120 });
     return () => cancelIdleCallback(handle);
@@ -577,15 +626,33 @@ export function useRefraction(
     // surface that animates its size (a nav growing a slot) would otherwise
     // rebake nearly every frame on Safari, which has no idle callback. The
     // rim stretches to the box meanwhile.
+    // Glass near the viewport bakes first; the rest waits behind it.
+    let seen = typeof IntersectionObserver !== 'function';
+    const request = () => {
+      cancel?.();
+      cancel = bakeSoon(fit, seen);
+    };
+    const near =
+      typeof IntersectionObserver === 'function'
+        ? new IntersectionObserver(
+            (entries) => {
+              if (!entries.some((entry) => entry.isIntersecting)) return;
+              seen = true;
+              near?.disconnect();
+              request();
+            },
+            { rootMargin: '100% 0px' },
+          )
+        : null;
+    near?.observe(element);
+
     const observer = new ResizeObserver(() => {
       cancel?.();
-      const timer = setTimeout(() => {
-        cancel = idle(fit);
-      }, 140);
+      const timer = setTimeout(request, 140);
       cancel = () => clearTimeout(timer);
     });
     observer.observe(element);
-    fit();
+    request();
 
     const source = mirror?.current;
     const unmirror = !live && source ? mirrorBackdrop(element, source, () => pad, () => [zoomX, zoom], mirrorActive) : undefined;
@@ -596,6 +663,7 @@ export function useRefraction(
       cancel?.();
       unmirror?.();
       ungovern();
+      near?.disconnect();
       observer.disconnect();
       element.style.removeProperty('--lg-refraction');
       element.style.removeProperty('--lg-rim');
