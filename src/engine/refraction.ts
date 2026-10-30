@@ -5,8 +5,9 @@
  * squircle bevel using Snell's law, bake it to an image, and hand it to an SVG
  * `feDisplacementMap`. Chromium can run that filter on the live backdrop
  * (`backdrop-filter: url(#…)`), which bends whatever sits behind the glass.
- * Every engine also gets a baked specular rim, so Safari and Firefox still
- * read as glass with blur + rim.
+ * Elsewhere (Safari, Firefox) lenses refract a live copy of what's beneath
+ * with the same field, as a normal filter in box units. Every engine also
+ * gets a baked specular rim.
  */
 import { useEffect } from 'react';
 // Components reach the material through this module, so the tokens always load
@@ -36,6 +37,12 @@ export interface GlassShape {
   dispersion?: number;
   /** Overall displacement multiplier. */
   strength?: number;
+  /**
+   * Rim stretch, 0–1 (lens only). Instead of pulling in light from past the
+   * edge, the rim samples inward ever more steeply, so whatever sits under it
+   * smears out to the edge in streaks: the thick-droplet look of iOS tab bars.
+   */
+  stretch?: number;
   /**
    * Margin (px) along the top and bottom of a lens that stays clear and
    * unbent, e.g. where a tab-bar lens rises past its bar: only the part over
@@ -112,12 +119,15 @@ function bevelProfile(bezel: number, thickness: number, ior: number) {
   };
 }
 
-function bake(width: number, height: number, radius: number, shape: Required<GlassShape>, pad = 0, simple = false, fringe = false): Baked {
+function bake(width: number, height: number, radius: number, shape: Required<GlassShape>, pad = 0, simple = false, fringe = false, box = false): Baked {
   // `simple`: one displacement pass (edge bend + magnification baked into a
   // single map), no colour split. Safari's GPU filter path renders chained
   // displacement + arithmetic composites black, so its mirrors use this.
   // `pad` widens the baked canvas around the shape: mirrored backdrops need
   // room for light the rim bends in from beyond the glass's own edge.
+  // `box`: every filter unit is a fraction of the filtered element's box.
+  // WebKit only draws feImage maps and displacement scales right that way;
+  // in px units it misplaces the map and renders a colour split as nothing.
   const W = width + pad * 2;
   const H = height + pad * 2;
   // Keep the bake under ~400k samples; the field is smooth so this is lossless enough.
@@ -142,6 +152,8 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   // touch of smoothing while the centre stays sharp.
   const zone = new Float32Array(cw * ch);
   let max = 0.0001;
+  let maxX = 0.0001;
+  let maxY = 0.0001;
 
   const hw = width / 2;
   const hh = height / 2;
@@ -182,7 +194,15 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
       }
 
       const i = y * cw + x;
-      const s = shift(d) * shape.strength * direction * band(py);
+      // Stretch: the sample point moves inward by bezel·k·(1-u)², so at the
+      // edge it barely moves while the rim sweeps across it (k = 0.5 holds
+      // the image still at the very edge; more would fold it back).
+      const u = d / shape.bezel;
+      const s = (lens && shape.stretch > 0
+        ? d >= 0 && u < 1
+          ? -shape.bezel * shape.stretch * 0.5 * (1 - u) ** 2
+          : 0
+        : shift(d) * direction) * shape.strength * band(py);
       // Edge bend only; magnification runs as its own pass so colour
       // splits only where the glass actually curves.
       let vx = nx * s;
@@ -195,6 +215,8 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
       dy[i] = vy;
       const m = Math.max(Math.abs(vx), Math.abs(vy));
       if (m > max) max = m;
+      if (Math.abs(vx) > maxX) maxX = Math.abs(vx);
+      if (Math.abs(vy) > maxY) maxY = Math.abs(vy);
 
       inside[i] = clamp(d / px1 + 0.5, 0, 1);
       zone[i] = (d <= 0 ? 1 : clamp(1 - d / Math.max(1, shape.bezel), 0, 1) ** 1.3) * band(py);
@@ -218,11 +240,16 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   canvas.height = ch;
   const ctx = canvas.getContext('2d')!;
 
+  // In box units a displacement scale s moves x by s·W and y by s·H, so each
+  // axis is encoded against its own side; in px both share one scale.
+  const scale = box ? 2 * Math.max(maxX / W, maxY / H) : max * 2;
+  const spanX = box ? (scale * W) / 2 : max;
+  const spanY = box ? (scale * H) / 2 : max;
   const field = ctx.createImageData(cw, ch);
   for (let i = 0; i < cw * ch; i++) {
     const o = i * 4;
-    field.data[o] = Math.round(127.5 + (dx[i] / max) * 127.5);
-    field.data[o + 1] = Math.round(127.5 + (dy[i] / max) * 127.5);
+    field.data[o] = Math.round(127.5 + (dx[i] / spanX) * 127.5);
+    field.data[o + 1] = Math.round(127.5 + (dy[i] / spanY) * 127.5);
     field.data[o + 2] = 128;
     field.data[o + 3] = 255;
   }
@@ -239,8 +266,8 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
         const px = ((x + 0.5) * W) / cw - W / 2;
         const py = ((y + 0.5) * H) / ch - H / 2;
         const k = band(py);
-        ramp.data[o] = Math.round(127.5 - (px / reach) * 127.5 * k);
-        ramp.data[o + 1] = Math.round(127.5 - (py / reach) * 127.5 * k);
+        ramp.data[o] = Math.round(127.5 - (px / (box ? W / 2 : reach)) * 127.5 * k);
+        ramp.data[o + 1] = Math.round(127.5 - (py / (box ? H / 2 : reach)) * 127.5 * k);
         ramp.data[o + 2] = 128;
         ramp.data[o + 3] = 255;
       }
@@ -295,30 +322,34 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   }
 
   const id = `lg-refract-${++counter}`;
-  // Region in the element's own box (objectBoundingBox): WebKit only renders
-  // feImage maps this way; Chromium accepts it for backdrop filters too.
-  // Primitive units stay in px so displacement scales are real pixels.
-  // Maps get explicit px sizes: WebKit otherwise draws them at their native
-  // (devicePixelRatio-scaled) size instead of stretching them over the box.
-  const box = { x: 0, y: 0, width: W, height: H };
-  const filter = el('filter', {
-    id,
-    // Generous region: the rim samples content from beyond the glass edge.
-    x: -0.25,
-    y: -0.25,
-    width: 1.5,
-    height: 1.5,
-    'color-interpolation-filters': 'sRGB',
-  });
-  filter.append(el('feImage', { href: map, ...box, preserveAspectRatio: 'none', result: 'field' }));
+  // Chromium (backdrop filters): primitive units in px, so displacement
+  // scales are real pixels and maps get explicit px sizes.
+  // Everywhere else (`box`): the filter and every primitive in the element's
+  // own box, the only form WebKit and Gecko draw correctly.
+  const area = box ? { x: 0, y: 0, width: 1, height: 1 } : { x: 0, y: 0, width: W, height: H };
+  const filter = el(
+    'filter',
+    box
+      ? { id, filterUnits: 'objectBoundingBox', primitiveUnits: 'objectBoundingBox', x: 0, y: 0, width: 1, height: 1, 'color-interpolation-filters': 'sRGB' }
+      : {
+          id,
+          // Generous region: the rim samples content from beyond the glass edge.
+          x: -0.25,
+          y: -0.25,
+          width: 1.5,
+          height: 1.5,
+          'color-interpolation-filters': 'sRGB',
+        },
+  );
+  filter.append(el('feImage', { href: map, ...area, preserveAspectRatio: 'none', result: 'field' }));
   let source = 'SourceGraphic';
   if (zoomMap) {
     filter.append(
-      el('feImage', { href: zoomMap, ...box, preserveAspectRatio: 'none', result: 'zoom' }),
+      el('feImage', { href: zoomMap, ...area, preserveAspectRatio: 'none', result: 'zoom' }),
       el('feDisplacementMap', {
         in: 'SourceGraphic',
         in2: 'zoom',
-        scale: 2 * reach * magnify,
+        scale: box ? magnify : 2 * reach * magnify,
         xChannelSelector: 'R',
         yChannelSelector: 'G',
         result: 'magnified',
@@ -327,7 +358,6 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
     source = 'magnified';
   }
 
-  const scale = max * 2;
   if (shape.dispersion > 0 && !simple && fringe) {
     // A transparent copy (glyphs, a track) can't be split by summing three
     // single-channel images: where their alphas overlap the sum saturates and
@@ -335,7 +365,7 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
     // light the red and blue rays carry past it shows, as a thin warm and cool
     // fringe on either side of each edge (purple outside, green inside, as
     // on iOS): the rainbow a water drop throws.
-    const spread = 0.3 * shape.dispersion;
+    const spread = (shape.stretch > 0 ? 0.12 : 0.3) * shape.dispersion;
     for (const [name, factor] of [['r', 1 + spread], ['g', 1], ['b', 1 - spread]] as const) {
       filter.append(
         el('feDisplacementMap', {
@@ -398,8 +428,8 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   if (smooth) {
     // Blend a slightly softened copy in across the rim only.
     filter.append(
-      el('feGaussianBlur', { in: 'bent', stdDeviation: 0.65, result: 'bent-soft' }),
-      el('feImage', { href: smooth, ...box, preserveAspectRatio: 'none', result: 'rim-zone' }),
+      el('feGaussianBlur', { in: 'bent', stdDeviation: box ? `${0.65 / W} ${0.65 / H}` : 0.65, result: 'bent-soft' }),
+      el('feImage', { href: smooth, ...area, preserveAspectRatio: 'none', result: 'rim-zone' }),
       el('feComposite', { in: 'bent-soft', in2: 'rim-zone', operator: 'in', result: 'rim-soft' }),
       el('feComposite', { in: 'bent', in2: 'rim-zone', operator: 'out', result: 'core' }),
       el('feComposite', { in: 'rim-soft', in2: 'core', operator: 'arithmetic', k2: 1, k3: 1, result: 'smoothed' }),
@@ -407,7 +437,7 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
     out = 'smoothed';
   }
   filter.append(
-    el('feImage', { href: mask, ...box, preserveAspectRatio: 'none', result: 'shape' }),
+    el('feImage', { href: mask, ...area, preserveAspectRatio: 'none', result: 'shape' }),
     el('feComposite', { in: out, in2: 'shape', operator: 'in' }),
   );
 
@@ -429,19 +459,20 @@ function resolve(shape: GlassShape, width: number, height: number): Required<Gla
     dispersion: shape.dispersion ?? (lens ? 1 : 0),
     strength: shape.strength ?? 1,
     inset: shape.inset ?? 0,
+    stretch: shape.stretch ?? 0,
     copy: shape.copy ?? false,
   };
 }
 
-export function glassFor(width: number, height: number, radius: number, shape: GlassShape = {}, pad = 0, simple = false, fringe = false): Baked {
+export function glassFor(width: number, height: number, radius: number, shape: GlassShape = {}, pad = 0, simple = false, fringe = false, box = false): Baked {
   const w = Math.round(width);
   const h = Math.round(height);
   const r = Math.min(w / 2, h / 2, Math.max(0, radius));
   const full = resolve(shape, w, h);
-  const key = [w, h, Math.round(r * 2) / 2, full.kind, full.bezel.toFixed(1), full.thickness.toFixed(1), full.ior, full.zoom, full.dispersion, full.strength, full.inset, pad, simple, fringe].join('|');
+  const key = [w, h, Math.round(r * 2) / 2, full.kind, full.bezel.toFixed(1), full.thickness.toFixed(1), full.ior, full.zoom, full.dispersion, full.strength, full.inset, full.stretch, pad, simple, fringe, box].join('|');
   let baked = cache.get(key);
   if (!baked) {
-    baked = bake(w, h, r, full, pad, simple, fringe);
+    baked = bake(w, h, r, full, pad, simple, fringe, box);
     cache.set(key, baked);
   }
   return baked;
@@ -489,8 +520,11 @@ export function useRefraction(
     let pad = 0;
     let zoom = 1;
     let zoomX = 1;
-    // Chromium can run the rim bend on the copy itself (as a normal filter).
-    const bendCopy = shape.copy === 'refract' && canRefractBackdrop() && !!mirror;
+    // The rim bend runs on the copy itself, as a normal filter. Chromium only
+    // does this when asked (it can bend the live backdrop instead); every
+    // other engine bends a mirrored lens's copy, in box units.
+    const chromium = canRefractBackdrop();
+    const bendCopy = !!mirror && (shape.copy === 'refract' || !chromium);
     let copyFilter = '';
     const applyCopyFilter = () => {
       const viewport = element.querySelector<HTMLElement>(':scope > .lg-mirror > .lg-mirror__viewport');
@@ -505,22 +539,21 @@ export function useRefraction(
       const baked = glassFor(width, height, radius, shape);
       filter = baked.filter;
       if (!live && mirror?.current) {
-        // No SVG filters off Chromium: real Safari's GPU path paints them
-        // black. The lens is a magnified copy, feathered out across the bevel.
+        // The lens is a magnified copy of what's beneath, bent at its rim.
         pad = Math.ceil(Math.min(width, height) * 0.45 + 6);
         ({ zoom, zoomX } = resolve(shape, width, height));
         element.style.setProperty('--lg-inner-mask', baked.inner);
         if (bendCopy) {
           // The copy is magnified by CSS; the filter only bends the rim and
           // fringes what it bends with colour.
-          copyFilter = glassFor(width, height, radius, { ...shape, zoom: 1, zoomX: 1 }, pad, false, true).filter;
+          copyFilter = glassFor(width, height, radius, { ...shape, zoom: 1, zoomX: 1 }, pad, false, true, !chromium).filter;
           applyCopyFilter();
         }
       }
       // A bent copy also refracts the real backdrop: the bar's glass, its edge
       // and the page bend and split into colour at the rim, so the lens
       // merges with what's beneath instead of sitting on it.
-      if (live || bendCopy) {
+      if (live || (bendCopy && chromium)) {
         // Behind a bent copy the backdrop only carries the bar's glass and
         // edges: the copy already magnifies the content, so the backdrop isn't
         // zoomed (that pushed the bar's edge into a ring inside the lens) and

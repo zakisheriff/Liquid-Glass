@@ -32,7 +32,7 @@ export function LensTrack({
   const select = useRef<HTMLSpanElement>(null);
   const strength = Math.max(1, Math.min(10, intensity)) / 5;
   const tabbar = variant === 'tabbar';
-  const zoom = tabbar ? 1.14 : 1.1;
+  const zoom = tabbar ? 1.04 : 1.1;
 
   useRefraction(glass, { kind: 'surface', strength });
   // iOS: a magnified centre and a thick rounded rim that bends whatever sits
@@ -46,7 +46,7 @@ export function LensTrack({
   // The lens shows a magnified, fully tinted copy of the bar, bent at its rim
   // where the browser can filter it: whatever the rim draws in is tinted too,
   // as on iOS, instead of the real glyphs showing white through it.
-  useRefraction(lens, { kind: 'lens', strength: 1.15, zoom, dispersion: 1, copy: 'refract' }, true, bar, () =>
+  useRefraction(lens, { kind: 'lens', strength: 1, stretch: 1, bezel: tabbar ? 24 : 16, zoom, dispersion: 1, copy: 'refract' }, true, bar, () =>
     bar.current?.hasAttribute('data-lifted') ?? false,
   );
 

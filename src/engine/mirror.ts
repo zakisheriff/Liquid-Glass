@@ -2,10 +2,10 @@
  * Lenses for engines that can't filter the live backdrop (Safari, Firefox).
  *
  * We keep a live copy of what sits beneath the glass inside the glass itself,
- * aligned pixel-for-pixel, magnify it around the lens centre with a plain CSS
- * transform, and feather it out across the bevel with a CSS mask. No SVG
- * filters: real Safari's GPU path renders displacement filters black. Inline
- * styles are re-synced each frame so animated content stays in step.
+ * aligned pixel-for-pixel, and magnify it around the lens centre with a plain
+ * CSS transform; useRefraction bends its rim with an SVG filter in box units
+ * (the form WebKit draws correctly). Inline styles are re-synced each frame so
+ * animated content stays in step.
  */
 
 const SELF = 'data-lg-mirror-self';

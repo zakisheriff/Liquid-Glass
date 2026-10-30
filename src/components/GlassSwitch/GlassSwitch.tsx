@@ -58,7 +58,7 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
     // track runs on through the lens, thinner inside and flaring back to full
     // height at the rim where it meets the track outside. It's drawn from a
     // live copy of the switch so it can show past its own edge.
-    useRefraction(thumbRef, { kind: 'lens', zoom: 0.72, zoomX: 1, dispersion: 1, copy: 'refract', strength: Math.max(1, Math.min(10, intensity)) / 5 }, true, ref, () =>
+    useRefraction(thumbRef, { kind: 'lens', zoom: 0.72, zoomX: 1, dispersion: 1, stretch: 1, copy: 'refract', strength: Math.max(1, Math.min(10, intensity)) / 5 }, true, ref, () =>
       parseFloat(ref.current?.style.getPropertyValue('--lg-lift') || '0') > 0.01,
     );
 
