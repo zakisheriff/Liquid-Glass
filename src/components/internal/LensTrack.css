@@ -111,13 +111,14 @@
   backdrop-filter: none;
   box-shadow:
     0 calc(var(--lg-lift) * 8px) calc(var(--lg-lift) * 26px) rgb(0 0 0 / calc(var(--lg-lift) * 0.18)),
-    inset 0 0 0 0.5px color-mix(in srgb, var(--lg-selection-lens-edge) calc(var(--lg-lift) * 100%), transparent),
+    inset 0 0 0 0.5px color-mix(in srgb, var(--lg-selection-lens-edge) calc(var(--lg-lift) * 45%), transparent),
     var(--lg-selection-lens-bevel);
   transition: none;
 }
 
 .lg-track__lens.lg-glass::before {
-  opacity: calc(var(--lg-lift) * 1.2);
+  /* A faint rim: the stretched light at the edge outlines the lens already. */
+  opacity: calc(var(--lg-lift) * 0.5);
   /* Above a copied lens's contents (Safari), so the rim still catches light. */
   z-index: 2;
 }
