@@ -8,8 +8,11 @@
  */
 import { useEffect, useRef } from 'react';
 import { guardSelection } from './selection';
-import { SPRINGS, clamp, createJelly, createSpring, rubberband } from './spring';
+import { SPRINGS, clamp, createJelly, createSpring, rubberband, springFrom } from './spring';
 import { haptic } from './haptics';
+
+/** Finger-following feel for the bar's pull, as on buttons. */
+const FOLLOW = springFrom(0.2, 0.82);
 
 export interface LensTrackRefs {
   bar: React.RefObject<HTMLElement | null>;
@@ -59,11 +62,12 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     // curves and a pixel-sharp baked rim, never a stretched bitmap.
     let W = 0;
     let H = 0;
-    const state = { x: 0, lift: 0, swell: 0, squash: 0 };
+    const state = { x: 0, lift: 0, swell: 0, squash: 0, pullX: 0, pullY: 0 };
     let current = latest.current.index;
     let gesture: {
       id: number;
       startX: number;
+      startY: number;
       anchor: number;
       moved: boolean;
       box: DOMRect;
@@ -129,11 +133,17 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       const kx = ((slot + (W - slot) * lift) / W) * (1 + squash);
       const ky = ((height + (H - height) * lift) / H) * (1 - squash * 0.6);
       const grow = 1 + (latest.current.swell / Math.max(bar.offsetWidth, 1)) * swell;
+      // The bar is held by the finger like a button: it leans a few px toward
+      // the drag and draws out a little along it, thinning across.
+      const { pullX, pullY } = state;
+      const ex = Math.abs(pullX) / Math.max(bar.offsetWidth, 1);
+      const ey = Math.abs(pullY) / Math.max(bar.offsetHeight, 1);
       const transform = `translateX(${x}px) scale(${kx}, ${ky})`;
       lens.style.transform = transform;
       select.style.transform = `translateX(${x}px)`;
       lens.style.opacity = String(clamp(lift * 4, 0, 1));
-      bar.style.scale = `${grow}`;
+      bar.style.scale = `${grow * (1 + ex - ey * 0.3)} ${grow * (1 + ey - ex * 0.3)}`;
+      bar.style.translate = `${pullX / 2}px ${pullY / 2}px`;
       lens.style.setProperty('--lg-lift', String(clamp(lift, 0, 1)));
       bar.style.setProperty('--lg-lift', String(clamp(lift, 0, 1)));
       // Paint a true capsule over each original glyph. A single horizontal
@@ -210,6 +220,28 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       state.swell = value;
       paint();
     });
+    const pullX = createSpring(0, SPRINGS.release, (value) => {
+      state.pullX = value;
+      paint();
+    });
+    const pullY = createSpring(0, SPRINGS.release, (value) => {
+      state.pullY = value;
+      paint();
+    });
+    const pull = (dx: number, dy: number) => {
+      // Saturating reach (rubber band): a long drag barely adds to it, so the
+      // bar gives like a droplet held in place and never slides away.
+      pullX.tune(FOLLOW);
+      pullY.tune(FOLLOW);
+      pullX.set(rubberband(dx, Math.min(16, bar.offsetWidth * 0.05), 0.5));
+      pullY.set(rubberband(dy, Math.min(10, bar.offsetHeight * 0.2), 0.5));
+    };
+    const letGo = () => {
+      pullX.tune(SPRINGS.release);
+      pullY.tune(SPRINGS.release);
+      pullX.set(0);
+      pullY.set(0);
+    };
 
     const place = (index: number, instant = false) => {
       current = index;
@@ -248,7 +280,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       clearTimeout(dropTimer);
       measure();
       const box = bar.getBoundingClientRect();
-      gesture = { id: event.pointerId, startX: event.clientX, anchor: index * slot, moved: false, box, hovered: index, startedAt: performance.now() };
+      gesture = { id: event.pointerId, startX: event.clientX, startY: event.clientY, anchor: index * slot, moved: false, box, hovered: index, startedAt: performance.now() };
       suppressClick = false;
       bar.dataset.lifted = '';
       preview(index);
@@ -276,6 +308,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
         }
       }
       light(event.clientX, gesture.box);
+      pull(event.clientX - gesture.startX, event.clientY - gesture.startY);
       if (!gesture.moved) return;
       const at = position(event.clientX);
       x.tune(SPRINGS.drag);
@@ -309,6 +342,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       else drop();
       swell.tune(SPRINGS.release);
       swell.set(0);
+      letGo();
       x.tune(SPRINGS.snap);
       if (commit && (moved || inside)) {
         suppressClick = true;
@@ -338,6 +372,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       lift.set(0);
       swell.tune(SPRINGS.release);
       swell.set(0);
+      letGo();
       x.tune(SPRINGS.snap);
       x.set(current * slot);
     };
@@ -400,7 +435,8 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     return () => {
       clearTimeout(dropTimer);
       api.current = null;
-      [x, lift, swell, jelly].forEach((s) => s.stop());
+      [x, lift, swell, pullX, pullY, jelly].forEach((s) => s.stop());
+      bar.style.removeProperty('translate');
       unguard();
       observer.disconnect();
       bar.removeEventListener('pointerdown', onDown);
