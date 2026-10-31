@@ -37,6 +37,7 @@
 .studio__canvas {
   position: absolute;
   inset: 0;
+  transform-origin: 50% 50%;
 }
 
 /* Items sit on a zero-size anchor at their offset from the centre, so no
@@ -65,7 +66,7 @@
 }
 
 .studio__shield:hover {
-  outline: 1px dashed rgb(10 132 255 / 0.6);
+  outline: calc(1px / var(--studio-zoom, 1)) dashed rgb(10 132 255 / 0.6);
 }
 
 .studio__shield:active {
@@ -73,7 +74,7 @@
 }
 
 .studio__shield[data-selected] {
-  outline: 1.5px solid #0a84ff;
+  outline: calc(1.5px / var(--studio-zoom, 1)) solid #0a84ff;
 }
 
 .studio__guide {
@@ -86,14 +87,14 @@
   left: 50%;
   top: 0;
   bottom: 0;
-  width: 1px;
+  width: calc(1px / var(--studio-zoom, 1));
 }
 
 .studio__guide--h {
   top: 50%;
   left: 0;
   right: 0;
-  height: 1px;
+  height: calc(1px / var(--studio-zoom, 1));
 }
 
 .studio__empty {

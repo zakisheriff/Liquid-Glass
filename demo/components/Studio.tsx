@@ -238,6 +238,11 @@ export function Studio() {
   const [theme, setTheme] = useState<Theme>('light');
   const [bg, setBg] = useState('plain');
   const [custom, setCustom] = useState('#f2eff0');
+  // Lays the whole canvas out larger, so it is drawn at full resolution and a
+  // recording needs no zooming in afterwards (which can only stretch pixels
+  // that were never there). CSS `zoom`, not a transform: Safari draws filtered
+  // layers at 1x and stretches them under a transform, which softens lenses.
+  const [zoom, setZoom] = useState(1);
   const [panel, setPanel] = useState(true);
   const [live, setLive] = useState(false);
   const [ready, setReady] = useState(false);
@@ -255,6 +260,7 @@ export function Studio() {
         if (saved.theme === 'light' || saved.theme === 'dark') setTheme(saved.theme);
         if (typeof saved.bg === 'string') setBg(saved.bg);
         if (typeof saved.custom === 'string') setCustom(saved.custom);
+        if (typeof saved.zoom === 'number' && saved.zoom >= 1 && saved.zoom <= 6) setZoom(saved.zoom);
       }
     } catch {
       /* start empty */
@@ -265,11 +271,11 @@ export function Studio() {
   useEffect(() => {
     if (!ready) return;
     try {
-      localStorage.setItem(STORAGE, JSON.stringify({ items, theme, bg, custom }));
+      localStorage.setItem(STORAGE, JSON.stringify({ items, theme, bg, custom, zoom }));
     } catch {
       /* storage unavailable */
     }
-  }, [ready, items, theme, bg, custom]);
+  }, [ready, items, theme, bg, custom, zoom]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -357,11 +363,12 @@ export function Studio() {
   const onShieldMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const d = drag.current;
     if (!d) return;
-    let x = d.x + e.clientX - d.px;
-    let y = d.y + e.clientY - d.py;
+    // Pointer travel is in screen px; positions are in the canvas's own px.
+    let x = d.x + (e.clientX - d.px) / zoom;
+    let y = d.y + (e.clientY - d.py) / zoom;
     // Snap to the centre lines of the canvas.
-    const v = Math.abs(x) < 6;
-    const h = Math.abs(y) < 6;
+    const v = Math.abs(x) < 6 / zoom;
+    const h = Math.abs(y) < 6 / zoom;
     if (v) x = 0;
     if (h) y = 0;
     setGuides({ v, h });
@@ -377,8 +384,8 @@ export function Studio() {
   const current = items.find((it) => it.id === selected) ?? null;
 
   return (
-    <div className="studio" data-theme={theme} style={{ background }}>
-      <div className="studio__canvas" onPointerDown={(e) => e.target === e.currentTarget && setSelected(null)}>
+    <div className="studio" data-theme={theme} style={{ background, '--studio-zoom': zoom } as React.CSSProperties}>
+      <div className="studio__canvas" style={zoom === 1 ? undefined : ({ zoom } as React.CSSProperties)} onPointerDown={(e) => e.target === e.currentTarget && setSelected(null)}>
         {items.map((item) => (
           // Keyed by theme: a theme change rebuilds the glass from scratch, so no
           // layer can keep painting the old appearance.
@@ -400,8 +407,8 @@ export function Studio() {
         ))}
         {editing && guides.v && <div className="studio__guide studio__guide--v" />}
         {editing && guides.h && <div className="studio__guide studio__guide--h" />}
-        {panel && ready && items.length === 0 && <p className="studio__empty">Add a component from the panel</p>}
       </div>
+      {panel && ready && items.length === 0 && <p className="studio__empty">Add a component from the panel</p>}
 
       {!panel && (
         <button type="button" className="studio__peek" onClick={() => setPanel(true)} aria-label="Show tools">
@@ -434,6 +441,10 @@ export function Studio() {
             </div>
           </Field>
 
+          <Field label="Zoom">
+            <Seg options={[1, 2, 3, 4, 5].map((n) => ({ value: n, label: `${n}x` }))} value={zoom} onChange={setZoom} />
+          </Field>
+
           <Field label="Add">
             <div className="studio__grid">
               {KINDS.map((k) => (
@@ -456,7 +467,7 @@ export function Studio() {
           )}
 
           <footer className="studio__hint">
-            Drag a component to move it. Arrow keys nudge it, Delete removes it. Edit locks components so they can be placed; Live lets you use them. Press H to hide or show these tools, and Cmd plus or minus to zoom the page.
+            Drag a component to move it. Arrow keys nudge it, Delete removes it. Edit locks components so they can be placed; Live lets you use them. Press H to hide or show these tools. Zoom draws everything larger and sharper, so record big instead of cropping in later.
             {items.length > 0 && (
               <button type="button" onClick={() => { setItems([]); setSelected(null); }}>Clear canvas</button>
             )}
