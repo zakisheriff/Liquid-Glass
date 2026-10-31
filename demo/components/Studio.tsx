@@ -40,7 +40,7 @@ const DEFAULTS: Record<Kind, Cfg> = {
   tabbar: { count: 4, labels: true, tab: 0, strength: 5 },
   segmented: { count: 3, small: false, index: 0, strength: 5 },
   slider: { thumb: true, value: 60, strength: 5 },
-  button: { label: 'Continue', variant: 'filled', size: 'md', tint: '#0a84ff', icon: 'none', strength: 5 },
+  button: { label: 'Continue', variant: 'glass', size: 'md', tint: '#0a84ff', icon: 'none', strength: 5 },
   search: { placeholder: 'Search', value: '', strength: 5 },
   card: { title: 'Made of glass', text: 'Cards, controls and sheets, all using the same material.', strength: 5 },
   menu: { picked: -1 },
@@ -380,7 +380,9 @@ export function Studio() {
     <div className="studio" data-theme={theme} style={{ background }}>
       <div className="studio__canvas" onPointerDown={(e) => e.target === e.currentTarget && setSelected(null)}>
         {items.map((item) => (
-          <div key={item.id} className="studio__item" style={{ left: `calc(50% + ${item.x}px)`, top: `calc(50% + ${item.y}px)` }}>
+          // Keyed by theme: a theme change rebuilds the glass from scratch, so no
+          // layer can keep painting the old appearance.
+          <div key={`${item.id}-${theme}`} className="studio__item" style={{ left: `calc(50% + ${item.x}px)`, top: `calc(50% + ${item.y}px)` }}>
             <div className="studio__body">
               <Body item={item} patch={(cfg) => patch(item.id, cfg)} />
               {editing && (
