@@ -26,8 +26,8 @@ const ANSWER_ENGINES = [
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      { userAgent: '*', allow: '/' },
-      { userAgent: ANSWER_ENGINES, allow: '/' },
+      { userAgent: '*', allow: '/', disallow: '/studio' },
+      { userAgent: ANSWER_ENGINES, allow: '/', disallow: '/studio' },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
     host: SITE_URL,
