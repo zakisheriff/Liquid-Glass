@@ -877,7 +877,7 @@ html[data-morph] .hero__title-text[data-docked] {
 /* The phone dock stays full size while its content scrolls. */
 .device__bottom {
   --gap: 10px;
-  --bar: 62px;
+  --bar: 68px;
   --full: 100%;
   position: absolute;
   left: 14px;
@@ -938,7 +938,7 @@ html[data-morph] .hero__title-text[data-docked] {
 
 /* Keep the three-tab tile's proportions when the mobile bar gets shorter. */
 .mock-app .device__bottom {
-  width: min(calc(var(--bar) * 258 / 62), calc(100% - 28px));
+  width: min(calc(var(--bar) * 258 / 68), calc(100% - 28px));
   left: 50%;
   right: auto;
   bottom: 26px;
@@ -2552,7 +2552,7 @@ html[data-morph] .hero__title-text[data-docked] {
 }
 
 .playground__dock-search.lg-button {
-  --lg-h: 62px;
+  --lg-h: 68px;
   flex: none;
 }
 
