@@ -88,16 +88,11 @@ function container(): SVGDefsElement {
   return defs;
 }
 
-/**
- * Only Chromium runs SVG filters inside `backdrop-filter`, and only desktop
- * GPUs carry it: it re-runs over the live backdrop every frame, which holds
- * even flagship Android phones near 30fps. Android takes the path iPhones do
- * (lenses refract a live copy, resting glass keeps blur and rim).
- */
+/** Only Chromium runs SVG filters inside `backdrop-filter`. */
 export function canRefractBackdrop(): boolean {
   if (typeof navigator === 'undefined') return false;
   const ua = navigator.userAgent;
-  return /Chrom(e|ium)\/|Edg\//.test(ua) && !/CriOS|FxiOS|EdgiOS|Android/.test(ua);
+  return /Chrom(e|ium)\/|Edg\//.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua);
 }
 
 /** Lateral shift (px) for light leaving the bevel, sampled across its width. */

@@ -60,8 +60,8 @@ export function LensTrack({
       spread: tabbar ? 0.3 : 0.16,
       contentZoom: zoom,
       copied: true,
-      swell: tabbar ? 12 : 16,
-      // The tab bar holds its place; only the segmented control gives.
+      swell: tabbar ? 8 : 14,
+      // The tab bar never stretches or moves up and down.
       pull: !tabbar,
     },
   );

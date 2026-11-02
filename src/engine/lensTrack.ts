@@ -13,17 +13,10 @@ import { haptic } from './haptics';
 
 /** Finger-following feel for the bar's pull, as on buttons. */
 const FOLLOW = springFrom(0.2, 0.82);
-/** How far the bar can draw out toward the finger, as a share of its height. */
-const PULL_REACH = 0.08;
-/** How hard it resists: the near edge moves this much per px of finger travel
- *  at first, then less and less. Low, so the bar feels heavy and held. */
-const PULL_GIVE = 0.15;
-/** The dragged lens: trails a fast finger a little, so it has speed to wobble with. */
-const DRAG = springFrom(0.14, 0.84);
-/** Its stretch: looser than the default jelly, so a quick flick or stop jiggles. */
-const WOBBLE = springFrom(0.34, 0.2);
-/** Landing in a slot: overshoots and rocks back once. */
-const LAND = springFrom(0.38, 0.6);
+/** A dragged lens's stretch: looser and further than the default jelly, so a
+ *  fast drag jiggles when it stops. Taps keep the standard feel. */
+const WOBBLE = springFrom(0.3, 0.24);
+const WOBBLE_REACH = 0.17;
 
 export interface LensTrackRefs {
   bar: React.RefObject<HTMLElement | null>;
@@ -50,8 +43,8 @@ export interface LensTrackOptions {
   copied?: boolean;
   /** How much the whole bar swells while touched (px on its long side). */
   swell: number;
-  /** Whether a vertical drag draws the bar out toward the finger. A tab bar
-   *  stays where it is; a segmented control gives a little. */
+  /** Whether a vertical drag stretches the bar toward the finger. Off for a
+   *  tab bar, which never moves up or down. */
   pull?: boolean;
 }
 
@@ -153,23 +146,19 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       if (!W || !H) return;
       const kx = ((slot + (W - slot) * lift) / W) * (1 + squash);
       const ky = ((height + (H - height) * lift) / H) * (1 - squash * 0.6);
+      const grow = 1 + (latest.current.swell / Math.max(bar.offsetWidth, 1)) * swell;
       // The bar is held by the finger like a button, but only vertically:
       // sideways drags move the lens, never the bar. Pulled up or down it
-      // draws out toward the finger: the near edge follows it, the far edge
-      // stays put, the press swell gives way to the stretch and it thins a
-      // little across (as measured on iOS 26 tab bars and segmented controls).
+      // leans a few px and draws out a little that way, thinning across.
       const pull = state.pull;
-      const h = Math.max(bar.offsetHeight, 1);
-      const reach = Math.abs(pull);
-      const taken = clamp(reach / (h * PULL_REACH), 0, 1);
-      const grow = 1 + (latest.current.swell / Math.max(bar.offsetWidth, 1)) * swell * (1 - taken * 0.85);
-      const lean = Math.sign(pull) * (reach / 2 + h * 0.03 * taken);
+      const ey = Math.abs(pull) / Math.max(bar.offsetHeight, 1);
       const transform = `translateX(${x}px) scale(${kx}, ${ky})`;
       lens.style.transform = transform;
       select.style.transform = `translateX(${x}px)`;
       lens.style.opacity = String(clamp(lift * 4, 0, 1));
-      shell.style.scale = `${grow * (1 - taken * 0.04)} ${grow + reach / h}`;
-      shell.style.translate = `0px ${lean}px`;
+      // A bar that doesn't pull only swells sideways: it never moves up or down.
+      shell.style.scale = latest.current.pull === false ? `${grow} 1` : `${grow * (1 - ey * 0.15)} ${grow * (1 + ey * 0.5)}`;
+      shell.style.translate = `0px ${pull / 2}px`;
       lens.style.setProperty('--lg-lift', String(clamp(lift, 0, 1)));
       bar.style.setProperty('--lg-lift', String(clamp(lift, 0, 1)));
       // Paint a true capsule over each original glyph. A single horizontal
@@ -229,13 +218,16 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
 
     // Travel stretches the droplet along its path, more the faster it goes,
     // and it jiggles back to round when the drag slows or stops.
+    // Set while a drag moves the lens (and until it lands): only then does
+    // it get the looser wobble.
+    let dragging = false;
     const jelly = createJelly((value) => {
       state.squash = value;
       paint();
-    }, 0.2, 1200, WOBBLE);
-    const x = createSpring(current * slot, LAND, (value, velocity) => {
+    }, 0.13, 1600);
+    const x = createSpring(current * slot, SPRINGS.snap, (value, velocity) => {
       state.x = value;
-      jelly.feed(velocity);
+      jelly.feed(velocity, dragging ? WOBBLE_REACH : undefined);
       paint();
     });
     const lift = createSpring(0, SPRINGS.lift, (value) => {
@@ -251,13 +243,11 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       paint();
     });
     const pull = (dy: number) => {
-      if (!latest.current.pull) return;
-      // A heavy rubber band: a firm drag only draws the bar out a few px, and
-      // it never slides away from where it sits.
-      // Finger travel is in screen px; the bar may be scaled or zoomed.
-      const toLayout = gesture ? bar.offsetHeight / Math.max(1, gesture.box.height) : 1;
+      if (latest.current.pull === false) return;
+      // Saturating reach (rubber band): a long drag barely adds to it, so the
+      // bar gives like a droplet held in place and never slides away.
       pullY.tune(FOLLOW);
-      pullY.set(rubberband(dy * toLayout, bar.offsetHeight * PULL_REACH, PULL_GIVE));
+      pullY.set(rubberband(dy, Math.min(10, bar.offsetHeight * 0.2), 0.5));
     };
     const letGo = () => {
       pullY.tune(SPRINGS.release);
@@ -267,7 +257,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     const place = (index: number, instant = false) => {
       current = index;
       if (!gesture) {
-        x.tune(LAND);
+        x.tune(SPRINGS.snap);
         x.set(index * slot, instant);
       }
     };
@@ -300,6 +290,8 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       if (index < 0) return;
       clearTimeout(dropTimer);
       measure();
+      dragging = false;
+      jelly.tune(SPRINGS.jelly);
       const box = bar.getBoundingClientRect();
       gesture = { id: event.pointerId, startX: event.clientX, startY: event.clientY, anchor: index * slot, moved: false, box, hovered: index, startedAt: performance.now() };
       suppressClick = false;
@@ -313,7 +305,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       swell.tune(SPRINGS.press);
       swell.set(1);
       // The lens slides out of the old selection toward the finger.
-      x.tune(LAND);
+      x.tune(SPRINGS.snap);
       x.set(index * slot);
       paint();
     };
@@ -332,7 +324,11 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       pull(event.clientY - gesture.startY);
       if (!gesture.moved) return;
       const at = position(event.clientX);
-      x.tune(DRAG);
+      if (!dragging) {
+        dragging = true;
+        jelly.tune(WOBBLE);
+      }
+      x.tune(SPRINGS.drag);
       x.set(at);
       const hovered = clamp(Math.round(at / slot), 0, latest.current.count - 1);
       if (hovered !== gesture.hovered) {
@@ -364,7 +360,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       swell.tune(SPRINGS.release);
       swell.set(0);
       letGo();
-      x.tune(LAND);
+      x.tune(SPRINGS.snap);
       if (commit && (moved || inside)) {
         suppressClick = true;
         current = index;
@@ -394,7 +390,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       swell.tune(SPRINGS.release);
       swell.set(0);
       letGo();
-      x.tune(LAND);
+      x.tune(SPRINGS.snap);
       x.set(current * slot);
     };
 

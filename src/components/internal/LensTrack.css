@@ -161,6 +161,8 @@
 /* ------------------------------------------------------------------ */
 
 .lg-track--tabbar {
+  /* Room above the icon and below the label inside the selection pill. */
+  --lg-item-h: 60px;
   --lg-navigation-fill: var(--lg-fill);
   --lg-selection-lens-fill: rgb(255 255 255 / 0.09);
   --lg-selection-lens-edge: rgb(255 255 255 / 0.25);
@@ -170,6 +172,12 @@
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.01em;
+}
+
+/* The label's line box leaves empty space under its letters, so an icon over
+   a label sits low when the boxes are centred: lift it to centre the ink. */
+.lg-track--tabbar:not(.lg-track--labels-only, .lg-track--icons-only) .lg-track__item {
+  padding-bottom: 3px;
 }
 
 .lg-track--tabbar .lg-nav__icon {
