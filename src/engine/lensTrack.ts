@@ -44,6 +44,9 @@ export interface LensTrackOptions {
   copied?: boolean;
   /** How much the whole bar swells while touched (px on its long side). */
   swell: number;
+  /** Whether a vertical drag draws the bar out toward the finger. A tab bar
+   *  stays where it is; a segmented control gives a little. */
+  pull?: boolean;
 }
 
 export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
@@ -242,6 +245,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       paint();
     });
     const pull = (dy: number) => {
+      if (!latest.current.pull) return;
       // A heavy rubber band: a firm drag only draws the bar out a few px, and
       // it never slides away from where it sits.
       // Finger travel is in screen px; the bar may be scaled or zoomed.

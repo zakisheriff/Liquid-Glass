@@ -61,6 +61,8 @@ export function LensTrack({
       contentZoom: zoom,
       copied: true,
       swell: tabbar ? 12 : 16,
+      // The tab bar holds its place; only the segmented control gives.
+      pull: !tabbar,
     },
   );
 
