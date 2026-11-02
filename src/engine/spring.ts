@@ -187,8 +187,8 @@ export const SPRINGS = {
  * The value is positive when stretched along the path, negative when the
  * rebound briefly makes it narrower and taller.
  */
-export function createJelly(onUpdate: (stretch: number) => void, max: number, speed: number) {
-  const spring = createSpring(0, SPRINGS.jelly, (value) => onUpdate(value));
+export function createJelly(onUpdate: (stretch: number) => void, max: number, speed: number, config = SPRINGS.jelly) {
+  const spring = createSpring(0, config, (value) => onUpdate(value));
   return {
     feed(velocity: number) {
       spring.set(max * Math.tanh(Math.abs(velocity) / speed));

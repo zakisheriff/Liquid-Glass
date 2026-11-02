@@ -18,6 +18,12 @@ const PULL_REACH = 0.08;
 /** How hard it resists: the near edge moves this much per px of finger travel
  *  at first, then less and less. Low, so the bar feels heavy and held. */
 const PULL_GIVE = 0.15;
+/** The dragged lens: trails a fast finger a little, so it has speed to wobble with. */
+const DRAG = springFrom(0.14, 0.84);
+/** Its stretch: looser than the default jelly, so a quick flick or stop jiggles. */
+const WOBBLE = springFrom(0.34, 0.2);
+/** Landing in a slot: overshoots and rocks back once. */
+const LAND = springFrom(0.38, 0.6);
 
 export interface LensTrackRefs {
   bar: React.RefObject<HTMLElement | null>;
@@ -226,8 +232,8 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     const jelly = createJelly((value) => {
       state.squash = value;
       paint();
-    }, 0.13, 1600);
-    const x = createSpring(current * slot, SPRINGS.snap, (value, velocity) => {
+    }, 0.2, 1200, WOBBLE);
+    const x = createSpring(current * slot, LAND, (value, velocity) => {
       state.x = value;
       jelly.feed(velocity);
       paint();
@@ -261,7 +267,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
     const place = (index: number, instant = false) => {
       current = index;
       if (!gesture) {
-        x.tune(SPRINGS.snap);
+        x.tune(LAND);
         x.set(index * slot, instant);
       }
     };
@@ -307,7 +313,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       swell.tune(SPRINGS.press);
       swell.set(1);
       // The lens slides out of the old selection toward the finger.
-      x.tune(SPRINGS.snap);
+      x.tune(LAND);
       x.set(index * slot);
       paint();
     };
@@ -326,7 +332,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       pull(event.clientY - gesture.startY);
       if (!gesture.moved) return;
       const at = position(event.clientX);
-      x.tune(SPRINGS.drag);
+      x.tune(DRAG);
       x.set(at);
       const hovered = clamp(Math.round(at / slot), 0, latest.current.count - 1);
       if (hovered !== gesture.hovered) {
@@ -358,7 +364,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       swell.tune(SPRINGS.release);
       swell.set(0);
       letGo();
-      x.tune(SPRINGS.snap);
+      x.tune(LAND);
       if (commit && (moved || inside)) {
         suppressClick = true;
         current = index;
@@ -388,7 +394,7 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       swell.tune(SPRINGS.release);
       swell.set(0);
       letGo();
-      x.tune(SPRINGS.snap);
+      x.tune(LAND);
       x.set(current * slot);
     };
 
