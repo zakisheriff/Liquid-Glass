@@ -14,7 +14,10 @@ import { haptic } from './haptics';
 /** Finger-following feel for the bar's pull, as on buttons. */
 const FOLLOW = springFrom(0.2, 0.82);
 /** How far the bar can draw out toward the finger, as a share of its height. */
-const PULL_REACH = 0.22;
+const PULL_REACH = 0.08;
+/** How hard it resists: the near edge moves this much per px of finger travel
+ *  at first, then less and less. Low, so the bar feels heavy and held. */
+const PULL_GIVE = 0.15;
 
 export interface LensTrackRefs {
   bar: React.RefObject<HTMLElement | null>;
@@ -239,12 +242,12 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       paint();
     });
     const pull = (dy: number) => {
-      // The near edge tracks the finger almost 1:1 at first, then saturates
-      // (rubber band), so the bar answers a small drag yet never slides away.
+      // A heavy rubber band: a firm drag only draws the bar out a few px, and
+      // it never slides away from where it sits.
       // Finger travel is in screen px; the bar may be scaled or zoomed.
       const toLayout = gesture ? bar.offsetHeight / Math.max(1, gesture.box.height) : 1;
       pullY.tune(FOLLOW);
-      pullY.set(rubberband(dy * toLayout, bar.offsetHeight * PULL_REACH, 1));
+      pullY.set(rubberband(dy * toLayout, bar.offsetHeight * PULL_REACH, PULL_GIVE));
     };
     const letGo = () => {
       pullY.tune(SPRINGS.release);
