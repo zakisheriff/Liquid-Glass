@@ -13,6 +13,8 @@ import { haptic } from './haptics';
 
 /** Finger-following feel for the bar's pull, as on buttons. */
 const FOLLOW = springFrom(0.2, 0.82);
+/** How far the bar can draw out toward the finger, as a share of its height. */
+const PULL_REACH = 0.22;
 
 export interface LensTrackRefs {
   bar: React.RefObject<HTMLElement | null>;
@@ -139,18 +141,23 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       if (!W || !H) return;
       const kx = ((slot + (W - slot) * lift) / W) * (1 + squash);
       const ky = ((height + (H - height) * lift) / H) * (1 - squash * 0.6);
-      const grow = 1 + (latest.current.swell / Math.max(bar.offsetWidth, 1)) * swell;
       // The bar is held by the finger like a button, but only vertically:
       // sideways drags move the lens, never the bar. Pulled up or down it
-      // leans a few px and draws out a little that way, thinning across.
+      // draws out toward the finger: the near edge follows it, the far edge
+      // stays put, the press swell gives way to the stretch and it thins a
+      // little across (as measured on iOS 26 tab bars and segmented controls).
       const pull = state.pull;
-      const ey = Math.abs(pull) / Math.max(bar.offsetHeight, 1);
+      const h = Math.max(bar.offsetHeight, 1);
+      const reach = Math.abs(pull);
+      const taken = clamp(reach / (h * PULL_REACH), 0, 1);
+      const grow = 1 + (latest.current.swell / Math.max(bar.offsetWidth, 1)) * swell * (1 - taken * 0.85);
+      const lean = Math.sign(pull) * (reach / 2 + h * 0.03 * taken);
       const transform = `translateX(${x}px) scale(${kx}, ${ky})`;
       lens.style.transform = transform;
       select.style.transform = `translateX(${x}px)`;
       lens.style.opacity = String(clamp(lift * 4, 0, 1));
-      shell.style.scale = `${grow * (1 - ey * 0.15)} ${grow * (1 + ey * 0.5)}`;
-      shell.style.translate = `0px ${pull / 2}px`;
+      shell.style.scale = `${grow * (1 - taken * 0.04)} ${grow + reach / h}`;
+      shell.style.translate = `0px ${lean}px`;
       lens.style.setProperty('--lg-lift', String(clamp(lift, 0, 1)));
       bar.style.setProperty('--lg-lift', String(clamp(lift, 0, 1)));
       // Paint a true capsule over each original glyph. A single horizontal
@@ -232,10 +239,12 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       paint();
     });
     const pull = (dy: number) => {
-      // Saturating reach (rubber band): a long drag barely adds to it, so the
-      // bar gives like a droplet held in place and never slides away.
+      // The near edge tracks the finger almost 1:1 at first, then saturates
+      // (rubber band), so the bar answers a small drag yet never slides away.
+      // Finger travel is in screen px; the bar may be scaled or zoomed.
+      const toLayout = gesture ? bar.offsetHeight / Math.max(1, gesture.box.height) : 1;
       pullY.tune(FOLLOW);
-      pullY.set(rubberband(dy, Math.min(10, bar.offsetHeight * 0.2), 0.5));
+      pullY.set(rubberband(dy * toLayout, bar.offsetHeight * PULL_REACH, 1));
     };
     const letGo = () => {
       pullY.tune(SPRINGS.release);
