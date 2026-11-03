@@ -18,6 +18,9 @@
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
+  /* As a link (`href`): no underline, same box as the button. */
+  text-decoration: none;
+  box-sizing: border-box;
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;

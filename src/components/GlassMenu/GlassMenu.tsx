@@ -9,7 +9,11 @@ export interface GlassMenuItem {
   label: React.ReactNode;
   /** Leading icon. */
   icon?: React.ReactNode;
-  /** Shows a trailing checkmark. */
+  /**
+   * Shows a trailing checkmark. Set it (true or false) on every item of a
+   * pick-one menu: those items become `menuitemradio` with `aria-checked`,
+   * so screen readers announce which one is selected.
+   */
   checked?: boolean;
   /** Red label for irreversible actions. */
   destructive?: boolean;
@@ -185,7 +189,7 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
       },
     } as typeof s;
     spring.current.set(1);
-    content.querySelector<HTMLElement>('[role="menuitem"]:not([disabled])')?.focus({ preventScroll: true });
+    content.querySelector<HTMLElement>('[role^="menuitem"]:not([disabled])')?.focus({ preventScroll: true });
     return () => {
       s.stop();
       fade.stop();
@@ -304,7 +308,9 @@ export const GlassMenu: React.FC<GlassMenuProps> = ({
               <button
                 key={index}
                 type="button"
-                role="menuitem"
+                // A pickable item (one with `checked` set) reports its state.
+                role={item.checked === undefined ? 'menuitem' : 'menuitemradio'}
+                aria-checked={item.checked === undefined ? undefined : item.checked}
                 className="lg-menu__item"
                 data-destructive={item.destructive ? '' : undefined}
                 data-index={index}

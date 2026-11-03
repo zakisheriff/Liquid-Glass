@@ -26,6 +26,13 @@ export interface GlassButtonProps extends React.ButtonHTMLAttributes<HTMLButtonE
   destructive?: boolean;
   /** Leading icon. With no children the button becomes a circle. */
   icon?: React.ReactNode;
+  /**
+   * Renders a real link (`<a>`) instead of a button, so it opens in a new tab
+   * with cmd/ctrl-click and shows its URL on hover. Use with `target`/`rel`.
+   */
+  href?: string;
+  target?: string;
+  rel?: string;
   children?: React.ReactNode;
 }
 
@@ -44,6 +51,9 @@ export const GlassButton = React.forwardRef<HTMLButtonElement, GlassButtonProps>
       style,
       children,
       type = 'button',
+      href,
+      target,
+      rel,
       onPointerDown,
       ...rest
     },
@@ -70,10 +80,14 @@ export const GlassButton = React.forwardRef<HTMLButtonElement, GlassButtonProps>
       .filter(Boolean)
       .join(' ');
 
+    // A link keeps the same look and press, but is an anchor for the browser.
+    const Element = (href != null ? 'a' : 'button') as 'button';
+    const link = href != null ? ({ href, target, rel: rel ?? (target === '_blank' ? 'noopener noreferrer' : undefined) } as object) : { type };
+
     return (
-      <button
+      <Element
         ref={ref}
-        type={type}
+        {...link}
         className={classes}
         data-liquid-glass=""
         data-icon-only={iconOnly ? '' : undefined}
@@ -88,7 +102,7 @@ export const GlassButton = React.forwardRef<HTMLButtonElement, GlassButtonProps>
       >
         {icon != null && <span className="lg-button__icon">{icon}</span>}
         {!iconOnly && children != null && <span className="lg-button__label">{children}</span>}
-      </button>
+      </Element>
     );
   },
 );

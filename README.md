@@ -120,6 +120,14 @@ import { GlassButton } from '@zakisheriff/liquid-glass';
 <GlassButton size="lg">Large</GlassButton>   {/* 52px */}
 ```
 
+**As a link**
+
+```tsx
+{/* Renders an <a>: opens in a new tab with cmd/ctrl-click, shows its URL on hover */}
+<GlassButton href="/docs">Documentation</GlassButton>
+<GlassButton href="https://github.com/you/repo" target="_blank">GitHub</GlassButton>
+```
+
 **Handling clicks**
 
 ```tsx
@@ -372,6 +380,8 @@ import { GlassMenu } from '@zakisheriff/liquid-glass';
   }))}
 />
 ```
+
+Setting `checked` (true or false) on each item makes them `menuitemradio` with `aria-checked`, so screen readers announce which one is selected.
 
 **Placement and size**
 
