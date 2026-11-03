@@ -132,11 +132,16 @@ export function Nav() {
               {link.label}
             </a>
           ))}
-          <a href="https://github.com/zakisheriff/Liquid-Glass" target="_blank" rel="noreferrer" aria-label="GitHub">
-            <GitHub size={16} />
-          </a>
         </nav>
         <div className="nav__actions">
+          <GlassButton
+            size="sm"
+            className="nav__github"
+            aria-label="GitHub"
+            icon={<GitHub size={18} />}
+            href="https://github.com/zakisheriff/Liquid-Glass"
+            target="_blank"
+          />
           <GlassButton
             size="sm"
             className="nav__theme"
