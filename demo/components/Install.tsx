@@ -67,6 +67,38 @@ function useCopy() {
   return { copied, copy };
 }
 
+/** The npm install command with a copy button. */
+export function InstallCommand({ className }: { className?: string }) {
+  const { copied, copy } = useCopy();
+  return (
+    <div className={['install__command', className].filter(Boolean).join(' ')}>
+      <code>{COMMAND}</code>
+      <GlassButton
+        size="sm"
+        icon={copied === 'cmd' ? <Check size={16} /> : <Copy size={16} />}
+        aria-label={copied === 'cmd' ? 'Copied' : 'Copy install command'}
+        onClick={() => copy('cmd', COMMAND)}
+      />
+    </div>
+  );
+}
+
+/** Copies the AI agent prompt in one tap. */
+export function CopyPrompt({ className }: { className?: string }) {
+  const { copied, copy } = useCopy();
+  return (
+    <GlassButton
+      className={className}
+      variant={copied === 'prompt' ? 'tinted' : 'glass'}
+      icon={copied === 'prompt' ? <Check size={16} /> : <Copy size={16} />}
+      title="Paste it into Claude Code, Cursor, Codex or Copilot and it adds Liquid Glass to your app"
+      onClick={() => copy('prompt', PROMPT)}
+    >
+      {copied === 'prompt' ? 'Copied, paste it into your AI agent' : 'Copy setup prompt for AI agents'}
+    </GlassButton>
+  );
+}
+
 export function Install() {
   const { copied, copy } = useCopy();
 
@@ -75,22 +107,14 @@ export function Install() {
       <header className="section-head">
         <h2>Get Started</h2>
       </header>
-      <div className="install__command">
-        <code>{COMMAND}</code>
-        <GlassButton
-          size="sm"
-          icon={copied === 'cmd' ? <Check size={16} /> : <Copy size={16} />}
-          aria-label={copied === 'cmd' ? 'Copied' : 'Copy install command'}
-          onClick={() => copy('cmd', COMMAND)}
-        />
-      </div>
+      <InstallCommand />
       <CodeBlock className="install__snippet" code={SNIPPET} label="example component" />
       <div className="install__links">
         <a className="install__docs" href="/docs">Documentation →</a>
-        <GlassButton onClick={() => window.open('https://www.npmjs.com/package/@zakisheriff/liquid-glass', '_blank')}>
+        <GlassButton href="https://www.npmjs.com/package/@zakisheriff/liquid-glass" target="_blank">
           npm
         </GlassButton>
-        <GlassButton onClick={() => window.open('https://github.com/zakisheriff/Liquid-Glass', '_blank')}>GitHub</GlassButton>
+        <GlassButton href="https://github.com/zakisheriff/Liquid-Glass" target="_blank">GitHub</GlassButton>
       </div>
 
       <div className="agent">

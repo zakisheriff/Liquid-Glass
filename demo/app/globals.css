@@ -419,9 +419,9 @@ html[data-morph] .hero__title-text[data-docked] {
   z-index: 60;
   margin: 0;
   font-family: var(--display);
-  font-size: clamp(48px, 8vw, 96px);
+  font-size: clamp(36px, 5.2vw, 64px);
   font-weight: 600;
-  line-height: 1.05;
+  line-height: 1.08;
   letter-spacing: -0.015em;
 }
 
@@ -438,6 +438,32 @@ html[data-morph] .hero__title-text[data-docked] {
   font-weight: 400;
   letter-spacing: 0.004em;
   color: var(--muted);
+}
+
+.hero__title-by {
+  display: block;
+}
+
+.hero__title-by a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.hero__lede {
+  max-width: 60em;
+  margin: 10px auto 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.hero__install {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 28px;
 }
 
 .install__docs {
@@ -1863,6 +1889,15 @@ html[data-morph] .hero__title-text[data-docked] {
 }
 
 /* Live options under each tile title. */
+/* Top left of a preview, opposite its light/dark toggle. */
+.stage > .copy-code {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 6;
+  width: auto !important;
+}
+
 .tile__options {
   display: flex;
   flex-wrap: wrap;

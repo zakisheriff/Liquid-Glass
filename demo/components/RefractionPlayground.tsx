@@ -57,7 +57,7 @@ export function RefractionPlayground() {
     <div className="playground">
       <div className="playground__search">
         <GlassInput type="search" placeholder="Search" value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Playground search" />
-        <GlassSegmented options={['Design', 'Code', 'Preview']} value={segment} onChange={setSegment} aria-label="Playground segments" />
+        <GlassSegmented options={['Recent', 'Shared', 'Starred']} value={segment} onChange={setSegment} aria-label="Playground segments" />
       </div>
       <GlassCard className="playground__panel" padding="16px 18px" radius="24px">
         <h3>Buttons</h3>

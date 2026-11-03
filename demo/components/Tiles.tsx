@@ -18,12 +18,14 @@ import { AppDock } from './AppDock';
 import { PreviewThemeContext, PreviewThemeToggle, usePreviewMode } from './PreviewTheme';
 import { SheetFrame } from './SheetFrame';
 import { PreviewMorphContext, usePreviewChange, usePreviewMorph } from './PreviewMorph';
+import { CopyCode } from './CopyCode';
 
 function Tile({
   title,
   wide,
   dark,
   options,
+  code,
   children,
 }: {
   title: string;
@@ -31,6 +33,8 @@ function Tile({
   dark?: boolean;
   /** Live options shown under the title. */
   options?: React.ReactNode;
+  /** JSX for the demo as currently configured, behind a Copy code button. */
+  code?: string;
   children: React.ReactNode;
 }) {
   const [mode, setMode] = usePreviewMode();
@@ -48,7 +52,9 @@ function Tile({
         return cloneElement(child, {
           className: `${child.props.className} preview-scope`,
           'data-theme': mode,
-          children: <><PreviewThemeToggle label={title} mode={mode} onChange={setMode} />{child.props.children}</>,
+          // The preview's own corner controls: copy its code (top left) and
+          // its light/dark toggle (top right).
+          children: <>{code && <CopyCode code={code} label={`${title} code`} />}<PreviewThemeToggle label={title} mode={mode} onChange={setMode} />{child.props.children}</>,
         });
       })}</div>
     </article>
@@ -89,11 +95,48 @@ const TINTS = [
 type Tint = (typeof TINTS)[number]['value'];
 const tintColor = (tint: Tint) => TINTS.find((t) => t.value === tint)?.color;
 
+const IMPORT = (names: string[]) => `'use client';
+
+import { useState } from 'react';
+import { ${names.join(', ')} } from '@zakisheriff/liquid-glass';
+import '@zakisheriff/liquid-glass/styles.css';
+`;
+
+const attr = (name: string, value: string | undefined) => (value ? ` ${name}="${value}"` : '');
+/** 'View as Gallery' → 'ViewAsGalleryIcon': a placeholder for the reader's own icon. */
+const iconName = (label: string) => `${label.split(/\W+/).map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join('')}Icon`;
+
+function switchCode(tint: Tint) {
+  return `${IMPORT(['GlassCard', 'GlassSwitch'])}
+export function Settings() {
+  const [wifi, setWifi] = useState(true);
+  const [data, setData] = useState(false);
+  const [live, setLive] = useState(true);
+
+  return (
+    <GlassCard padding="6px 18px" radius="26px">
+      <label>
+        Wi-Fi
+        <GlassSwitch checked={wifi} onChange={setWifi}${attr('tint', tintColor(tint))} />
+      </label>
+      <label>
+        Use Mobile Data
+        <GlassSwitch checked={data} onChange={setData}${attr('tint', tintColor(tint))} />
+      </label>
+      <label>
+        Live Activities
+        <GlassSwitch checked={live} onChange={setLive}${attr('tint', tintColor(tint))} />
+      </label>
+    </GlassCard>
+  );
+}`;
+}
+
 function SwitchTile() {
   const [rows, setRows] = useState([true, false, true]);
   const [tint, setTint] = useState<Tint>('green');
   return (
-    <Tile title="Switch" options={<Choice label="Tint" options={TINTS.map(({ value, label }) => ({ value, label }))} value={tint} onChange={setTint} />}>
+    <Tile title="Switch" code={switchCode(tint)} options={<Choice label="Tint" options={TINTS.map(({ value, label }) => ({ value, label }))} value={tint} onChange={setTint} />}>
       <div className="stage stage--sunset">
         <GlassCard className="stage__list" padding="6px 18px" radius="26px">
           {['Wi-Fi', 'Use Mobile Data', 'Live Activities'].map((label, i) => (
@@ -123,6 +166,27 @@ const TAB_POOL = [
 ];
 const SEARCH_TAB = { label: 'Search', icon: <Search /> };
 
+function tabCode(labels: string[], split: boolean, showLabels: boolean) {
+  const items = labels.map((label) => `  { label: '${label}', icon: <${iconName(label)} /> },`).join('\n');
+  const nav = `<GlassNav items={tabs} activeIndex={tab} onChange={setTab}${showLabels ? '' : ' showLabels={false}'} aria-label="Tabs" />`;
+  return `${IMPORT(split ? ['GlassButton', 'GlassNav'] : ['GlassNav'])}
+// Use your own icons.
+const tabs = [
+${items}
+];
+
+export function TabBar() {
+  const [tab, setTab] = useState(0);
+
+  return ${split ? `(
+    <div style={{ display: 'flex', gap: 10 }}>
+      ${nav}
+      <GlassButton icon={<SearchIcon />} aria-label="Search" />
+    </div>
+  )` : nav};
+}`;
+}
+
 function TabTile() {
   const [tab, setTab] = useState(0);
   const [count, setCount] = useState(4);
@@ -136,6 +200,7 @@ function TabTile() {
   return (
     <Tile
       title="Tab Bar"
+      code={tabCode(items.map((item) => item.label), split, labels === 'show')}
       options={<>
         <Choice label="Tabs" options={[2, 3, 4, 5, 6]} value={count} onChange={setCount} />
         <Choice label="Layout" options={[{ value: 'bar', label: 'Bar' }, { value: 'split', label: 'Tabs + Button' }]} value={layout} onChange={setLayout} />
@@ -159,14 +224,31 @@ function TabTile() {
 
 const RANGES = ['Day', 'Week', 'Month', 'Year', 'All'];
 
+function segmentCode(options: string[], size: 'md' | 'sm', selected: number) {
+  return `${IMPORT(['GlassSegmented'])}
+export function Range() {
+  const [range, setRange] = useState(${selected});
+
+  return (
+    <GlassSegmented
+      options={[${options.map((o) => `'${o}'`).join(', ')}]}
+      value={range}
+      onChange={setRange}${size === 'sm' ? `
+      size="sm"` : ''}
+      aria-label="Range"
+    />
+  );
+}`;
+}
+
 function SegmentTile() {
-  const [value, setValue] = useState(0);
   const [size, setSize] = useState(1);
   const [count, setCount] = useState(4);
   const [scale, setScale] = useState<'md' | 'sm'>('md');
   return (
     <Tile
       title="Segmented"
+      code={segmentCode(RANGES.slice(0, count), scale, Math.min(size, count - 1))}
       options={<>
         <Choice label="Segments" options={[2, 3, 4, 5]} value={count} onChange={setCount} />
         <Choice label="Size" options={[{ value: 'md', label: 'Regular' }, { value: 'sm', label: 'Small' }]} value={scale} onChange={setScale} />
@@ -174,7 +256,6 @@ function SegmentTile() {
     >
       <div className="stage stage--type">
         <div className="stage__column">
-          <GlassSegmented options={['Chat', 'Work']} value={value} onChange={setValue} size={scale} style={{ width: `${2 * (scale === 'sm' ? 64 : 72) + 8}px` }} aria-label="Mode" />
           <GlassSegmented options={RANGES.slice(0, count)} value={Math.min(size, count - 1)} onChange={setSize} size={scale} style={{ width: `${count * (scale === 'sm' ? 64 : 72) + 8}px` }} aria-label="Range" />
         </div>
       </div>
@@ -195,11 +276,29 @@ function PreviewSlider({ initialValue, onValue, ...props }: Omit<GlassSliderProp
   }} />;
 }
 
+function sliderCode(tint: Tint) {
+  return `${IMPORT(['GlassCard', 'GlassSlider'])}
+// Use your own icons.
+export function Mixer() {
+  const [display, setDisplay] = useState(64);
+  const [sound, setSound] = useState(38);
+  const [balance, setBalance] = useState(52);
+
+  return (
+    <GlassCard padding="20px" radius="28px">
+      <GlassSlider showThumb={false} value={display} onChange={setDisplay} icon={<SunIcon />} label="Display" />
+      <GlassSlider showThumb={false} value={sound} onChange={setSound} icon={<SpeakerIcon />} label="Sound" />
+      <GlassSlider value={balance} onChange={setBalance}${attr('tint', tint === 'green' ? '#30d158' : tintColor(tint))} aria-label="Balance" />
+    </GlassCard>
+  );
+}`;
+}
+
 function SliderTile() {
   const backdrop = useRef<HTMLDivElement>(null);
   const [tint, setTint] = useState<Tint>('blue');
   return (
-    <Tile title="Slider" options={<Choice label="Tint" options={TINTS.map(({ value, label }) => ({ value, label }))} value={tint} onChange={setTint} />}>
+    <Tile title="Slider" code={sliderCode(tint)} options={<Choice label="Tint" options={TINTS.map(({ value, label }) => ({ value, label }))} value={tint} onChange={setTint} />}>
       <div className="stage stage--aurora">
         <div ref={backdrop} className="stage__slider-backdrop" aria-hidden="true">
           <div className="stage__slider-art" />
@@ -216,6 +315,30 @@ function SliderTile() {
   );
 }
 
+function buttonCode(size: 'sm' | 'md' | 'lg') {
+  const sz = size === 'md' ? '' : ` size="${size}"`;
+  return `${IMPORT(['GlassButton'])}
+// Use your own icons.
+export function Buttons() {
+  const [liked, setLiked] = useState(false);
+
+  return (
+    <>
+      <GlassButton${sz} icon={<PlusIcon />} aria-label="Add" />
+      <GlassButton${sz} icon={liked ? <HeartFillIcon /> : <HeartIcon />} aria-label="Like" tint={liked ? '#ff375f' : undefined} onClick={() => setLiked(!liked)} />
+      <GlassButton${sz} icon={<ShareIcon />} aria-label="Share" />
+      <GlassButton${sz}>Glass</GlassButton>
+      <GlassButton${sz} variant="filled">Filled</GlassButton>
+      <GlassButton${sz} variant="tinted">Tinted</GlassButton>
+      <GlassButton${sz} variant="tinted-filled" tint="#af52de">Tinted filled</GlassButton>
+      <GlassButton${sz} variant="clear">Clear</GlassButton>
+      <GlassButton${sz} destructive>Destructive</GlassButton>
+      <GlassButton${sz} variant="filled" destructive>Destructive filled</GlassButton>
+    </>
+  );
+}`;
+}
+
 function ButtonTile() {
   const [liked, setLiked] = useState(false);
   const [size, setSize] = useState<'sm' | 'md' | 'lg'>('md');
@@ -223,6 +346,7 @@ function ButtonTile() {
   return (
     <Tile
       title="Buttons"
+      code={buttonCode(size)}
       options={<Choice label="Size" options={[{ value: 'sm', label: 'Small' }, { value: 'md', label: 'Medium' }, { value: 'lg', label: 'Large' }]} value={size} onChange={setSize} />}
     >
       <div className="stage stage--stripes">
@@ -261,10 +385,27 @@ function ButtonTile() {
   );
 }
 
+const SEARCH_CODE = `${IMPORT(['GlassInput'])}
+// Use your own icon.
+export function Search() {
+  const [query, setQuery] = useState('');
+
+  return (
+    <GlassInput
+      type="search"
+      placeholder="Search"
+      value={query}
+      onChange={(event) => setQuery(event.target.value)}
+      trailing={<MicIcon />}
+      aria-label="Search"
+    />
+  );
+}`;
+
 function SearchTile() {
   const [query, setQuery] = useState('');
   return (
-    <Tile title="Search">
+    <Tile title="Search" code={SEARCH_CODE}>
       <div className="stage stage--ocean">
         <div className="stage__search">
           <GlassInput
@@ -281,12 +422,37 @@ function SearchTile() {
   );
 }
 
+const SHEET_CODE = `${IMPORT(['GlassButton', 'GlassSheet', 'GlassSlider', 'GlassSwitch'])}
+export function NowPlaying() {
+  const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState(60);
+  const [notify, setNotify] = useState(true);
+
+  return (
+    <>
+      <GlassButton size="lg" variant="filled" onClick={() => setOpen(true)}>
+        Open Sheet
+      </GlassButton>
+      <GlassSheet open={open} onClose={() => setOpen(false)} detents={['medium', 'large']} aria-label="Now playing">
+        <h3>Bloom</h3>
+        <p>Iris Vale</p>
+        <GlassSlider value={position} onChange={setPosition} aria-label="Position" />
+        <label>
+          Notify me
+          <GlassSwitch checked={notify} onChange={setNotify} />
+        </label>
+        <GlassButton size="lg" onClick={() => setOpen(false)}>Done</GlassButton>
+      </GlassSheet>
+    </>
+  );
+}`;
+
 function SheetTile() {
   const [open, setOpen] = useState(false);
   const [notify, setNotify] = useState(true);
   const [rate, setRate] = useState(60);
   return (
-    <Tile title="Sheet">
+    <Tile title="Sheet" code={SHEET_CODE}>
       <div className="stage stage--candy" style={{ backgroundPosition: `center ${rate}%`, backgroundSize: 'auto 160%' }}>
         <GlassButton size="lg" variant="filled" onClick={() => setOpen(true)}>
           Open Sheet
@@ -325,6 +491,29 @@ const NOTES = [
   { title: 'Ideas', text: 'Glass widgets for the home screen', day: 'Mon' },
 ];
 
+function menuCode(labels: string[], align: 'start' | 'end') {
+  return `${IMPORT(['GlassMenu'])}
+// Use your own icons.
+export function NoteOptions() {
+  const [picked, setPicked] = useState('');
+
+  return (
+    <GlassMenu
+      icon={<EllipsisIcon />}
+      aria-label="Note options"${align === 'start' ? `
+      align="start"` : ''}
+      items={[
+${labels.map((l) => `        { label: '${l}', icon: <${iconName(l)} /> },`).join('\n')}
+      ].map((item) => ({
+        ...item,
+        checked: picked === item.label,
+        onSelect: () => setPicked(item.label),
+      }))}
+    />
+  );
+}`;
+}
+
 function MenuTile() {
   const [count, setCount] = useState(3);
   const [side, setSide] = useState<'end' | 'start'>('end');
@@ -334,6 +523,7 @@ function MenuTile() {
   return (
     <Tile
       title="Menu"
+      code={menuCode(MENU_ITEMS.slice(0, count).map((item) => item.label), side)}
       options={<>
         <Choice label="Items" options={[2, 3, 4, 5]} value={count} onChange={setCount} />
         <Choice label="Button" options={[{ value: 'start', label: 'Left' }, { value: 'end', label: 'Right' }]} value={side} onChange={setSide} />

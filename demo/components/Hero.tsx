@@ -6,6 +6,7 @@ import { Avatar, HomeFeed } from './HomeFeed';
 import { MockApp } from './MockApp';
 import { PreviewThemeContext, PreviewThemeControlsContext, usePreviewMode } from './PreviewTheme';
 import { Docs, GitHub, Heart, Npm } from './icons';
+import { CopyPrompt, InstallCommand } from './Install';
 
 /** Just the Dynamic Island: no clock or status icons on the mockup. */
 function Island() {
@@ -58,27 +59,34 @@ export function Hero() {
     <section className="hero" id="top">
       <div className="hero__copy">
         <h1 className="hero__title">
+          {/* Only "Liquid Glass" flies into the nav on scroll. */}
           <span id="hero-title" className="hero__title-text">
             Liquid Glass
+          </span>{' '}
+          for Website
+          <span className="hero__title-by">
+            by <a href="https://theatom.lk" target="_blank" rel="noreferrer">The Atom</a>
           </span>
         </h1>
+        <div className="hero__install">
+          <InstallCommand />
+          <CopyPrompt />
+        </div>
+        <p className="hero__lede">Apple-style liquid glass components for React and Next.js. About 32 KB gzipped, MIT licensed.</p>
         <div className="hero__ctas">
-          <GlassButton
-            variant="filled"
-            onClick={() => document.getElementById('install')?.scrollIntoView()}
-          >
+          <GlassButton variant="filled" href="#install">
             Get Started
           </GlassButton>
-          <GlassButton variant="tinted" tint="#a371f7" icon={<GitHub size={18} />} onClick={() => window.open('https://github.com/zakisheriff/Liquid-Glass', '_blank')}>
+          <GlassButton variant="tinted" tint="#a371f7" icon={<GitHub size={18} />} href="https://github.com/zakisheriff/Liquid-Glass" target="_blank">
             GitHub
           </GlassButton>
-          <GlassButton variant="tinted" tint="#e5484d" icon={<Npm size={16} />} onClick={() => window.open('https://www.npmjs.com/package/@zakisheriff/liquid-glass', '_blank')}>
+          <GlassButton variant="tinted" tint="#e5484d" icon={<Npm size={16} />} href="https://www.npmjs.com/package/@zakisheriff/liquid-glass" target="_blank">
             npm
           </GlassButton>
-          <GlassButton variant="tinted" icon={<Docs size={18} />} onClick={() => { window.location.href = '/docs'; }}>
+          <GlassButton variant="tinted" icon={<Docs size={18} />} href="/docs">
             Documentation
           </GlassButton>
-          <GlassButton variant="filled" tint="#ff375f" icon={<Heart size={18} />} aria-label="Support on Buy Me a Coffee" onClick={() => window.open(SUPPORT_URL, '_blank', 'noopener,noreferrer')}>
+          <GlassButton variant="filled" tint="#ff375f" icon={<Heart size={18} />} aria-label="Support on Buy Me a Coffee" href={SUPPORT_URL} target="_blank">
             Support
           </GlassButton>
         </div>

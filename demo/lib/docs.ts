@@ -13,10 +13,10 @@ export default function Settings() {
 }`;
 
 export const COMPONENTS = [
-  { name: 'GlassButton', description: 'Glass, clear, tinted and filled buttons, including icon-only and destructive variants.', props: 'variant, size, icon, tint, destructive, onClick' },
+  { name: 'GlassButton', description: 'Glass, clear, tinted and filled buttons, including icon-only and destructive variants. Pass href to render a real link.', props: 'variant, size, icon, tint, destructive, href, target, onClick' },
   { name: 'GlassSwitch', description: 'A toggle with a glass thumb that lifts on press and supports dragging.', props: 'checked, defaultChecked, onChange, tint, disabled' },
   { name: 'GlassNav', description: 'A tab bar with a draggable glass selection and keyboard navigation. Icons with labels, or icons only.', props: 'items: { label, icon? }[], activeIndex, onChange, showLabels' },
-  { name: 'GlassMenu', description: 'A pull-down menu that grows out of its glass button and folds back into it. Slide across the items to pick one.', props: 'icon, items: { label, icon?, checked?, destructive?, onSelect? }[], align, aria-label' },
+  { name: 'GlassMenu', description: 'A pull-down menu that grows out of its glass button and folds back into it. Slide across the items to pick one. Items with checked set are announced as a pick-one list.', props: 'icon, items: { label, icon?, checked?, destructive?, onSelect? }[], align, aria-label' },
   { name: 'GlassSegmented', description: 'Segmented choices with a glass lens that follows the pointer.', props: 'options, value, onChange, size' },
   { name: 'GlassSlider', description: 'A continuous slider with a lifted lens thumb, or a Control Center-style block.', props: 'value, min, max, step, onChange, showThumb, icon, label' },
   { name: 'GlassInput', description: 'Text and search inputs with an optional trailing accessory and clear button.', props: 'type, value, onChange, placeholder, trailing' },
