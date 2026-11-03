@@ -449,6 +449,51 @@ html[data-morph] .hero__title-text[data-docked] {
   text-decoration: none;
 }
 
+/* Hover: a letter turns into a sticker for a moment, then comes back.
+   An arrow over the title, a hand only on the link. */
+.hero__title {
+  cursor: default;
+}
+
+.hero__title a {
+  cursor: pointer;
+}
+
+.sprinkle__word {
+  white-space: nowrap;
+}
+
+[data-ch] {
+  position: relative;
+}
+
+[data-ch][data-pop] {
+  animation: sprinkle-letter 1100ms ease both;
+}
+
+.sprinkle__sticker {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 1.05em;
+  height: 1.05em;
+  object-fit: contain;
+  pointer-events: none;
+  animation: sprinkle-pop 1100ms cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+
+@keyframes sprinkle-letter {
+  0%, 100% { color: inherit; }
+  8%, 82% { color: transparent; }
+}
+
+@keyframes sprinkle-pop {
+  0% { opacity: 0; filter: blur(6px); transform: translate(-50%, -50%) scale(0.2) rotate(calc(var(--tilt) * -1)); }
+  14% { opacity: 1; filter: none; transform: translate(-50%, -50%) scale(1.25) rotate(var(--tilt)); }
+  26%, 72% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(var(--tilt)); }
+  100% { opacity: 0; transform: translate(-50%, -62%) scale(0.5) rotate(var(--tilt)); }
+}
+
 .hero__lede {
   max-width: 60em;
   margin: 10px auto 0;

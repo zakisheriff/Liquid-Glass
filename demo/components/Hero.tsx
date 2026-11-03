@@ -7,6 +7,7 @@ import { MockApp } from './MockApp';
 import { PreviewThemeContext, PreviewThemeControlsContext, usePreviewMode } from './PreviewTheme';
 import { Docs, GitHub, Heart, Npm } from './icons';
 import { CopyPrompt, InstallCommand } from './Install';
+import { Sprinkle, useSprinkle } from './Sprinkle';
 
 /** Just the Dynamic Island: no clock or status icons on the mockup. */
 function Island() {
@@ -55,17 +56,21 @@ function Device() {
 }
 
 export function Hero() {
+  const sprinkle = useSprinkle();
   return (
     <section className="hero" id="top">
       <div className="hero__copy">
-        <h1 className="hero__title">
+        <h1 className="hero__title" aria-label="Liquid Glass for Website by The Atom" onPointerOver={sprinkle}>
           {/* Only "Liquid Glass" flies into the nav on scroll. */}
           <span id="hero-title" className="hero__title-text">
-            Liquid Glass
+            <Sprinkle text="Liquid Glass" />
           </span>{' '}
-          for Website
+          <Sprinkle text="for Website" />
           <span className="hero__title-by">
-            by <a href="https://theatom.lk" target="_blank" rel="noreferrer">The Atom</a>
+            <Sprinkle text="by" />{' '}
+            <a href="https://theatom.lk" target="_blank" rel="noreferrer">
+              <Sprinkle text="The Atom" />
+            </a>
           </span>
         </h1>
         <div className="hero__install">
