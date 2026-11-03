@@ -25,6 +25,7 @@
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
+  -webkit-user-drag: none;
   transform-origin: center;
   will-change: scale, translate;
 }

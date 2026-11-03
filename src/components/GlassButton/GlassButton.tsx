@@ -81,8 +81,12 @@ export const GlassButton = React.forwardRef<HTMLButtonElement, GlassButtonProps>
       .join(' ');
 
     // A link keeps the same look and press, but is an anchor for the browser.
+    // Not draggable, so moving the finger stretches the glass instead of picking up the link.
     const Element = (href != null ? 'a' : 'button') as 'button';
-    const link = href != null ? ({ href, target, rel: rel ?? (target === '_blank' ? 'noopener noreferrer' : undefined) } as object) : { type };
+    const link =
+      href != null
+        ? ({ href, target, rel: rel ?? (target === '_blank' ? 'noopener noreferrer' : undefined), draggable: false } as object)
+        : { type };
 
     return (
       <Element
