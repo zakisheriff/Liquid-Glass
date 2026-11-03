@@ -136,14 +136,6 @@ export function Nav() {
         <div className="nav__actions">
           <GlassButton
             size="sm"
-            className="nav__github"
-            aria-label="GitHub"
-            icon={<GitHub size={18} />}
-            href="https://github.com/zakisheriff/Liquid-Glass"
-            target="_blank"
-          />
-          <GlassButton
-            size="sm"
             className="nav__theme"
             data-mode={theme}
             aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
@@ -154,6 +146,14 @@ export function Nav() {
               </span>
             }
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          />
+          <GlassButton
+            size="sm"
+            className="nav__github"
+            aria-label="GitHub"
+            icon={<GitHub size={18} />}
+            href="https://github.com/zakisheriff/Liquid-Glass"
+            target="_blank"
           />
           <GlassButton
             size="sm"
