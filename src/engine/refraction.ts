@@ -58,6 +58,12 @@ export interface GlassShape {
    * so content the rim draws in is styled like the rest of the copy.
    */
   copy?: boolean | 'refract';
+  /**
+   * With a copied lens, never refract the live backdrop too (Chromium would):
+   * the glass behind the copy stays clear in every browser, so the lens looks
+   * the same everywhere.
+   */
+  copyOnly?: boolean;
 }
 
 interface Baked {
@@ -475,6 +481,7 @@ function resolve(shape: GlassShape, width: number, height: number): Required<Gla
     inset: shape.inset ?? 0,
     stretch: shape.stretch ?? 0,
     copy: shape.copy ?? false,
+    copyOnly: shape.copyOnly ?? false,
   };
 }
 
@@ -608,7 +615,7 @@ export function useRefraction(
       // A bent copy also refracts the real backdrop: the bar's glass, its edge
       // and the page bend and split into colour at the rim, so the lens
       // merges with what's beneath instead of sitting on it.
-      if (live || (bendCopy && chromium)) {
+      if (live || (bendCopy && chromium && !shape.copyOnly)) {
         // Behind a bent copy the backdrop only carries the bar's glass and
         // edges: the copy already magnifies the content, so the backdrop isn't
         // zoomed (that pushed the bar's edge into a ring inside the lens) and

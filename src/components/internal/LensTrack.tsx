@@ -39,14 +39,15 @@ export function LensTrack({
   // under its edge (icons, labels, the bar's own border) with a faint
   // rainbow fringe.
   // Where the backdrop can't be filtered (Safari, Firefox) the lens refracts a
-  // live copy of the bar instead, so the icons still magnify inside it.
+  // live copy of the bar instead, so the icons still magnify inside it. The
+  // tab bar's lens works that way in every browser, so it looks the same.
   const overhang = tabbar ? 14 : 12;
   // Only the part of the lens over the bar bends; where it rises past the bar
   // it stays clear glass.
   // The lens shows a magnified, fully tinted copy of the bar, bent at its rim
   // where the browser can filter it: whatever the rim draws in is tinted too,
   // as on iOS, instead of the real glyphs showing white through it.
-  useRefraction(lens, { kind: 'lens', strength: 1, stretch: 1, bezel: tabbar ? 24 : 16, zoom, dispersion: 1, copy: 'refract' }, true, bar, () =>
+  useRefraction(lens, { kind: 'lens', strength: 1, stretch: 1, bezel: tabbar ? 24 : 16, zoom, dispersion: 1, copy: 'refract', copyOnly: tabbar }, true, bar, () =>
     bar.current?.hasAttribute('data-lifted') ?? false,
   );
 
