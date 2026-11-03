@@ -32,6 +32,7 @@ export { GlassSwitch } from './components/GlassSwitch';
 export type { GlassSwitchProps } from './components/GlassSwitch';
 
 // Filter provider (kept for compatibility; components bake their own refraction now)
+/** @deprecated Unused since v0.2; removed in 0.4.0. */
 export { LiquidGlassFilter } from './filters/LiquidGlassFilter';
 export type { LiquidGlassFilterProps } from './filters/LiquidGlassFilter';
 

@@ -11,9 +11,9 @@ export interface LiquidGlassFilterProps {
 }
 
 /**
- * Renders shared SVG filter definitions used by all liquid glass components.
- * Wrap your app (or the section using glass components) with this provider.
- * If not used, glass components will auto-inject a local filter.
+ * @deprecated Left over from v0.1 and no longer used by any component: each
+ * surface now builds its own refraction. Wrapping an app in it has no effect.
+ * It will be removed in the next breaking release (0.4.0).
  */
 export function LiquidGlassFilter({ children }: LiquidGlassFilterProps) {
   return (

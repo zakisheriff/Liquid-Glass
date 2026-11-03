@@ -159,7 +159,7 @@ export function springFrom(response: number, dampingFraction: number): SpringCon
   return { stiffness: w * w, damping: 2 * dampingFraction * w };
 }
 
-/** Feel presets tuned against iOS 26 screen recordings. */
+/** Feel presets, tuned by eye against iOS 26 screen recordings. */
 export const SPRINGS = {
   /** Finger down: quick, almost no overshoot. */
   press: springFrom(0.22, 0.86),
