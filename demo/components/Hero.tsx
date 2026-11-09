@@ -77,7 +77,7 @@ export function Hero() {
           <InstallCommand />
           <CopyPrompt />
         </div>
-        <p className="hero__lede">Apple-style liquid glass components for React and Next.js. About 32 KB gzipped, MIT licensed.</p>
+        <p className="hero__lede">Apple-Style Liquid Glass Components for React and Next.js. About 32 KB Gzipped, MIT Licensed.</p>
         <div className="hero__ctas">
           <GlassButton variant="tinted" tint="#a371f7" icon={<GitHub size={18} />} href="https://github.com/zakisheriff/Liquid-Glass" target="_blank">
             GitHub
@@ -93,7 +93,7 @@ export function Hero() {
           </GlassButton>
         </div>
         <p className="hero__hint">
-          Best experienced in Chrome or Edge on a laptop or Android, or Safari on iOS 26 and macOS 26. Older iPhones get a simpler lens.
+          Best Experienced in Chrome or Edge on a Laptop or Android, or Safari on iOS 26 and macOS 26. Older iPhones Get a Simpler Lens.
         </p>
       </div>
       <div className="hero__stage">
