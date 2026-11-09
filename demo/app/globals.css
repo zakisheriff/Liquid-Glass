@@ -690,10 +690,11 @@ html[data-morph] .hero__title-text[data-docked] {
   color: var(--muted);
   font-size: 12px;
   line-height: 1.4;
+  text-wrap: balance;
 }
 
 /* ------------------------------------------------------------------ */
-/*  Device                                                             */
+/*  Device                                                            */
 /* ------------------------------------------------------------------ */
 
 .device {
