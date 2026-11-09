@@ -92,6 +92,9 @@ export function Hero() {
             Support
           </GlassButton>
         </div>
+        <p className="hero__hint">
+          Best experienced in Chrome or Edge on a laptop or Android, or Safari on iOS 26 and macOS 26. Older iPhones get a simpler lens.
+        </p>
       </div>
       <div className="hero__stage">
         <Device />

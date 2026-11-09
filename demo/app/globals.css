@@ -685,9 +685,11 @@ html[data-morph] .hero__title-text[data-docked] {
 }
 
 .hero__hint {
-  margin: 28px 0 0;
+  max-width: 34em;
+  margin: 20px auto 0;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 /* ------------------------------------------------------------------ */
