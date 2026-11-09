@@ -101,6 +101,19 @@ export function canRefractBackdrop(): boolean {
   return /Chrom(e|ium)\/|Edg\//.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua);
 }
 
+/**
+ * WebKit before Safari 26 (iOS 18 and older, every iOS browser there) paints
+ * an SVG filter over a lens's live copy from stale tiles: as the lens moves,
+ * glyphs inside it tear into fragments. CSS anchor positioning arrived in
+ * Safari 26, so its absence tells those engines apart.
+ */
+function filtersTearWhileMoving(): boolean {
+  if (typeof navigator === 'undefined' || typeof CSS === 'undefined') return false;
+  const ua = navigator.userAgent;
+  const webkit = /AppleWebKit\//.test(ua) && !/Chrom(e|ium)\/|Edg\//.test(ua);
+  return webkit && !CSS.supports('anchor-name', '--lg');
+}
+
 /** Lateral shift (px) for light leaving the bevel, sampled across its width. */
 function bevelProfile(bezel: number, thickness: number, ior: number) {
   const N = 256;
@@ -586,7 +599,10 @@ export function useRefraction(
     // does this when asked (it can bend the live backdrop instead); every
     // other engine bends a mirrored lens's copy, in box units.
     const chromium = canRefractBackdrop();
-    const bendCopy = !!mirror && (shape.copy === 'refract' || !chromium);
+    // Older WebKit can't filter a moving copy at all; its lenses show the copy
+    // unbent instead.
+    const tears = filtersTearWhileMoving();
+    const bendCopy = !!mirror && (shape.copy === 'refract' || !chromium) && !tears;
     let copyFilter = '';
     const applyCopyFilter = () => {
       const viewport = element.querySelector<HTMLElement>(':scope > .lg-mirror > .lg-mirror__viewport');
@@ -604,6 +620,14 @@ export function useRefraction(
         // The lens is a magnified copy of what's beneath, bent at its rim.
         pad = Math.ceil(Math.min(width, height) * 0.45 + 6);
         ({ zoom, zoomX } = resolve(shape, width, height));
+        if (tears) {
+          // Without a bent rim to carry it, magnification pushes the content
+          // at the lens edge out of view while the real glyphs there are cut
+          // away: letters lose a slice. Keep the copy 1:1 there (minifying
+          // lenses only ever repeat what's around them, so they stay).
+          zoom = Math.min(zoom, 1);
+          zoomX = Math.min(zoomX, 1);
+        }
         element.style.setProperty('--lg-inner-mask', baked.inner);
         if (bendCopy) {
           // The copy is magnified by CSS; the filter only bends the rim and
