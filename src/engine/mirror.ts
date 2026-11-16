@@ -80,6 +80,15 @@ const stateOf = (el: HTMLElement) =>
     .sort()
     .join(' ');
 
+/**
+ * Whether an attribute change alters what the content draws (an icon's fill,
+ * a path's d, an image's src). Those only reach the copy through a fresh
+ * clone. Styles and classes are followed every frame by sync(), and state
+ * flags (data-*, aria-*) change on every press, so they never rebuild it.
+ */
+const paints = (name: string | null) =>
+  !!name && name !== 'style' && name !== 'class' && name !== 'tabindex' && !name.startsWith('data-') && !name.startsWith('aria-');
+
 const BACKGROUND = ['background-color', 'background-image', 'background-size', 'background-position', 'background-repeat', 'border-radius'];
 
 // align() owns the clone root's placement. Animation variables and colours
@@ -281,7 +290,7 @@ export function mirrorBackdrop(
     // Our own copies live inside the glass, which may sit inside the source.
     if (records.every((r) => layer.contains(r.target) || r.target === layer || r.target === glass)) return;
     wake();
-    const structural = records.some((r) => r.type !== 'attributes' && !layer.contains(r.target));
+    const structural = records.some((r) => !layer.contains(r.target) && (r.type !== 'attributes' || paints(r.attributeName)));
     if (structural && !pending) pending = requestAnimationFrame(recopy);
     else if (!structural && !stopped && visible && !document.hidden && active()) {
       // Spring callbacks can run after our rAF tick. Follow their final
@@ -291,7 +300,7 @@ export function mirrorBackdrop(
       align();
     }
   });
-  mutations.observe(source, { childList: true, characterData: true, attributes: true, attributeFilter: ['style', 'class'], subtree: true });
+  mutations.observe(source, { childList: true, characterData: true, attributes: true, subtree: true });
 
   const io =
     typeof IntersectionObserver === 'function'
