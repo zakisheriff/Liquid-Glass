@@ -74,7 +74,26 @@ interface Baked {
 }
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
-const cache = new Map<string, Baked>();
+const cache = new Map<string, Promise<Baked>>();
+
+/**
+ * PNG-encodes the canvas off the main thread. toDataURL encodes in place and
+ * held up the page for tens of ms per shape, enough to stutter a sheet rising
+ * over glass. toBlob copies the pixels now (so the canvas can be redrawn at
+ * once) and encodes in the background; the result is the same data URL.
+ */
+function encode(canvas: HTMLCanvasElement): Promise<string> {
+  return new Promise((done) => {
+    if (typeof canvas.toBlob !== 'function' || typeof FileReader !== 'function') return done(canvas.toDataURL());
+    canvas.toBlob((blob) => {
+      if (!blob) return done(canvas.toDataURL());
+      const reader = new FileReader();
+      reader.onload = () => done(reader.result as string);
+      reader.onerror = () => done(canvas.toDataURL());
+      reader.readAsDataURL(blob);
+    });
+  });
+}
 let defs: SVGDefsElement | null = null;
 let counter = 0;
 
@@ -139,7 +158,13 @@ function bevelProfile(bezel: number, thickness: number, ior: number) {
   };
 }
 
-function bake(width: number, height: number, radius: number, shape: Required<GlassShape>, pad = 0, simple = false, fringe = false, box = false): Baked {
+/** Sets every pixel of `image` to one colour, a word at a time. */
+function fillPixels(image: ImageData, r: number, g: number, b: number, a: number) {
+  const word = new Uint32Array(new Uint8ClampedArray([r, g, b, a]).buffer)[0];
+  new Uint32Array(image.data.buffer, image.data.byteOffset, image.data.length / 4).fill(word);
+}
+
+function bake(width: number, height: number, radius: number, shape: Required<GlassShape>, pad = 0, simple = false, fringe = false, box = false): Promise<Baked> {
   // `simple`: one displacement pass (edge bend + magnification baked into a
   // single map), no colour split. Safari's GPU filter path renders chained
   // displacement + arithmetic composites black, so its mirrors use this.
@@ -171,6 +196,10 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   // without filtering, so there the bent image steps and aliases; it gets a
   // touch of smoothing while the centre stays sharp.
   const zone = new Float32Array(cw * ch);
+  // Pixels outside the settled interior: the only ones whose outputs vary.
+  // Every pass below fills the interior in one go and visits just these.
+  const outer = new Int32Array(cw * ch);
+  let edges = 0;
   let max = 0.0001;
   let maxX = 0.0001;
   let maxY = 0.0001;
@@ -209,6 +238,7 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
         inside[y * cw + x] = 1;
         continue;
       }
+      outer[edges++] = y * cw + x;
 
       let nx: number;
       let ny: number;
@@ -268,7 +298,7 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   const canvas = document.createElement('canvas');
   canvas.width = cw;
   canvas.height = ch;
-  const ctx = canvas.getContext('2d')!;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
 
   // In box units a displacement scale s moves x by s·W and y by s·H, so each
   // axis is encoded against its own side; in px both share one scale.
@@ -276,7 +306,9 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   const spanX = box ? (scale * W) / 2 : max;
   const spanY = box ? (scale * H) / 2 : max;
   const field = ctx.createImageData(cw, ch);
-  for (let i = 0; i < cw * ch; i++) {
+  fillPixels(field, 128, 128, 128, 255);
+  for (let e = 0; e < edges; e++) {
+    const i = outer[e];
     const o = i * 4;
     field.data[o] = Math.round(127.5 + (dx[i] / spanX) * 127.5);
     field.data[o + 1] = Math.round(127.5 + (dy[i] / spanY) * 127.5);
@@ -284,10 +316,10 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
     field.data[o + 3] = 255;
   }
   ctx.putImageData(field, 0, 0);
-  const map = canvas.toDataURL();
+  const map = encode(canvas);
 
   const reach = Math.max(W, H) / 2;
-  let zoomMap = '';
+  let zoomMap: Promise<string> = Promise.resolve('');
   if (magnify && !simple) {
     const ramp = ctx.createImageData(cw, ch);
     for (let y = 0; y < ch; y++) {
@@ -303,11 +335,13 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
       }
     }
     ctx.putImageData(ramp, 0, 0);
-    zoomMap = canvas.toDataURL();
+    zoomMap = encode(canvas);
   }
 
   const shine = ctx.createImageData(cw, ch);
-  for (let i = 0; i < cw * ch; i++) {
+  fillPixels(shine, 255, 255, 255, 0);
+  for (let e = 0; e < edges; e++) {
+    const i = outer[e];
     const o = i * 4;
     let r = 255;
     let g = 255;
@@ -326,31 +360,56 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
     shine.data[o + 3] = Math.round(rimA[i] * 255);
   }
   ctx.putImageData(shine, 0, 0);
-  const rim = canvas.toDataURL();
+  const rim = encode(canvas);
 
   // Exact rounded-rect alpha: the filter's output is a rectangle, and bent
   // light sampled past the rim must not leak into the corners.
   const shapeMask = ctx.createImageData(cw, ch);
-  for (let i = 0; i < cw * ch; i++) {
+  fillPixels(shapeMask, 255, 255, 255, 255);
+  for (let e = 0; e < edges; e++) {
+    const i = outer[e];
     const o = i * 4;
     shapeMask.data[o] = shapeMask.data[o + 1] = shapeMask.data[o + 2] = 255;
     shapeMask.data[o + 3] = Math.round(inside[i] * 255);
   }
   ctx.putImageData(shapeMask, 0, 0);
-  const mask = canvas.toDataURL();
+  const mask = encode(canvas);
 
-  let smooth = '';
+  let smooth: Promise<string> = Promise.resolve('');
   if (lens && !simple) {
     const soft = ctx.createImageData(cw, ch);
-    for (let i = 0; i < cw * ch; i++) {
+    fillPixels(soft, 255, 255, 255, 0);
+    for (let e = 0; e < edges; e++) {
+      const i = outer[e];
       const o = i * 4;
       soft.data[o] = soft.data[o + 1] = soft.data[o + 2] = 255;
       soft.data[o + 3] = Math.round(zone[i] * 255);
     }
     ctx.putImageData(soft, 0, 0);
-    smooth = canvas.toDataURL();
+    smooth = encode(canvas);
   }
 
+  return Promise.all([map, zoomMap, rim, mask, smooth]).then(([map, zoomMap, rim, mask, smooth]) =>
+    assemble(W, H, box, magnify, reach, scale, shape, simple, fringe, map, zoomMap, rim, mask, smooth),
+  );
+}
+
+function assemble(
+  W: number,
+  H: number,
+  box: boolean,
+  magnify: number,
+  reach: number,
+  scale: number,
+  shape: Required<GlassShape>,
+  simple: boolean,
+  fringe: boolean,
+  map: string,
+  zoomMap: string,
+  rim: string,
+  mask: string,
+  smooth: string,
+): Baked {
   const id = `lg-refract-${++counter}`;
   // Chromium (backdrop filters): primitive units in px, so displacement
   // scales are real pixels and maps get explicit px sizes.
@@ -498,7 +557,7 @@ function resolve(shape: GlassShape, width: number, height: number): Required<Gla
   };
 }
 
-export function glassFor(width: number, height: number, radius: number, shape: GlassShape = {}, pad = 0, simple = false, fringe = false, box = false): Baked {
+export function glassFor(width: number, height: number, radius: number, shape: GlassShape = {}, pad = 0, simple = false, fringe = false, box = false): Promise<Baked> {
   const w = Math.round(width);
   const h = Math.round(height);
   const r = Math.min(w / 2, h / 2, Math.max(0, radius));
@@ -523,9 +582,32 @@ const soon: Array<() => void> = [];
 const later: Array<() => void> = [];
 let pumping = false;
 
+/** While held (a sheet rising), queued bakes wait; see holdBakes. */
+let held = 0;
+
+/**
+ * Pauses glass bakes until the returned release is called. A sheet holds them
+ * while it animates, so glass inside it never bakes mid-flight (each bake is
+ * a few ms of maths that would drop frames); it all bakes once it lands.
+ */
+export function holdBakes(): () => void {
+  held++;
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    held--;
+    if (!held && !pumping && (soon.length || later.length)) pump();
+  };
+}
+
 function pump() {
   pumping = true;
   const run = (deadline?: IdleDeadline) => {
+    if (held) {
+      pumping = false;
+      return;
+    }
     // Without idle callbacks (Safari) a slice gets a fixed budget instead.
     const end = performance.now() + 8;
     const left = () => (deadline ? deadline.timeRemaining() > 4 : performance.now() < end);
@@ -609,14 +691,18 @@ export function useRefraction(
       if (viewport && copyFilter) viewport.style.filter = copyFilter;
     };
 
+    // Each fit supersedes the last: maps that finish encoding after a newer
+    // fit (or after unmount) are dropped.
+    let fits = 0;
+    let gone = false;
     const fit = () => {
       const width = element.offsetWidth;
       const height = element.offsetHeight;
       if (!width || !height) return;
+      const run = ++fits;
       const radius = cornerRadius(element, width, height);
-      const baked = glassFor(width, height, radius, shape);
-      filter = baked.filter;
-      if (!live && mirror?.current) {
+      const mirrored = !live && !!mirror?.current;
+      if (mirrored) {
         // The lens is a magnified copy of what's beneath, bent at its rim.
         pad = Math.ceil(Math.min(width, height) * 0.45 + 6);
         ({ zoom, zoomX } = resolve(shape, width, height));
@@ -628,29 +714,40 @@ export function useRefraction(
           zoom = Math.min(zoom, 1);
           zoomX = Math.min(zoomX, 1);
         }
-        element.style.setProperty('--lg-inner-mask', baked.inner);
-        if (bendCopy) {
-          // The copy is magnified by CSS; the filter only bends the rim and
-          // fringes what it bends with colour.
-          copyFilter = glassFor(width, height, radius, { ...shape, zoom: 1, zoomX: 1 }, pad, false, true, !chromium).filter;
-          applyCopyFilter();
-        }
       }
       // A bent copy also refracts the real backdrop: the bar's glass, its edge
       // and the page bend and split into colour at the rim, so the lens
       // merges with what's beneath instead of sitting on it.
-      if (live || (bendCopy && chromium && !shape.copyOnly)) {
+      const refractBackdrop = live || (bendCopy && chromium && !shape.copyOnly);
+      const none = Promise.resolve(null);
+      Promise.all([
+        glassFor(width, height, radius, shape),
+        // The copy is magnified by CSS; the filter only bends the rim and
+        // fringes what it bends with colour.
+        mirrored && bendCopy ? glassFor(width, height, radius, { ...shape, zoom: 1, zoomX: 1 }, pad, false, true, !chromium) : none,
         // Behind a bent copy the backdrop only carries the bar's glass and
         // edges: the copy already magnifies the content, so the backdrop isn't
         // zoomed (that pushed the bar's edge into a ring inside the lens) and
         // its rim bends gently, curling the bar's edge into thin arcs.
-        const backdrop = live ? baked.filter : glassFor(width, height, radius, { ...shape, zoom: 1, zoomX: 1, strength: (shape.strength ?? 1) * 0.45 }).filter;
-        element.style.setProperty('--lg-refraction', backdrop);
-        // Lets CSS keep its softening/saturation for real refraction only, and
-        // tells resting surfaces from lenses.
-        element.setAttribute('data-lg-refract', shape.kind ?? 'surface');
-      }
-      element.style.setProperty('--lg-rim', baked.rim);
+        refractBackdrop && !live ? glassFor(width, height, radius, { ...shape, zoom: 1, zoomX: 1, strength: (shape.strength ?? 1) * 0.45 }) : none,
+      ]).then(([baked, copy, behind]) => {
+        if (run !== fits || gone) return;
+        filter = baked.filter;
+        if (mirrored) {
+          element.style.setProperty('--lg-inner-mask', baked.inner);
+          if (copy) {
+            copyFilter = copy.filter;
+            applyCopyFilter();
+          }
+        }
+        if (refractBackdrop) {
+          element.style.setProperty('--lg-refraction', live ? baked.filter : behind!.filter);
+          // Lets CSS keep its softening/saturation for real refraction only, and
+          // tells resting surfaces from lenses.
+          element.setAttribute('data-lg-refract', shape.kind ?? 'surface');
+        }
+        element.style.setProperty('--lg-rim', baked.rim);
+      });
     };
 
     // Refit once resizing settles: a bake is a full canvas pass, and a
@@ -691,6 +788,7 @@ export function useRefraction(
     const ungovern = governRefraction(element);
 
     return () => {
+      gone = true;
       cancel?.();
       unmirror?.();
       ungovern();
