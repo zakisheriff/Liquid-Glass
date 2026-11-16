@@ -5,23 +5,23 @@
 <br />
 <br />
 
-[![npm version](https://img.shields.io/npm/v/@zakisheriff/liquid-glass?style=for-the-badge&logo=npm&color=cb3837)](https://www.npmjs.com/package/@zakisheriff/liquid-glass)
-[![Total npm downloads](https://badgen.net/npm/dt/@zakisheriff/liquid-glass?label=total%20downloads&color=0a84ff&scale=1.25)](https://www.npmjs.com/package/@zakisheriff/liquid-glass)
-[![Bundle size](https://img.shields.io/badge/gzip-36_kB-30d158?style=for-the-badge)](https://www.npmjs.com/package/@zakisheriff/liquid-glass?activeTab=code)
-[![Zero dependencies](https://img.shields.io/badge/dependencies-0-30d158?style=for-the-badge)](https://www.npmjs.com/package/@zakisheriff/liquid-glass?activeTab=dependencies)
+[![npm Version](https://img.shields.io/npm/v/@zakisheriff/liquid-glass?style=for-the-badge&logo=npm&color=cb3837)](https://www.npmjs.com/package/@zakisheriff/liquid-glass)
+[![Total npm Downloads](https://badgen.net/npm/dt/@zakisheriff/liquid-glass?label=Total%20Downloads&color=0a84ff&scale=1.25)](https://www.npmjs.com/package/@zakisheriff/liquid-glass)
+[![Bundle Size](https://img.shields.io/badge/Gzip-36_kB-30d158?style=for-the-badge)](https://www.npmjs.com/package/@zakisheriff/liquid-glass?activeTab=code)
+[![Zero Dependencies](https://img.shields.io/badge/Dependencies-0-30d158?style=for-the-badge)](https://www.npmjs.com/package/@zakisheriff/liquid-glass?activeTab=dependencies)
 <br />
 ![React](https://img.shields.io/badge/React-%3E%3D17-61dafb?style=for-the-badge&logo=react&logoColor=white)
-![Next.js](https://img.shields.io/badge/Next.js-ready-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-Ready-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](./LICENSE)
 
 <br />
 
-[![Live demo](https://img.shields.io/badge/Live_demo-liquidglass.theatom.lk-0a84ff?style=for-the-badge&logo=safari&logoColor=white)](https://liquidglass.theatom.lk)
-[![Demo video](https://img.shields.io/badge/Demo_video-watch-ff375f?style=for-the-badge&logo=airplayvideo&logoColor=white)](https://liquidglass.theatom.lk/docs#demo)
-[![Docs](https://img.shields.io/badge/Docs-read-1d1d1f?style=for-the-badge&logo=readthedocs&logoColor=white)](https://liquidglass.theatom.lk/docs)
-[![npm](https://img.shields.io/badge/npm-install-cb3837?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/@zakisheriff/liquid-glass)
-[![GitHub](https://img.shields.io/badge/GitHub-star-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/zakisheriff/Liquid-Glass)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-liquidglass.theatom.lk-0a84ff?style=for-the-badge&logo=safari&logoColor=white)](https://liquidglass.theatom.lk)
+[![Demo Video](https://img.shields.io/badge/Demo_Video-Watch-ff375f?style=for-the-badge&logo=airplayvideo&logoColor=white)](https://liquidglass.theatom.lk/docs#demo)
+[![Docs](https://img.shields.io/badge/Docs-Read-1d1d1f?style=for-the-badge&logo=readthedocs&logoColor=white)](https://liquidglass.theatom.lk/docs)
+[![npm](https://img.shields.io/badge/npm-Install-cb3837?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/@zakisheriff/liquid-glass)
+[![GitHub](https://img.shields.io/badge/GitHub-Star-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/zakisheriff/Liquid-Glass)
 
 <br />
 <br />
