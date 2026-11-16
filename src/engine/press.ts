@@ -114,6 +114,13 @@ export function usePress(ref: React.RefObject<HTMLElement | null>, options: Pres
     const hold = (event: TouchEvent) => {
       if (pointer && event.cancelable) event.preventDefault();
     };
+    // A link or image inside the glass would otherwise be picked up by the
+    // browser's own drag (Safari shows a floating link and steals the
+    // pointer), so the glass stops following until the drag is pulled
+    // further. Pressed glass is held, never dragged out.
+    const noDrag = (event: DragEvent) => event.preventDefault();
+    el.setAttribute('data-lg-press', '');
+    el.addEventListener('dragstart', noDrag);
     const unguard = guardSelection(el);
     el.addEventListener('touchmove', hold, { passive: false });
     el.addEventListener('pointerdown', down);
@@ -124,6 +131,8 @@ export function usePress(ref: React.RefObject<HTMLElement | null>, options: Pres
       unguard();
       el.removeEventListener('pointerdown', down);
       el.removeEventListener('touchmove', hold);
+      el.removeEventListener('dragstart', noDrag);
+      el.removeAttribute('data-lg-press');
       window.removeEventListener('blur', blur);
       el.style.removeProperty('scale');
       el.style.removeProperty('translate');

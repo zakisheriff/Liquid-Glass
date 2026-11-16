@@ -152,6 +152,13 @@
   pointer-events: none;
 }
 
+/* Pressable glass (usePress) never lets a link or image inside it be dragged
+   out; the press stretches the glass instead. */
+[data-lg-press],
+[data-lg-press] :is(a, img) {
+  -webkit-user-drag: none;
+}
+
 .lg-glass {
   position: relative;
   box-sizing: border-box;
