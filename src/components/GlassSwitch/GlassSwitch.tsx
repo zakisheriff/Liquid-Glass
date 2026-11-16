@@ -3,6 +3,9 @@ import { SPRINGS, clamp, createJelly, createSpring, rubberband, springFrom } fro
 
 /** The knob drops back with a short, gentle settle rather than a jelly bounce. */
 const SETTLE = springFrom(0.36, 0.68);
+/** The track colour eases in and out over about a third of a second, evenly
+ *  enough that it never reads as a snap to green. */
+const TINT = springFrom(0.5, 1);
 import { useRefraction } from '../../engine/refraction';
 import { haptic } from '../../engine/haptics';
 import { guardSelection } from '../../engine/selection';
@@ -101,7 +104,7 @@ export const GlassSwitch = React.forwardRef<HTMLButtonElement, GlassSwitchProps>
         v.glass = lift.target ? value : Math.min(v.glass, value);
         paint();
       });
-      const color = createSpring(checked ? 1 : 0, SPRINGS.fade, (value) => {
+      const color = createSpring(checked ? 1 : 0, TINT, (value) => {
         fill.style.opacity = String(clamp(value, 0, 1));
       });
       fill.style.opacity = checked ? '1' : '0';
