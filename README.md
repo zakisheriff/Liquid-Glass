@@ -337,7 +337,7 @@ const [tab, setTab] = useState(0);
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `items` | `Array<{ label: string; icon?: ReactNode }>` |  | The tabs. Icons sit above labels. |
+| `items` | `Array<{ label: string; icon?: ReactNode; activeIcon?: ReactNode }>` |  | The tabs. Icons sit above labels. `activeIcon` is the selected look (e.g. filled): the selected tab shows it, and the lens fills in whatever icon it covers. |
 | `activeIndex` | `number` | `0` | Index of the selected tab. |
 | `onChange` | `(index: number) => void` |  | Called when a tab is tapped, or when the lens is dragged onto one. |
 | `showLabels` | `boolean` | `true` | `false` shows icons only. |

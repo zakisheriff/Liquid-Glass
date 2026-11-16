@@ -117,11 +117,13 @@ export function useLensTrack(refs: LensTrackRefs, options: LensTrackOptions) {
       select.style.width = `${slot}px`;
       select.style.left = `${pad}px`;
       glyphs = buttons.flatMap((button) =>
-        Array.from(button.querySelectorAll<HTMLElement>('.lg-nav__label, .lg-nav__icon > .lg-symbol')).map((node) => {
+        Array.from(button.querySelectorAll<HTMLElement>('.lg-nav__label, .lg-nav__icon')).map((box) => {
           // Symbols are already masked to their shape, so their hide mask
-          // goes on the icon box around them.
-          const label = node.classList.contains('lg-nav__label');
-          const host = label ? node : (node.parentElement as HTMLElement);
+          // goes on the icon box around them. Any other icon (an SVG, an
+          // image) is measured and masked by its box.
+          const label = box.classList.contains('lg-nav__label');
+          const node = label ? box : (box.querySelector<HTMLElement>(':scope > .lg-symbol') ?? box);
+          const host = box;
           const n = node.getBoundingClientRect();
           const h = host.getBoundingClientRect();
           return {

@@ -4,6 +4,10 @@ import { LensTrack } from '../internal/LensTrack';
 export interface GlassNavItem {
   label: string;
   icon?: React.ReactNode;
+  /** The selected look of `icon`, e.g. its filled version. The lens always
+   *  draws this one: whatever part of an icon it covers fills in, right up to
+   *  its edge, and the rest stays as `icon`, as on the iOS 26 tab bar. */
+  activeIcon?: React.ReactNode;
 }
 
 export interface GlassNavProps {
@@ -51,7 +55,15 @@ export const GlassNav: React.FC<GlassNavProps> = ({
       labels={items.map((item) => item.label)}
       items={items.map((item, i) => (
         <React.Fragment key={i}>
-          {item.icon != null && <span className="lg-nav__icon">{item.icon}</span>}
+          {item.icon != null &&
+            (item.activeIcon != null ? (
+              <span className="lg-nav__icons">
+                <span className="lg-nav__icon lg-nav__icon--idle">{item.icon}</span>
+                <span className="lg-nav__icon lg-nav__icon--active">{item.activeIcon}</span>
+              </span>
+            ) : (
+              <span className="lg-nav__icon">{item.icon}</span>
+            ))}
           {!iconsOnly && <span className="lg-nav__label">{item.label}</span>}
         </React.Fragment>
       ))}

@@ -187,6 +187,42 @@
   height: 26px;
 }
 
+/* An icon with a selected look: both versions share one cell. The bar shows
+   the selected look on the selected tab at rest. While the lens is lifted the
+   bar shows every icon plain and the lens copy shows every icon selected, so
+   an icon fills in exactly where the lens covers it. */
+.lg-nav__icons {
+  display: grid;
+}
+
+.lg-nav__icons > .lg-nav__icon {
+  grid-area: 1 / 1;
+}
+
+.lg-nav__icon--active,
+.lg-track__item[aria-selected='true'] .lg-nav__icon--idle {
+  visibility: hidden;
+}
+
+.lg-track__item[aria-selected='true'] .lg-nav__icon--active,
+.lg-track[data-lifted] .lg-nav__icon--idle {
+  visibility: visible;
+}
+
+.lg-track[data-lifted] .lg-nav__icon--active {
+  visibility: hidden;
+}
+
+/* The copy inside the lens carries the bar's flags too, so it needs the
+   stronger selector. */
+.lg-track[data-lg-copy] .lg-nav__icons > .lg-nav__icon--active {
+  visibility: visible;
+}
+
+.lg-track[data-lg-copy] .lg-nav__icons > .lg-nav__icon--idle {
+  visibility: hidden;
+}
+
 .lg-track--tabbar .lg-nav__icon > :is(svg, .lg-symbol) {
   width: 100%;
   height: 100%;
