@@ -1,7 +1,7 @@
 import { version } from '../../package.json';
 
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://liquidglass.theatom.lk').replace(/\/$/, '');
-export const SITE_TITLE = 'Liquid Glass for Web — React & Next.js Components';
+export const SITE_TITLE = 'Liquid Glass for Web - React & Next.js Components';
 export const SITE_DESCRIPTION = 'Apple-inspired liquid glass for the web. Real refracting React and Next.js buttons, switches, tab bars, sliders, menus and sheets. Lightweight, open source, MIT licensed.';
 export const PACKAGE_VERSION = version;
 export const UPDATED = '2026-10-28';
