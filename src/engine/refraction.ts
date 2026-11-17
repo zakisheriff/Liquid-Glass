@@ -175,9 +175,12 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   // in px units it misplaces the map and renders a colour split as nothing.
   const W = width + pad * 2;
   const H = height + pad * 2;
-  // Keep the bake under ~400k samples; the field is smooth so this is lossless enough.
+  // Keep the bake under ~1M samples. The field is smooth, but the rim is a
+  // hairline: below about one sample per CSS pixel it breaks into dots on a
+  // large sheet, so big glass keeps close to full resolution. Only the rim
+  // band is computed per pixel (see `outer`), so this stays cheap.
   let density = Math.min(typeof devicePixelRatio === 'number' ? devicePixelRatio : 1, 2);
-  while (W * H * density * density > 400_000 && density > 0.35) density *= 0.75;
+  while (W * H * density * density > 1_000_000 && density > 0.35) density *= 0.85;
   const cw = Math.max(1, Math.ceil(W * density));
   const ch = Math.max(1, Math.ceil(H * density));
 
@@ -190,12 +193,14 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
   const dx = new Float32Array(cw * ch);
   const dy = new Float32Array(cw * ch);
   const rimA = new Float32Array(cw * ch);
-  const rimHue = new Float32Array(cw * ch);
+  // Only lenses use these two; a surface skips them (writes past an empty
+  // typed array are no-ops), which halves a large sheet's working memory.
+  const rimHue = new Float32Array(lens && shape.dispersion > 0 ? cw * ch : 0);
   const inside = new Float32Array(cw * ch);
   // Where the rim compresses the backdrop hardest. feDisplacementMap samples
   // without filtering, so there the bent image steps and aliases; it gets a
   // touch of smoothing while the centre stays sharp.
-  const zone = new Float32Array(cw * ch);
+  const zone = new Float32Array(lens && !simple ? cw * ch : 0);
   // Pixels outside the settled interior: the only ones whose outputs vary.
   // Every pass below fills the interior in one go and visits just these.
   const outer = new Int32Array(cw * ch);
@@ -286,7 +291,10 @@ function bake(width: number, height: number, radius: number, shape: Required<Gla
         // diagonal corners (direct + internally reflected).
         const facing = -(nx + ny) * Math.SQRT1_2;
         const light = 0.22 + 0.78 * Math.abs(facing) ** 2.2 * (facing > 0 ? 1 : 0.62);
-        const line = Math.exp(-(((d - 0.55) / 0.55) ** 2));
+        // A hairline, but never thinner than about a sample: sampled any
+        // finer it shows as dots once the bake drops below full resolution.
+        const hair = Math.max(0.55, px1 * 0.75);
+        const line = Math.exp(-(((d - hair) / hair) ** 2));
         const inner = Math.exp(-((d / (shape.bezel * 0.55)) ** 2)) * 0.14;
         const edgeAA = clamp(d / px1 + 1, 0, 1);
         rimA[i] = clamp((line * (lens ? 0.95 : 0.7) + inner) * light * edgeAA, 0, 1);
@@ -582,32 +590,41 @@ const soon: Array<() => void> = [];
 const later: Array<() => void> = [];
 let pumping = false;
 
-/** While held (a sheet rising), queued bakes wait; see holdBakes. */
-let held = 0;
+/** Fits whose maps are still encoding. */
+let encoding = 0;
+let settled: Array<() => void> = [];
+const quiet = () => !soon.length && !later.length && !encoding;
+function checkSettled() {
+  if (!quiet()) return;
+  const waiting = settled;
+  settled = [];
+  waiting.forEach((done) => done());
+}
 
 /**
- * Pauses glass bakes until the returned release is called. A sheet holds them
- * while it animates, so glass inside it never bakes mid-flight (each bake is
- * a few ms of maths that would drop frames); it all bakes once it lands.
+ * Resolves once every queued glass bake has finished, or after `timeout` ms.
+ * A sheet waits on this before it rises, so the glass in it is complete from
+ * the first frame (nothing pops in when it lands) and no bake runs while it
+ * moves.
  */
-export function holdBakes(): () => void {
-  held++;
-  let released = false;
-  return () => {
-    if (released) return;
-    released = true;
-    held--;
-    if (!held && !pumping && (soon.length || later.length)) pump();
-  };
+export function whenBaked(timeout = 160): Promise<void> {
+  return new Promise((resolve) => {
+    if (quiet()) return resolve();
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      resolve();
+    };
+    settled.push(finish);
+    setTimeout(finish, timeout);
+  });
 }
 
 function pump() {
   pumping = true;
   const run = (deadline?: IdleDeadline) => {
-    if (held) {
-      pumping = false;
-      return;
-    }
+
     // Without idle callbacks (Safari) a slice gets a fixed budget instead.
     const end = performance.now() + 8;
     const left = () => (deadline ? deadline.timeRemaining() > 4 : performance.now() < end);
@@ -617,7 +634,10 @@ function pump() {
       ran++;
     }
     if (soon.length || later.length) idle(run);
-    else pumping = false;
+    else {
+      pumping = false;
+      checkSettled();
+    }
   };
   idle(run);
 }
@@ -720,6 +740,7 @@ export function useRefraction(
       // merges with what's beneath instead of sitting on it.
       const refractBackdrop = live || (bendCopy && chromium && !shape.copyOnly);
       const none = Promise.resolve(null);
+      encoding++;
       Promise.all([
         glassFor(width, height, radius, shape),
         // The copy is magnified by CSS; the filter only bends the rim and
@@ -747,6 +768,9 @@ export function useRefraction(
           element.setAttribute('data-lg-refract', shape.kind ?? 'surface');
         }
         element.style.setProperty('--lg-rim', baked.rim);
+      }).finally(() => {
+        encoding--;
+        checkSettled();
       });
     };
 
@@ -756,9 +780,17 @@ export function useRefraction(
     // rim stretches to the box meanwhile.
     // Glass near the viewport bakes first; the rest waits behind it.
     let seen = typeof IntersectionObserver !== 'function';
+    // A queued fit reads the box when it runs, so it already covers any
+    // resize before then.
+    let queued = false;
+    const job = () => {
+      queued = false;
+      fit();
+    };
     const request = () => {
       cancel?.();
-      cancel = bakeSoon(fit, seen);
+      queued = true;
+      cancel = bakeSoon(job, seen);
     };
     const near =
       typeof IntersectionObserver === 'function'
@@ -775,6 +807,10 @@ export function useRefraction(
     near?.observe(element);
 
     const observer = new ResizeObserver(() => {
+      // The observer reports once on mount too: cancelling the queued fit
+      // there would leave the glass rimless for a moment (and a sheet that
+      // waits for its glass would rise without it).
+      if (queued) return;
       cancel?.();
       const timer = setTimeout(request, 140);
       cancel = () => clearTimeout(timer);

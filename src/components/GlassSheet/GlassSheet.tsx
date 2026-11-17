@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { clamp, createSpring, rubberband, springFrom } from '../../engine/spring';
-import { holdBakes, useRefraction } from '../../engine/refraction';
+import { useRefraction, whenBaked } from '../../engine/refraction';
 import './GlassSheet.css';
 
 export interface GlassSheetProps {
@@ -90,22 +90,11 @@ export const GlassSheet: React.FC<GlassSheetProps> = ({ open, onClose, intensity
       if (wanted.length && sheet.hasAttribute('data-raised') !== raised) sheet.toggleAttribute('data-raised', raised);
     };
     let closing = false;
-    // Glass bakes wait while the sheet is in flight, so nothing but the
-    // spring runs on the main thread until it lands.
-    let release: (() => void) | null = null;
-    const landed = () => {
-      release?.();
-      release = null;
-      sheet.removeAttribute('data-lg-moving');
-    };
-    const position = createSpring(hidden, OPEN, (y, velocity) => {
+    const position = createSpring(hidden, OPEN, (y) => {
       paint(y);
       if (closing && y >= hidden - 1) setMounted(false);
-      if (release && Math.abs(y - position.target) < 1 && Math.abs(velocity) < 20) landed();
     });
     const go = (y: number, feel: typeof OPEN) => {
-      release ??= holdBakes();
-      sheet.setAttribute('data-lg-moving', '');
       position.tune(feel);
       position.set(y);
     };
@@ -116,11 +105,20 @@ export const GlassSheet: React.FC<GlassSheetProps> = ({ open, onClose, intensity
       },
     };
     paint(hidden);
-    requestAnimationFrame(() => {
-      measure();
-      position.set(hidden, true);
-      if (open) go(rest, OPEN);
-    });
+    // The glass in the sheet bakes first (a few ms, or nothing once cached),
+    // so it rises complete: no rims or tint popping in when it lands, and no
+    // bake competing with the spring for frames.
+    let stale = false;
+    let started = false;
+    whenBaked().then(() =>
+      requestAnimationFrame(() => {
+        if (stale || closing) return;
+        started = true;
+        measure();
+        position.set(hidden, true);
+        if (open) go(rest, OPEN);
+      }),
+    );
 
     let gesture: { id: number; y: number; from: number; t: number; v: number; last: number } | null = null;
     const down = (event: PointerEvent) => {
@@ -131,8 +129,6 @@ export const GlassSheet: React.FC<GlassSheetProps> = ({ open, onClose, intensity
       if (raised && !target.closest('.lg-sheet__grabber-zone') && sheet.scrollTop > 0) return;
       if (target.closest('input, textarea, button, a, [role="slider"], [role="switch"]')) return;
       position.stop();
-      landed();
-      sheet.setAttribute('data-lg-moving', '');
       gesture = { id: event.pointerId, y: event.clientY, from: position.value, t: event.timeStamp, v: 0, last: position.value };
       sheet.setPointerCapture(event.pointerId);
     };
@@ -168,6 +164,9 @@ export const GlassSheet: React.FC<GlassSheetProps> = ({ open, onClose, intensity
       if (event.key === 'Escape') closeRef.current?.();
     };
     const resize = () => {
+      // The observer also reports on mount; the sheet rises on its own once
+      // its glass is ready.
+      if (!started) return;
       const at = position.target;
       const was = stops.indexOf(at);
       measure();
@@ -184,8 +183,8 @@ export const GlassSheet: React.FC<GlassSheetProps> = ({ open, onClose, intensity
     if (!container) document.body.style.overflow = 'hidden';
     sheet.focus({ preventScroll: true });
     return () => {
+      stale = true;
       position.stop();
-      landed();
       api.current = null;
       observer.disconnect();
       sheet.removeEventListener('pointerdown', down);

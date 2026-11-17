@@ -172,16 +172,13 @@
 }
 
 /* Refraction is the costly part of glass: the backdrop is re-bent on every
-   frame it moves. It pauses while the page scrolls or a sheet is in flight
-   (blur and rim carry the look in motion), off screen, and on resting
-   surfaces of weak devices. */
+   frame it moves. It pauses while the page scrolls (blur and rim carry the
+   look in motion), off screen, and on resting surfaces of weak devices. */
 [data-lg-refract] {
   --lg-filter: var(--lg-refraction);
 }
 
 html[data-lg-scrolling] [data-lg-refract],
-[data-lg-moving][data-lg-refract],
-[data-lg-moving] [data-lg-refract],
 [data-lg-refract][data-lg-offscreen],
 html[data-lg-quality='low'] [data-lg-refract='surface'] {
   --lg-filter: initial;
